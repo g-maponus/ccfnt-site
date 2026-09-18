@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+	<ShortName>CCFNT</ShortName>
+	<Description>Search CCFNT - Bienvenue!</Description>
+	<Contact>help@wordpress.com</Contact>
+	<Url type="application/atom+xml" template="https://ccfnt.org/?s={searchTerms}&amp;feed=atom" />
+	<Url type="rss+xml" template="https://ccfnt.org/?s={searchTerms}&amp;feed=rss2" />
+	<Url type="text/html" template="https://ccfnt.org/?s={searchTerms}" method="GET" />
+	<Url type="application/opensearchdescription+xml" rel="self" template="https://ccfnt.org/osd.xml" />
+	<LongName>CCFNT</LongName>
+	<Image height="16" width="16" type="image/vnd.microsoft.icon">https://secure.gravatar.com/blavatar/f012f37fdb7ef6853aaf24c41c1d8d9961dd2679d5327b19ebde930d128c2603?s=16&#038;d=https%3A%2F%2Fccfnt.org%2Ffavicon.ico</Image>
+	<Image height="64" width="64" type="image/jpeg">https://secure.gravatar.com/blavatar/f012f37fdb7ef6853aaf24c41c1d8d9961dd2679d5327b19ebde930d128c2603?s=64&#038;d=https%3A%2F%2Fs-ssl.wordpress.com%2Fi%2Flogo%2Fgray-white-transparent-64.png</Image>
+	<Query role="example" searchTerms="photography" />
+	<Tags>blog</Tags>
+	<Developer>Automattic</Developer>
+	<SyndicationRight>open</SyndicationRight>
+	<AdultContent>false</AdultContent>
+	<Language>fr-FR</Language>
+	<OutputEncoding>UTF-8</OutputEncoding>
+	<InputEncoding>UTF-8</InputEncoding>
+	<moz:SearchForm>https://ccfnt.org</moz:SearchForm>
+</OpenSearchDescription>

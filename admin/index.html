@@ -1,0 +1,3216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin — CCFNT</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Helvetica, Arial, sans-serif; background: #f5f0eb; color: #333; min-height: 100vh; }
+
+/* ---- Login ---- */
+#login-screen {
+  display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px;
+}
+.login-card {
+  background: #fff; border-radius: 8px; box-shadow: 0 2px 16px rgba(0,0,0,.12);
+  padding: 40px 36px; max-width: 380px; width: 100%; text-align: center;
+}
+.login-card h1 { color: #990000; font-size: 1.4em; margin-bottom: 4px; }
+.login-card .subtitle { color: #888; font-size: .85em; margin-bottom: 28px; }
+.login-card input[type=text] {
+  width: 100%; padding: 10px 14px; border: 1px solid #c9a87c; border-radius: 4px;
+  font-size: 1.1em; text-align: center; letter-spacing: .2em; margin-bottom: 10px;
+}
+.login-card input[type=text]:focus { outline: none; border-color: #990000; }
+.btn {
+  display: inline-block; padding: 10px 20px; border: none; border-radius: 4px;
+  cursor: pointer; font-size: .9em; font-weight: 700; transition: background .18s;
+}
+.btn-primary { background: #990000; color: #fff; width: 100%; }
+.btn-primary:hover { background: #c00; }
+.btn-primary:disabled { background: #ccc; cursor: default; }
+.btn-secondary { background: #f5f0eb; color: #555; border: 1px solid #c9a87c; }
+.btn-secondary:hover { background: #ede5d8; }
+.btn-danger { background: #c0392b; color: #fff; padding: 4px 10px; font-size: .8em; border-radius: 3px; }
+.btn-danger:hover { background: #e74c3c; }
+.login-msg { font-size: .82em; min-height: 1.2em; margin-top: 8px; }
+#otp-step { display: none; margin-top: 16px; }
+
+/* ---- Dashboard ---- */
+#dashboard { display: none; }
+.top-bar {
+  background: #3a1f00; color: #f0e6d3; padding: 12px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.top-bar h1 { font-size: 1.1em; font-weight: 700; letter-spacing: .04em; }
+.top-bar .tb-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.lit-badge {
+  display: inline-block; font-size: .72em; font-weight: 700; letter-spacing: .02em;
+  padding: 3px 10px; border-radius: 11px; white-space: nowrap;
+  background: #f0c080; color: #3a1f00; border: 1px solid #d9a95a;
+}
+.top-bar .logout { font-size: .8em; color: #f0c080; cursor: pointer; text-decoration: underline; }
+
+.tabs { display: flex; flex-wrap: wrap; background: #fff; border-bottom: 2px solid #c9a87c; }
+.tab-btn {
+  padding: 12px 24px; background: none; border: none; cursor: pointer;
+  font-size: .9em; font-weight: 600; color: #777; border-bottom: 3px solid transparent;
+  margin-bottom: -2px; transition: color .15s;
+}
+.tab-btn.active { color: #990000; border-bottom-color: #990000; }
+.tab-btn:hover { color: #990000; }
+@media (max-width: 640px) { .tab-btn { padding: 10px 13px; font-size: .82em; } }
+
+.tab-panel { display: none; padding: 24px; max-width: 900px; }
+/* Préparation (Mass board) is card/grid-heavy and was wasting most of a wide
+   screen at the shared 900px cap — widen just this tab so the asset/team grids
+   (already auto-fill/minmax) actually use the space and activity messages
+   aren't squeezed. Added 2026-08-22. */
+#tab-prep { max-width: 1600px; }
+/* Rôles & Contacts → Personnes outgrew the shared 900px cap once the TEST/PROD
+   contacts toggle added 4 columns (Email/Tél. × TEST/PROD) on top of the
+   existing ones — the table's own overflow-x:auto let it scroll, but inside a
+   card that was itself clipped to 900px that just meant "most of it invisible
+   with no visible scrollbar," not a usable scroll area. Widen the whole tab
+   instead, same fix as #tab-prep above. Added 2026-08-30 (user screenshot).*/
+#tab-roles { max-width: 1600px; }
+/* RSVP table (Nom/Pers./Contact/Plat/Boisson/Reçu le/Statut/Accusé — 8 columns)
+   outgrew the shared 900px cap too, same story as #tab-prep/#tab-roles above:
+   the table's own overflow-x:auto let it scroll, but names still wrapped to
+   3-4 lines and the scrollbar ate real width. Widen the whole tab instead.
+   Added 2026-08-31 (user screenshot). */
+#tab-rsvp { max-width: 1600px; }
+.tab-panel.active { display: block; }
+.subtabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+.subtab-btn { background: #f4f2ee; border: 1px solid #e6dcc9; color: #8a7a5c; padding: 7px 18px; border-radius: 20px; font-size: .9em; cursor: pointer; font-family: inherit; }
+.subtab-btn:hover { color: #990000; }
+.subtab-btn.active { background: #990000; border-color: #990000; color: #fff; }
+.subtab-panel { display: none; }
+.subtab-panel.active { display: block; }
+.prep-stats { display: flex; gap: 10px; flex-wrap: wrap; margin: 4px 0 16px; }
+.pstat { flex: 1; min-width: 82px; background: #faf7f2; border: 1px solid #f0e6d3; border-radius: 9px; padding: 10px 12px; text-align: center; cursor: pointer; font-family: inherit; appearance: none; -webkit-appearance: none; transition: border-color .12s, box-shadow .12s, background .12s; }
+.pstat:hover { border-color: #c9a87c; background: #fff; }
+.pstat.sel { border-color: #8E1B26; background: #fff; box-shadow: 0 0 0 2px rgba(142,27,38,.16); }
+.pstat.sel .pstat-l { color: #8E1B26; }
+.pstat:focus-visible { outline: 2px solid #8E1B26; outline-offset: 2px; }
+.pstat-n { font-size: 1.65em; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.pstat-l { font-size: .7em; color: #888; text-transform: uppercase; letter-spacing: .05em; margin-top: 5px; }
+/* Préparation — timeline (stepper) + focused detail */
+.prep-progress { margin: 2px 0 16px; }
+.prep-countdown { margin: 0 0 14px; padding: 9px 14px; background: #fbf6ec; border: 1px solid #f0e6d3; border-radius: 8px; font-size: .92em; color: #6a4d1a; }
+.prep-countdown b { color: #8E1B26; }
+.prep-filter { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 14px; align-items: center; }
+.pf-chip { display: inline-flex; align-items: center; gap: 6px; font-size: .76em; font-weight: 600; padding: 4px 10px; border-radius: 14px; border: 1px solid #e0d6c2; background: #fff; color: #6a5a3a; cursor: pointer; font-family: inherit; transition: opacity .12s, background .12s; }
+.pf-chip .pf-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.pf-chip.off { opacity: .42; text-decoration: line-through; background: #f6f2ea; }
+.pf-chip.pf-reset { border-style: dashed; color: #8a6d3b; }
+.pt-daysleft { font-size: .72em; color: #9a8f7a; }
+.pt-daysleft.urgent { color: #b00020; font-weight: 700; }
+.pt-daysleft.today { color: #8a6d00; font-weight: 700; }
+.pp-row { display: flex; align-items: center; gap: 12px; }
+.pp-txt { font-size: .82em; color: #6a5a3a; font-weight: 600; white-space: nowrap; }
+.pp-bar { flex: 1; height: 8px; background: #efe7d6; border-radius: 5px; overflow: hidden; }
+.pp-fill { height: 100%; background: #2a7a2a; border-radius: 5px; transition: width .3s; }
+/* ---- Mass board (rebuild) ---- */
+.mb-h { margin: 22px 0 4px; color: #8E1B26; font-size: 1.08em; }
+.mb-sub { font-size: .84em; color: #666; margin: 0 0 12px; }
+.mb-assets { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin-bottom: 6px; }
+.mb-asset { border: 1px solid #ece0c8; border-radius: 10px; padding: 13px 14px; background: #fffdf8; display: flex; flex-direction: column; gap: 7px; }
+.mb-asset h4 { margin: 0; font-size: 1em; color: #3a1f00; display: flex; align-items: center; gap: 7px; }
+.mb-asset .meta { font-size: .8em; color: #7a6a4a; }
+.mb-asset .who { font-size: .78em; color: #999; }
+.mb-asset .row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; }
+.mb-chip { font-size: .72em; font-weight: 600; padding: 2px 9px; border-radius: 11px; white-space: nowrap; }
+.mb-chip.ok { color:#2a7a2a; background:#eaf5ea; } .mb-chip.warn { color:#8a6d00; background:#fdf6e3; }
+.mb-chip.bad { color:#b00020; background:#fdecec; } .mb-chip.neutral { color:#4c5866; background:#eef1f4; }
+.mb-chip.info { color:#7a5cc0; background:#f1ecfb; }
+.mb-team { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; margin-bottom: 6px; }
+.mb-trow { border: 1px solid #ece0c8; border-radius: 9px; padding: 10px 12px; background: #fffdf8; }
+.mb-trow .tl { font-weight: 600; color: #3a1f00; font-size: .92em; }
+.mb-trow .tn { font-size: .8em; color: #777; margin: 2px 0 7px; }
+.mb-dispatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.mb-disp { border: 1px solid #ece0c8; border-radius: 10px; padding: 13px 14px; background: #fffdf8; }
+.mb-disp h4 { margin: 0 0 6px; font-size: .98em; color: #3a1f00; }
+.mb-topic { display: block; font-size: .84em; margin: 3px 0; color: #444; }
+.mb-topic input { margin-right: 6px; }
+.mb-topic.gated { color: #b08; opacity: .7; }
+.mb-topic .badge-req { font-size: .68em; color: #8E1B26; margin-left: 4px; font-weight: 700; }
+.mb-topic .badge-gate { font-size: .68em; color: #b0700a; margin-left: 4px; }
+.mb-sec { border: 1px solid #ece0c8; border-radius: 9px; margin: 8px 0; overflow: hidden; }
+.mb-sec > .h { display: flex; align-items: center; gap: 9px; padding: 9px 12px; background: #faf5ea; cursor: pointer; }
+.mb-sec > .h .lbl { font-weight: 600; color: #3a1f00; font-size: .92em; }
+.mb-sec > .h .st { margin-left: auto; }
+.mb-sec > .b { padding: 10px 12px; }
+.mb-sec textarea { width: 100%; min-height: 90px; font: inherit; font-size: .88em; border: 1px solid #d9c8a5; border-radius: 6px; padding: 8px; box-sizing: border-box; white-space: pre-wrap; }
+.mb-sec .preview { font-size: .86em; white-space: pre-wrap; color: #333; max-height: 160px; overflow: auto; background: #fff; border: 1px dashed #e5d8bd; border-radius: 6px; padding: 8px; }
+.mb-modal { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 60; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.mb-modal-inner { background: #fff; border-radius: 12px; padding: 18px 20px; max-width: 560px; width: 100%; max-height: 82vh; overflow: auto; }
+.mb-song { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 6px; cursor: pointer; }
+.mb-song:hover { background: #faf5ea; border-color: #d9c8a5; }
+.mb-song .t { font-weight: 600; font-size: .9em; color: #3a1f00; }
+.mb-song .m { font-size: .74em; color: #999; }
+[data-theme="dark"] .mb-asset, [data-theme="dark"] .mb-trow, [data-theme="dark"] .mb-disp,
+[data-theme="dark"] .mb-sec, [data-theme="dark"] .mb-modal-inner { background: #323235; border-color: #45454a; }
+[data-theme="dark"] .mb-sec > .h { background: #3a3a3e; }
+[data-theme="dark"] .mb-asset h4, [data-theme="dark"] .mb-trow .tl, [data-theme="dark"] .mb-sec > .h .lbl { color: #e8e2d5; }
+/* ---- Bulletin editor: a real full-page view (not a drawer), per PZ's
+   request for enough room to work comfortably. Sits ABOVE #dashboard as an
+   opaque overlay (z-index 50) rather than hiding it outright -- #mb-song-modal
+   (z-index 60) and #pv-modal (1000) live INSIDE #dashboard's DOM subtree, and
+   a display:none ancestor would hide them too, so #dashboard must stay
+   "visible" underneath for those to still work when opened from here. */
+#bulletin-editor { display: none; position: fixed; inset: 0; z-index: 50; background: #f5f0eb;
+  flex-direction: column; }
+[data-theme="dark"] #bulletin-editor { background: #26262a; }
+.be-top { background: #3a1f00; color: #f0e6d3; padding: 12px 24px; display: flex;
+  align-items: center; gap: 16px; flex-wrap: wrap; }
+.be-top h2 { font-size: 1.05em; font-weight: 700; flex: 1; min-width: 0; }
+.be-back { color: #f0c080; cursor: pointer; text-decoration: underline; font-size: .88em;
+  background: none; border: none; font: inherit; }
+.be-grid { flex: 1; min-height: 0; display: grid;
+  grid-template-columns: minmax(340px, 460px) minmax(0, 1fr); gap: 16px; padding: 16px 24px; }
+@media (max-width: 900px) { .be-grid { grid-template-columns: 1fr; overflow-y: auto; } }
+.be-left { min-height: 0; overflow-y: auto; padding-right: 4px; }
+.be-right { min-height: 0; background: #fff; border: 1px solid #c9a87c; border-radius: 8px;
+  overflow: hidden; display: flex; flex-direction: column; }
+[data-theme="dark"] .be-right { background: #323235; border-color: #45454a; }
+.be-right iframe { flex: 1; border: none; width: 100%; background: #fff; }
+.be-card { border: 1px solid #ece0c8; border-radius: 10px; padding: 12px 14px; background: #fffdf8;
+  margin-bottom: 12px; }
+[data-theme="dark"] .be-card { background: #323235; border-color: #45454a; }
+.be-card-h { font-weight: 600; color: #3a1f00; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+[data-theme="dark"] .be-card-h { color: #e8e2d5; }
+.be-cur { font-size: .85em; color: #555; white-space: pre-wrap; margin-bottom: 8px; }
+.be-years select { width: 100%; padding: 5px; margin-bottom: 6px; }
+.be-cand-prev { font-size: .82em; white-space: pre-wrap; color: #333; max-height: 120px;
+  overflow: auto; background: #fff; border: 1px dashed #e5d8bd; border-radius: 6px; padding: 7px; margin-bottom: 6px; }
+[data-theme="dark"] .be-cand-prev { background: #26262a; color: #ddd; }
+.be-bottom { padding: 12px 24px; background: #fff; border-top: 2px solid #c9a87c;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+[data-theme="dark"] .be-bottom { background: #26262a; }
+/* Chants & Partitions page (2026-08-29) -- mirrors #bulletin-editor's
+   .be-top/.be-bottom/.be-card, just a single scrolling column instead of
+   the bulletin's 2-column live-preview grid (nothing here needs a preview
+   pane). */
+#chants-editor { display: none; position: fixed; inset: 0; z-index: 50; background: #f5f0eb;
+  flex-direction: column; }
+[data-theme="dark"] #chants-editor { background: #26262a; }
+.ce-body { flex: 1; min-height: 0; overflow-y: auto; padding: 16px 24px; }
+.ce-list { max-width: 640px; margin: 0 auto; }
+.ce-file-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 8px 0; }
+@media (max-width: 560px) { .ce-file-row { grid-template-columns: 1fr; } }
+.ce-file { border: 1px dashed #e5d8bd; border-radius: 8px; padding: 8px 10px; }
+[data-theme="dark"] .ce-file { border-color: #45454a; }
+.ce-file-label { font-size: .78em; font-weight: 600; color: #8a6d3b; margin-bottom: 4px; }
+[data-theme="dark"] .ce-file-label { color: #cbb888; }
+.ce-file-cur { font-size: .82em; color: #555; word-break: break-word; }
+[data-theme="dark"] .ce-file-cur { color: #ccc; }
+.ce-approve { display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: .85em; cursor: pointer; }
+#ce-search-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55);
+  z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+.ce-search-box { background: #fff; border-radius: 10px; width: min(520px, 96vw); max-height: 80vh;
+  display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 12px 44px rgba(0,0,0,.32); }
+[data-theme="dark"] .ce-search-box { background: #323235; }
+.ce-search-list { flex: 1; overflow-y: auto; padding: 4px 15px 12px; }
+.pt-wrap { display: grid; grid-template-columns: minmax(210px, 290px) minmax(0, 1fr); gap: 26px; align-items: start; }
+.pt-timeline { min-width: 0; }
+.pt-detail { min-width: 0; }
+@media (max-width: 760px) { .pt-wrap { grid-template-columns: 1fr; } }
+.pt-node { display: flex; gap: 11px; width: 100%; text-align: left; background: none; border: none; cursor: pointer; padding: 0; font: inherit; }
+.pt-marker { flex: 0 0 24px; display: flex; flex-direction: column; align-items: center; align-self: stretch; }
+.pt-dot { width: 23px; height: 23px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .72em; font-weight: 700; border: 2px solid #cfc3ad; background: #fff; color: #8a7a55; box-sizing: border-box; flex: 0 0 auto; }
+.pt-line { flex: 1 1 auto; width: 2px; min-height: 10px; background: #e6dcc6; margin: 3px 0; }
+.pt-node:last-child .pt-line { visibility: hidden; }
+.pt-body { flex: 1; min-width: 0; padding: 1px 6px 16px 0; }
+.pt-title { font-size: .9em; font-weight: 600; color: #3a1f00; line-height: 1.25; }
+.pt-meta { margin-top: 4px; display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
+.pt-jbadge { background: #f3ead6; color: #8a6d3b; border-radius: 4px; padding: 0 6px; font-size: .72em; font-weight: 700; }
+.pt-node.sel .pt-body { background: #fbf6ec; border-radius: 8px; box-shadow: inset 3px 0 0 #d6a94a; padding-left: 11px; }
+.pt-node:hover .pt-title { color: #7a4d00; }
+.pt-node.done .pt-title, .pt-node.skipped .pt-title { color: #9a9a86; font-weight: 500; }
+.pt-node.skipped .pt-title { text-decoration: line-through; }
+.pt-node.done .pt-dot { background: #2a7a2a; border-color: #2a7a2a; color: #fff; }
+.pt-node.done .pt-line { background: #bcdcbc; }
+.pt-node.overdue .pt-dot { background: #b00020; border-color: #b00020; color: #fff; }
+.pt-node.due .pt-dot { background: #d6a94a; border-color: #d6a94a; color: #fff; }
+.pt-node.waiting_ack .pt-dot { background: #7a5cc0; border-color: #7a5cc0; color: #fff; }
+.pt-node.blocked .pt-dot { background: #f0f0f0; border-color: #d8d0bd; color: #888; font-size: .66em; }
+.pt-node.pending .pt-dot { background: #fff; border-color: #cfc3ad; color: #b8ab8c; }
+#lib-typetabs .subtab-btn { padding: 6px 14px; font-size: .85em; }
+.lib-l { font-size: .72em; color: #888; text-transform: uppercase; letter-spacing: .04em; }
+.lib-i { padding: 7px 10px; border: 1px solid #c9a87c; border-radius: 5px; font-size: .92em; font-family: inherit; }
+.lib-row { border: 1px solid #f0e6d3; border-radius: 8px; padding: 11px 14px; margin-bottom: 8px; background: #fff; }
+.lib-badge { font-size: .72em; padding: 2px 8px; border-radius: 10px; white-space: nowrap; font-weight: 600; }
+.prep-docs a { color: #8E1B26; text-decoration: none; cursor: pointer; }
+.prep-docs a:hover { text-decoration: underline; }
+/* document preview modal */
+#pv-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+.pv-doc { max-width: 720px; margin: 0 auto; padding: 28px 34px; font-family: Georgia, 'Times New Roman', serif; line-height: 1.6; color: #222; }
+.pv-doc h1, .pv-doc h2, .pv-doc h3 { color: #3a1f00; line-height: 1.25; }
+.pv-doc img { max-width: 100%; height: auto; }
+.pv-doc table { border-collapse: collapse; margin: 10px 0; }
+.pv-doc td, .pv-doc th { border: 1px solid #ccc; padding: 4px 8px; }
+
+/* ---- Cards / sections ---- */
+.card {
+  background: #fff; border-radius: 6px; box-shadow: 0 1px 6px rgba(0,0,0,.08);
+  padding: 20px 24px; margin-bottom: 20px;
+}
+.card h2 { font-size: 1em; color: #990000; margin-bottom: 14px; border-bottom: 1px solid #f0e6d3; padding-bottom: 8px; }
+.stat-row { display: flex; gap: 20px; margin-bottom: 4px; }
+.stat { text-align: center; padding: 12px 20px; background: #fdf6ee; border-radius: 6px; flex: 1; }
+.stat .num { font-size: 2em; font-weight: 700; color: #990000; }
+.stat .lbl { font-size: .78em; color: #888; text-transform: uppercase; letter-spacing: .07em; }
+
+/* ---- Subscriber table ---- */
+.sub-table { width: 100%; border-collapse: collapse; font-size: .88em; }
+.sub-table th { text-align: left; padding: 6px 10px; color: #888; font-size: .78em; text-transform: uppercase; letter-spacing: .07em; border-bottom: 2px solid #f0e6d3; white-space: nowrap; }
+.sub-table td { padding: 8px 10px; border-bottom: 1px solid #f5f0eb; }
+.sub-table tr:last-child td { border-bottom: none; }
+.sub-table tr:hover td { background: #fdf6ee; }
+.no-subs { color: #aaa; font-size: .88em; padding: 12px 0; text-align: center; }
+
+/* ---- Mass / Quête table ---- */
+.mass-row {
+  display: flex; align-items: center; gap: 12px; padding: 10px 0;
+  border-bottom: 1px solid #f5f0eb;
+}
+.mass-row:last-child { border-bottom: none; }
+.mass-label { flex: 1; font-weight: 600; color: #3a1f00; }
+.mass-date-input { width: 140px; padding: 6px 10px; border: 1px solid #c9a87c; border-radius: 4px; font-size: .88em; }
+.mass-label-input { flex: 1; padding: 6px 10px; border: 1px solid #c9a87c; border-radius: 4px; font-size: .88em; }
+.mass-date-input:focus, .mass-label-input:focus, .quete-input:focus { outline: none; border-color: #990000; }
+.quete-input { width: 110px; padding: 6px 10px; border: 1px solid #c9a87c; border-radius: 4px; font-size: .88em; }
+.quete-badge {
+  display: inline-block; background: #2a7a2a; color: #fff; border-radius: 12px;
+  padding: 2px 10px; font-size: .78em; font-weight: 700;
+}
+.quete-empty { color: #ccc; font-size: .82em; font-style: italic; }
+.save-row { margin-top: 16px; display: flex; gap: 10px; align-items: center; }
+.save-msg { font-size: .82em; color: #2a7a2a; min-height: 1.2em; }
+.save-msg.error { color: #990000; }
+
+/* ---- Mass add/remove ---- */
+.add-mass-row { display: flex; gap: 10px; align-items: center; margin-top: 14px; padding-top: 14px; border-top: 1px dashed #e0d0c0; }
+.add-mass-row input { padding: 6px 10px; border: 1px solid #c9a87c; border-radius: 4px; font-size: .88em; }
+.add-mass-row input:focus { outline: none; border-color: #990000; }
+.del-btn { background: none; border: none; cursor: pointer; color: #c0392b; font-size: 1.1em; padding: 2px 6px; border-radius: 3px; }
+.del-btn:hover { background: #fdf0f0; }
+
+/* ---- Events (recurring potlucks) ---- */
+.event-card { background: #fdf6ee; border: 1px solid #e8ddd0; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; }
+.event-card .event-id { font-size: .78em; color: #999; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+.event-field-row { display: flex; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+.event-field { flex: 1; min-width: 180px; }
+.event-field label { font-size: .78em; color: #888; display: block; margin-bottom: 3px; }
+.event-field input { width: 100%; box-sizing: border-box; padding: 6px 10px; border: 1px solid #c9a87c; border-radius: 4px; font-size: .88em; }
+.event-field input:focus { outline: none; border-color: #990000; }
+
+#spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #ccc; border-top-color: #990000; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-left: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---- Toggle switch ---- */
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f5f0eb; }
+.toggle-row:last-child { border-bottom: none; }
+.toggle-label { font-size: .9em; color: #333; }
+.toggle-label small { display: block; font-size: .78em; color: #999; margin-top: 2px; }
+.switch { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; inset: 0; background: #ccc; border-radius: 22px; cursor: pointer; transition: background .2s; }
+.slider:before { content: ""; position: absolute; height: 16px; width: 16px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: transform .2s; }
+input:checked + .slider { background: #990000; }
+input:checked + .slider:before { transform: translateX(18px); }
+</style>
+</head>
+<body>
+
+<!-- =========== LOGIN =========== -->
+<div id="login-screen">
+  <div class="login-card">
+    <h1>&#9962; CCFNT Admin</h1>
+    <p class="subtitle">Espace d'administration du site</p>
+
+    <div id="step-request">
+      <p style="font-size:.88em;color:#555;margin-bottom:12px">
+        Sélectionnez votre nom, puis choisissez comment vous connecter.
+      </p>
+      <select id="admin-person" style="width:100%;padding:11px 12px;border:1px solid #c9a87c;border-radius:6px;font-size:1em;margin-bottom:14px;background:#fff"></select>
+      <button class="btn btn-primary" id="btn-magic" style="width:100%;margin-bottom:8px">📧 M'envoyer un lien par email</button>
+      <button class="btn btn-secondary" id="btn-request" style="width:100%">📱 Recevoir un code par SMS</button>
+      <p class="login-msg" id="req-msg"></p>
+    </div>
+
+    <div id="otp-step">
+      <p style="font-size:.88em;color:#555;margin-bottom:6px">Entrez le code reçu par SMS&nbsp;:</p>
+      <p id="otp-sent-to" style="font-size:.82em;color:#8a6d3b;margin:0 0 12px"></p>
+      <input type="text" id="otp-input" placeholder="123456" maxlength="6" inputmode="numeric" autocomplete="one-time-code">
+      <button class="btn btn-primary" id="btn-verify">Valider</button>
+      <p class="login-msg" id="verify-msg"></p>
+      <p style="margin-top:12px">
+        <button class="btn btn-secondary" id="btn-resend" style="font-size:.8em;padding:6px 14px">Renvoyer le code</button>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- =========== DASHBOARD =========== -->
+<div id="dashboard">
+  <div class="top-bar">
+    <div class="tb-left">
+      <h1>&#9962; CCFNT — Administration</h1>
+      <span class="lit-badge" id="lit-badge" title="Année liturgique en cours — cycle des lectures du dimanche (A=Matthieu, B=Marc, C=Luc), changeant au 1er dimanche de l'Avent"></span>
+    </div>
+    <span class="logout" id="btn-logout">Déconnexion</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="prep">🗓️ Préparation</button>
+    <button class="tab-btn" data-tab="library">📚 Bibliothèque</button>
+    <button class="tab-btn" data-tab="events">🗓️ Événements</button>
+    <button class="tab-btn" data-tab="rsvp">🙋 RSVP</button>
+    <button class="tab-btn" data-tab="masses">📅 Dates des messes</button>
+    <button class="tab-btn" data-tab="quete">💰 La Quête</button>
+    <button class="tab-btn" data-tab="roles">👥 Rôles &amp; Contacts</button>
+    <button class="tab-btn" data-tab="subscribers">📋 Abonnés SMS</button>
+    <button class="tab-btn" data-tab="notifications">🔔 Notifications</button>
+    <button class="tab-btn" data-tab="settings">⚙️ Paramètres</button>
+  </div>
+
+  <!-- Subscribers tab -->
+  <div class="tab-panel" id="tab-subscribers">
+    <div class="card">
+      <div class="stat-row" id="stats-row">
+        <div class="stat"><div class="num" id="stat-count">—</div><div class="lbl">Abonnés</div></div>
+        <div class="stat"><div class="num" id="stat-cap">—</div><div class="lbl">Capacité max</div></div>
+        <div class="stat"><div class="num" id="stat-remaining">—</div><div class="lbl">Places restantes</div></div>
+        <div class="stat"><div class="num" id="stat-opted-out" style="color:#888">—</div><div class="lbl">Désabonnés</div></div>
+        <div class="stat">
+          <div class="num" id="stat-balance">—</div>
+          <div class="lbl">Crédits SMS</div>
+          <button class="btn btn-secondary" id="btn-refresh-balance" style="font-size:.7em;padding:3px 8px;margin-top:4px">↻ Actualiser</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Envoyer un SMS aux abonnés</h2>
+      <p style="font-size:.83em;color:#888;margin-bottom:14px">
+        Message libre envoyé immédiatement à tous les abonnés actifs (non désabonnés) —
+        remplace l'ancien rappel automatique (retiré, il faisait doublon avec les envois
+        de la page Préparation).
+      </p>
+      <textarea id="smsb-text" rows="4" maxlength="480" placeholder="Écrivez votre message ici…"
+        style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #c9a87c;border-radius:4px;
+        font-size:.95em;font-family:inherit;resize:vertical"></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:.8em;color:#888">
+        <span id="smsb-count">0 / 480</span>
+        <span id="smsb-url-warn" style="color:#b33;font-weight:600" hidden>⚠️ Retirez le lien — les SMS avec URL sont refusés.</span>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:12px">
+        <button class="btn btn-primary" id="btn-send-broadcast" style="width:auto;padding:8px 22px">Envoyer</button>
+        <span class="save-msg" id="smsb-result"></span>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Liste des abonnés</h2>
+      <div id="sub-list-wrap">
+        <p class="no-subs">Chargement…</p>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Tester un SMS</h2>
+      <p style="font-size:.83em;color:#888;margin-bottom:14px">Envoyer un SMS de test pour vérifier le contenu du message avant envoi réel.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
+        <div>
+          <label style="font-size:.83em;color:#888;display:block;margin-bottom:4px">Numéro de téléphone</label>
+          <input type="tel" id="test-phone" placeholder="+12145551234" autocomplete="off"
+            style="padding:8px 12px;border:1px solid #c9a87c;border-radius:4px;font-size:.9em;width:190px">
+        </div>
+        <div>
+          <label style="font-size:.83em;color:#888;display:block;margin-bottom:4px">Type de message</label>
+          <select id="test-type" style="padding:8px 12px;border:1px solid #c9a87c;border-radius:4px;font-size:.9em;background:#fff;height:36px">
+            <option value="welcome">Message de bienvenue</option>
+            <option value="reminder">Rappel de messe</option>
+          </select>
+        </div>
+        <button class="btn btn-secondary" id="btn-test-sms" style="padding:8px 20px">Envoyer le test</button>
+      </div>
+      <div id="test-sms-result" style="margin-top:12px;font-size:.85em"></div>
+    </div>
+  </div>
+
+  <!-- Masses tab -->
+  <div class="tab-panel" id="tab-masses">
+    <div class="card">
+      <h2>Dates des messes 2026</h2>
+      <div id="masses-list"></div>
+      <div class="add-mass-row">
+        <input type="date" id="new-mass-date" placeholder="AAAA-MM-JJ">
+        <input type="text" id="new-mass-label" placeholder="ex : 10 mai 2026" style="flex:1">
+        <button class="btn btn-secondary" id="btn-add-mass">+ Ajouter</button>
+      </div>
+      <div class="save-row">
+        <button class="btn btn-primary" id="btn-save-masses" style="width:auto;padding:9px 24px">Enregistrer</button>
+        <span class="save-msg" id="masses-save-msg"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Events tab -->
+  <div class="tab-panel" id="tab-events">
+    <div class="card">
+      <h2>Les 3 rencontres annuelles</h2>
+      <p style="font-size:.83em;color:#888;margin-bottom:14px">
+        Rentrée (sept/oct), Chandeleur (février), fin d'année scolaire (mai/juin) — voir
+        <code>/communaute/rencontres/</code>. Le <strong>Slug RSVP</strong> est l'identifiant utilisé
+        dans le lien <code>/rsvp/?event=…</code> envoyé par courriel : mettez-le à jour chaque année
+        avec la nouvelle occasion.
+      </p>
+      <p style="font-size:.83em;background:#fdf0f0;color:#990000;border-left:3px solid #990000;padding:8px 12px;margin-bottom:14px;border-radius:4px">
+        ⚠️ <strong>Où</strong> est <strong>public</strong> — utilisé dans les emails/rappels envoyés à
+        toute la communauté (ne jamais y mettre l'adresse complète, juste « chez Untel »).
+        <strong>Adresse</strong> est <strong>privée</strong> — envoyée uniquement dans la confirmation
+        RSVP, une fois la réponse approuvée dans l'onglet 🙋 RSVP.
+      </p>
+      <div id="events-list"></div>
+      <div class="save-row">
+        <button class="btn btn-primary" id="btn-save-events" style="width:auto;padding:9px 24px">Enregistrer</button>
+        <span class="save-msg" id="events-save-msg"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RSVP tab -->
+  <div class="tab-panel" id="tab-rsvp">
+    <div class="card">
+      <h2>Réponses RSVP</h2>
+      <p style="font-size:.83em;color:#888;margin-bottom:14px">
+        Réponses envoyées depuis les pages <code>/rsvp/?event=…</code> liées dans les courriels.
+        Chaque réponse reçoit d'abord un accusé de réception <strong>sans l'adresse</strong> ; approuvez
+        une entrée « ⏳ En attente » pour lui envoyer l'adresse (anti-spam / vérification).
+      </p>
+      <div id="rsvp-list-wrap">
+        <p class="no-subs">Chargement…</p>
+      </div>
+
+      <details style="margin-top:18px;border:1px solid #e6dcc9;border-radius:9px;padding:0 14px">
+        <summary style="cursor:pointer;padding:12px 0;font-weight:600;color:#8E1B26">➕ Ajouter une réponse manuellement</summary>
+        <div style="padding:6px 0 16px">
+          <p style="font-size:.82em;color:#666;margin:0 0 12px">
+            Pour une réponse reçue hors du formulaire (appel, texto, e-mail direct). Envoie
+            immédiatement le même accusé + adresse qu'une réponse approuvée depuis la liste —
+            pas d'étape « en attente ».
+          </p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
+            <label style="font-size:.82em;color:#666">Événement
+              <select id="rsvp-manual-event" style="width:100%;padding:7px;border:1px solid #d9c8a5;border-radius:6px;box-sizing:border-box;margin-top:3px"></select>
+            </label>
+            <label style="font-size:.82em;color:#666">Nom
+              <input id="rsvp-manual-name" style="width:100%;padding:7px;border:1px solid #d9c8a5;border-radius:6px;box-sizing:border-box;margin-top:3px" placeholder="Jocelyne Raad">
+            </label>
+            <label style="font-size:.82em;color:#666">Contact (email ou téléphone)
+              <input id="rsvp-manual-contact" style="width:100%;padding:7px;border:1px solid #d9c8a5;border-radius:6px;box-sizing:border-box;margin-top:3px" placeholder="jocelyne@exemple.com">
+            </label>
+            <label style="font-size:.82em;color:#666">Personnes
+              <input id="rsvp-manual-headcount" type="number" min="1" max="20" value="1" style="width:100%;padding:7px;border:1px solid #d9c8a5;border-radius:6px;box-sizing:border-box;margin-top:3px">
+            </label>
+            <label style="font-size:.82em;color:#666">Plat
+              <input id="rsvp-manual-food" style="width:100%;padding:7px;border:1px solid #d9c8a5;border-radius:6px;box-sizing:border-box;margin-top:3px" placeholder="Taboulé">
+            </label>
+            <label style="font-size:.82em;color:#666">Boisson
+              <input id="rsvp-manual-beverage" style="width:100%;padding:7px;border:1px solid #d9c8a5;border-radius:6px;box-sizing:border-box;margin-top:3px">
+            </label>
+          </div>
+          <div style="margin-top:10px"><button class="btn btn-primary" style="font-size:.8em" onclick="addRsvpManual(this)">Ajouter et envoyer la confirmation</button></div>
+          <div id="rsvp-manual-result" style="margin-top:10px;font-size:.85em"></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- Quête tab -->
+  <div class="tab-panel" id="tab-quete">
+    <div class="card">
+      <h2>Montants de la quête par messe</h2>
+      <div id="quete-list"></div>
+      <div class="save-row">
+        <span class="save-msg" id="quete-save-msg"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings tab -->
+  <div class="tab-panel" id="tab-settings">
+    <div class="subtabs">
+      <button class="subtab-btn active" data-subtab="settings-sms">📱 SMS (Textbelt)</button>
+      <button class="subtab-btn" data-subtab="settings-ai">🤖 IA (Claude)</button>
+      <button class="subtab-btn" data-subtab="settings-bulletin">📄 Bulletin</button>
+    </div>
+
+    <div class="subtab-panel active" id="sub-settings-sms">
+    <div class="card">
+      <h2>Clé API Textbelt (SMS)</h2>
+      <p style="font-size:.85em;color:#666;margin-bottom:16px">
+        Utilisée pour envoyer les rappels SMS et les codes d'authentification.
+        Achetez des crédits sur <a href="https://textbelt.com" target="_blank" style="color:#990000">textbelt.com</a>.
+      </p>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+        <input type="password" id="key-input" style="flex:1;padding:8px 12px;border:1px solid #c9a87c;border-radius:4px;font-family:monospace;font-size:.88em" placeholder="Chargement…">
+        <button class="btn btn-secondary" id="btn-toggle-key" style="white-space:nowrap">Afficher</button>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <button class="btn btn-primary" id="btn-save-key" style="width:auto;padding:9px 24px">Enregistrer la clé</button>
+        <span class="save-msg" id="key-save-msg"></span>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Solde de crédits SMS</h2>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <div class="stat" style="min-width:120px">
+          <div class="num" id="settings-balance">—</div>
+          <div class="lbl">Crédits restants</div>
+        </div>
+        <div style="font-size:.85em;color:#666;line-height:1.6">
+          <p>Coût par envoi de rappel&nbsp;: <strong id="cost-estimate">—</strong> crédit(s)</p>
+          <p style="margin-top:4px;font-size:.9em;color:#aaa">= 1 crédit × nombre d'abonnés</p>
+        </div>
+        <button class="btn btn-secondary" id="btn-refresh-balance2" style="margin-left:auto">↻ Actualiser</button>
+      </div>
+    </div>
+    </div><!-- /sub-settings-sms -->
+
+    <div class="subtab-panel" id="sub-settings-ai">
+      <div class="card">
+        <h2>Clé API Claude (Anthropic)</h2>
+        <p style="font-size:.85em;color:#666;margin-bottom:14px">
+          Pour les brouillons rédigés par l'IA (bulletin, intentions, chants, homélie). Créez une clé sur
+          <a href="https://console.anthropic.com" target="_blank" rel="noopener" style="color:#990000">console.anthropic.com</a>.
+          Rien n'est envoyé sans votre validation — <em>la rédaction IA s'activera en Phase&nbsp;3</em>.
+        </p>
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px">
+          <input type="password" id="ai-key-input" style="flex:1;padding:8px 12px;border:1px solid #c9a87c;border-radius:4px;font-family:monospace;font-size:.88em" placeholder="Chargement…" autocomplete="off">
+          <button class="btn btn-secondary" id="btn-toggle-ai-key" style="white-space:nowrap">Afficher</button>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn btn-primary" id="btn-save-ai-key" style="width:auto;padding:9px 24px">Enregistrer la clé</button>
+          <span class="save-msg" id="ai-key-msg"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Modèle</h2>
+        <p style="font-size:.85em;color:#666;margin-bottom:12px">Le modèle Claude utilisé pour rédiger les brouillons.</p>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <select id="ai-model-select" style="padding:8px 12px;border:1px solid #c9a87c;border-radius:5px;font-size:.95em;min-width:290px"></select>
+          <button class="btn btn-primary" id="btn-save-ai-model" style="width:auto;padding:9px 20px">Enregistrer</button>
+          <span class="save-msg" id="ai-model-msg"></span>
+        </div>
+        <p id="ai-model-note" style="font-size:.82em;color:#888;margin-top:10px"></p>
+      </div>
+
+      <div class="card">
+        <h2>Coûts &amp; utilisation</h2>
+        <div id="ai-usage" style="margin-top:4px"></div>
+        <div id="ai-cost-est" style="font-size:.86em;color:#555;background:#faf7f2;border:1px solid #f0e6d3;border-radius:9px;padding:12px 16px;margin-top:14px"></div>
+      </div>
+    </div><!-- /sub-settings-ai -->
+
+    <div class="subtab-panel" id="sub-settings-bulletin">
+      <div class="card">
+        <h2>Note de consignes (bas du bulletin)</h2>
+        <p style="font-size:.85em;color:#666;margin-bottom:12px">
+          Affichée dans un petit encadré en bas du bulletin, sur toutes les messes.
+          Ne répétez pas les prochaines dates de messe ici — elles sont déjà dans l'en-tête.
+        </p>
+        <textarea id="bulletin-consignes-input" style="width:100%;min-height:90px;padding:8px 12px;border:1px solid #c9a87c;border-radius:4px;font:inherit;font-size:.9em;box-sizing:border-box" placeholder="Chargement…"></textarea>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:10px">
+          <button class="btn btn-primary" id="btn-save-consignes" style="width:auto;padding:9px 24px">Enregistrer</button>
+          <span class="save-msg" id="consignes-save-msg"></span>
+        </div>
+      </div>
+    </div><!-- /sub-settings-bulletin -->
+
+  </div>
+
+  <!-- Notifications tab -->
+  <div class="tab-panel" id="tab-notifications">
+    <div class="card">
+      <h2>Serveur ntfy</h2>
+      <p style="font-size:.85em;color:#666;margin-bottom:16px">
+        URL complète incluant le topic, ex&nbsp;: <code>http://192.168.0.51:8840/homelab-alerts</code>
+      </p>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+        <input type="text" id="ntfy-url" placeholder="http://192.168.0.51:8840/homelab-alerts"
+          style="flex:1;padding:8px 12px;border:1px solid #c9a87c;border-radius:4px;font-family:monospace;font-size:.88em">
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <button class="btn btn-primary" id="btn-save-ntfy" style="width:auto;padding:9px 24px">Enregistrer</button>
+        <button class="btn btn-secondary" id="btn-test-ntfy" style="padding:9px 20px">Envoyer un test</button>
+        <span class="save-msg" id="ntfy-save-msg"></span>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Événements à notifier</h2>
+      <div class="toggle-row">
+        <div class="toggle-label">Nouvel abonné
+          <small>Quand un nouveau numéro est inscrit</small></div>
+        <label class="switch"><input type="checkbox" id="evt-new_subscriber" checked><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">Réactivation
+          <small>Quand un abonné désactivé se réinscrit</small></div>
+        <label class="switch"><input type="checkbox" id="evt-reactivation" checked><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">Désabonnement
+          <small>Quand quelqu'un envoie STOP</small></div>
+        <label class="switch"><input type="checkbox" id="evt-opt_out" checked><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">SMS envoyé aux abonnés
+          <small>Quand un message est envoyé via « Envoyer un SMS »</small></div>
+        <label class="switch"><input type="checkbox" id="evt-sms_broadcast" checked><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row" style="border-top:2px solid #f0e6d3;margin-top:8px;padding-top:16px">
+        <div class="toggle-label">Tâche confirmée · Préparation
+          <small>Quand un responsable clique « C'est fait » sur une tâche de messe</small></div>
+        <label class="switch"><input type="checkbox" id="evt-prep_ack" checked><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">Tâche marquée faite (admin) · Préparation
+          <small>Quand une tâche est marquée faite depuis l'onglet Préparation</small></div>
+        <label class="switch"><input type="checkbox" id="evt-prep_done" checked><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">Rappel / relance envoyé · Préparation
+          <small>À chaque envoi ou relance d'une tâche à un responsable (peut être bruyant)</small></div>
+        <label class="switch"><input type="checkbox" id="evt-prep_reminder"><span class="slider"></span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Préparation tab -->
+  <div class="tab-panel active" id="tab-prep">
+    <div class="card">
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:6px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid #f0e6d3">
+        <label style="font-weight:600;color:#3a1f00">Messe&nbsp;:</label>
+        <select id="mb-mass" style="padding:8px 12px;border:1px solid #c9a87c;border-radius:5px;font-size:1em" onchange="mbLoad(this.value)"></select>
+        <span class="lit-badge" id="mb-lit" title="Année liturgique de cette messe"></span>
+        <label style="font-weight:600;color:#3a1f00;margin-left:6px">Célébrant&nbsp;:</label>
+        <select id="mb-celebrant" style="padding:7px 10px;border:1px solid #c9a87c;border-radius:5px;font-size:.92em" title="Célébrant — restreint au clergé" onchange="mbSetCelebrant(this.value)"></select>
+        <button class="btn btn-secondary" style="font-size:.8em;padding:5px 12px" onclick="mbLoad(document.getElementById('mb-mass').value)">↻ Actualiser</button>
+        <span class="save-msg" id="mb-msg"></span>
+      </div>
+      <div id="mb-countdown" class="prep-countdown"></div>
+
+      <h3 class="mb-h">📦 Les éléments à préparer</h3>
+      <div id="mb-assets" class="mb-assets">Chargement…</div>
+
+      <h3 class="mb-h">👥 L'équipe de la messe</h3>
+      <p class="mb-sub">Chaque rôle reçoit sa demande avec un lien « c'est fait ». Réattribuez dans <strong>Rôles &amp; Contacts</strong>.</p>
+      <div id="mb-team" class="mb-team"></div>
+
+      <h3 class="mb-h">✉️ Les communications</h3>
+      <p class="mb-sub">Chaque envoi combine les <em>sujets obligatoires</em> (remplis automatiquement) et les <em>sujets optionnels</em> que vous cochez. Rien n'est envoyé sans votre validation.</p>
+      <div id="mb-dispatches" class="mb-dispatch-grid"></div>
+    </div>
+
+    <!-- full-width detail drawer (bulletin builder / intentions / dispatch composer) -->
+    <div id="mb-drawer" class="card" style="display:none">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap">
+        <h2 id="mb-drawer-title" style="margin:0">—</h2>
+        <button class="btn btn-secondary" style="font-size:.8em;padding:4px 12px;margin-left:auto" onclick="mbCloseDrawer()">✕ Fermer</button>
+      </div>
+      <div id="mb-drawer-body"></div>
+    </div>
+  </div>
+
+  <!-- song picker modal -->
+  <div id="mb-song-modal" class="mb-modal" style="display:none">
+    <div class="mb-modal-inner">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <h3 id="mb-song-title" style="margin:0">Choisir un chant</h3>
+        <button class="btn btn-secondary" style="margin-left:auto;font-size:.8em;padding:4px 10px" onclick="mbCloseSong()">✕</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <input id="mb-song-q" placeholder="Rechercher un chant…" oninput="mbSongSearch()"
+               style="flex:1;padding:9px 12px;border:1px solid #c9a87c;border-radius:6px;font-size:.95em">
+        <select id="mb-song-season" onchange="mbSongSearch()"
+                style="padding:9px 10px;border:1px solid #c9a87c;border-radius:6px;font-size:.9em">
+          <option value="">Toutes saisons</option>
+          <option value="avent">Avent</option>
+          <option value="noel">Noël</option>
+          <option value="careme">Carême</option>
+          <option value="paques">Temps pascal</option>
+          <option value="ordinaire">Temps ordinaire</option>
+        </select>
+      </div>
+      <div id="mb-song-list" style="max-height:52vh;overflow:auto"></div>
+    </div>
+  </div>
+
+  <!-- Rôles & Contacts tab -->
+  <div class="tab-panel" id="tab-roles">
+    <div class="subtabs">
+      <button class="subtab-btn active" data-subtab="roles-roles">🗂️ Rôles</button>
+      <button class="subtab-btn" data-subtab="roles-people">👤 Personnes</button>
+      <button class="subtab-btn" data-subtab="roles-logs">📜 Logs</button>
+    </div>
+
+    <div class="subtab-panel active" id="sub-roles-roles">
+      <div class="card">
+        <h2>Rôles</h2>
+        <p style="font-size:.85em;color:#666;margin-bottom:12px">Qui fait quoi. Réattribuez un rôle en changeant la personne. Pour modifier une adresse email ou un téléphone, allez dans l'onglet <strong>Personnes</strong>.</p>
+        <div id="roles-table" style="color:#888">Chargement…</div>
+      </div>
+    </div>
+
+    <div class="subtab-panel" id="sub-roles-people">
+      <div class="card">
+        <h2>Personnes</h2>
+        <p style="font-size:.85em;color:#666;margin-bottom:12px">Modifiez ici le nom et les coordonnées de chaque personne. Décochez « Actif » quand quelqu'un quitte&nbsp;: l'historique reste et les rôles concernés sont signalés.</p>
+        <div id="contacts-mode-banner" style="margin-bottom:14px"></div>
+        <div id="people-table" style="color:#888">Chargement…</div>
+
+        <details style="margin-top:18px;border:1px solid #e6dcc9;border-radius:9px;padding:0 14px">
+          <summary style="cursor:pointer;padding:12px 0;font-weight:600;color:#8E1B26">⬆️ Import en masse — Email/Tél. PROD</summary>
+          <div style="padding:6px 0 16px">
+            <p style="font-size:.82em;color:#666;margin:0 0 8px">Collez une ligne par personne — <strong>Nom</strong>, <strong>Email PROD</strong>, <strong>Tél PROD</strong> — depuis un tableur (collage direct, colonnes séparées par tabulation) ou un CSV (virgules). Le nom doit correspondre à la colonne <strong>Nom</strong> ci-dessus (accents/majuscules sans importance). Les cases vides ne remplacent rien ; seules les colonnes PROD sont modifiées.</p>
+            <textarea id="people-import-rows" placeholder="Philippe Zimmern	philippe@exemple.com	972-555-0100
+Sabine Kerael	sabine@exemple.com	972-555-0101" style="width:100%;min-height:110px;padding:8px;border:1px solid #d9c8a5;border-radius:6px;box-sizing:border-box;font:12px/1.4 ui-monospace,monospace"></textarea>
+            <div style="margin-top:8px"><button class="btn btn-primary" style="font-size:.8em" onclick="importPeopleBulk(this)">Importer</button></div>
+            <div id="people-import-result" style="margin-top:10px;font-size:.85em"></div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="subtab-panel" id="sub-roles-logs">
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap">
+          <h2 style="margin:0">Journal d'activité</h2>
+          <button class="btn btn-secondary" id="logs-refresh" style="font-size:.8em;padding:5px 12px">↻ Actualiser</button>
+          <span id="logs-count" style="font-size:.82em;color:#999"></span>
+        </div>
+        <p style="font-size:.85em;color:#666;margin-bottom:12px">Qui s'est connecté (et comment), et les actions sur la bibliothèque, les documents, les rôles et les brouillons. Du plus récent au plus ancien.</p>
+        <div id="logs-list" style="color:#888">Chargement…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bibliothèque tab (Phase 2 — document library) -->
+  <div class="tab-panel" id="tab-library">
+    <div class="card">
+      <h2>Bibliothèque de documents</h2>
+      <p style="font-size:.85em;color:#666;margin-bottom:14px">Bulletins, homélies, partitions, enregistrements et intentions — classés par type et par date. Alimentée automatiquement depuis les messages du groupe&nbsp;; ajoutez ou téléchargez les documents manquants. C'est ici que l'IA (à venir) ira chercher les documents de l'an dernier pour le même dimanche.</p>
+
+      <details style="margin-bottom:16px;border:1px solid #e6dcc9;border-radius:9px;padding:0 14px">
+        <summary style="cursor:pointer;padding:12px 0;font-weight:600;color:#8E1B26">＋ Ajouter un document</summary>
+        <div style="padding:6px 0 16px">
+          <div class="subtabs" style="margin-bottom:12px">
+            <button class="subtab-btn active" type="button" data-addmode="upload" onclick="setAddMode('upload')">⬆️ Télécharger un fichier</button>
+            <button class="subtab-btn" type="button" data-addmode="reference" onclick="setAddMode('reference')">🔗 Lien / référence</button>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
+            <div><label class="lib-l">Type</label><br><select id="lib-add-type" class="lib-i"></select></div>
+            <div><label class="lib-l">Titre</label><br><input id="lib-add-title" class="lib-i" style="width:230px" placeholder="ex : Bulletin — 3e dim. de Pâques"></div>
+            <div><label class="lib-l">Date (messe)</label><br><input id="lib-add-date" class="lib-i" type="date"></div>
+            <div><label class="lib-l">Dimanche / slot</label><br><input id="lib-add-slot" class="lib-i" style="width:150px" placeholder="ex : paques-3"></div>
+            <div><label class="lib-l">Tags (,)</label><br><input id="lib-add-tags" class="lib-i" style="width:150px" placeholder="pâques, bulletin"></div>
+          </div>
+          <div id="lib-add-upload-row" style="margin-top:12px">
+            <label class="lib-l">Fichier</label> <input id="lib-add-file" type="file" style="font-size:.9em">
+            <span style="color:#999;font-size:.8em">(max 30 Mo — PDF, DOCX, MP3, images…)</span>
+          </div>
+          <div id="lib-add-url-row" style="margin-top:12px;display:none">
+            <label class="lib-l">URL du document</label><br>
+            <input id="lib-add-url" class="lib-i" style="width:100%;max-width:520px" placeholder="https://drive.google.com/…">
+          </div>
+          <div style="margin-top:14px">
+            <button class="btn btn-primary" id="lib-add-btn" onclick="libAdd()">Ajouter à la bibliothèque</button>
+            <span class="save-msg" id="lib-add-msg"></span>
+          </div>
+        </div>
+      </details>
+
+      <div id="lib-filters" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #f0e6d3">
+        <div id="lib-typetabs" class="subtabs" style="margin:0"></div>
+        <span style="flex:1"></span>
+        <select id="lib-year" class="lib-i"><option value="">Toutes les années</option></select>
+        <input id="lib-search" class="lib-i" style="width:170px" placeholder="Rechercher…">
+        <button class="btn btn-secondary" id="lib-refresh" style="font-size:.8em;padding:5px 12px">↻ Actualiser</button>
+        <button class="btn btn-secondary" id="lib-bysunday-btn" style="font-size:.8em;padding:5px 12px" onclick="libToggleBySunday()">📅 Par dimanche</button>
+        <div id="lib-bysunday-picker" style="display:none;width:100%;gap:8px;align-items:center;margin-top:4px">
+          <select id="lib-bysunday-date" class="lib-i"></select>
+          <button class="btn btn-primary" style="font-size:.8em;padding:5px 12px" onclick="libShowBySunday()">Afficher</button>
+        </div>
+      </div>
+      <div id="lib-list" style="color:#888">Chargement…</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Bulletin editor -- a real full-page view (see .be-* CSS comment), reached
+     from the Mass board's Bulletin card. Replaces mbOpenBulletin()'s old
+     drawer for the bulletin itself; that drawer (dead since this shipped)
+     was deleted outright 2026-08-29 along with the "Mise en page" role it
+     existed for. Added 2026-08-29. -->
+<div id="bulletin-editor">
+  <div class="be-top">
+    <button class="be-back" onclick="beClose()">← Retour au tableau de bord</button>
+    <h2 id="be-title">Bulletin</h2>
+    <span id="be-page-chip"></span>
+  </div>
+  <div class="be-grid">
+    <div class="be-left">
+      <p style="font-size:.82em;color:#666;margin:0 0 10px">Les lectures (AELF) et les
+        annonces sont automatiques et non modifiables ici. Pour les sections ci-dessous,
+        choisissez le contenu d'une année précédente ou cherchez un autre chant.</p>
+      <div id="be-sections">Chargement…</div>
+      <div class="be-card">
+        <div class="be-card-h">📣 À la communauté</div>
+        <p style="font-size:.78em;color:#666;margin:0 0 6px">Annonces libres imprimées sur le bulletin (au-dessus de l'encadré consignes) — prochains événements, potluck, ou pour se souvenir de quelqu'un dans l'épreuve ou décédé.</p>
+        <textarea id="be-community-text" style="width:100%;min-height:90px;padding:8px;border:1px solid #d9c8a5;border-radius:6px;box-sizing:border-box;font:inherit;font-size:.88em"></textarea>
+        <button class="btn btn-primary" style="font-size:.78em;margin-top:6px" onclick="beSaveCommunity(this)">💾 Enregistrer</button>
+      </div>
+    </div>
+    <div class="be-right"><iframe id="be-preview" title="Aperçu du bulletin"></iframe></div>
+  </div>
+  <div class="be-bottom">
+    <button class="btn btn-primary" id="be-render-btn" onclick="beRender()">🖨️ Générer le PDF final</button>
+    <button class="btn btn-secondary" id="be-approve-btn" style="display:none" onclick="beApprove()">✅ Approuver</button>
+    <div id="be-render-result" style="flex:1;min-width:200px"></div>
+  </div>
+</div>
+
+<!-- Chants & Partitions -- review page for the mass's already-chosen chants +
+     psaume: preview/play each partition & recording, relink a wrong/missing
+     one from the Library, and approve each slot -- approving every slot is
+     what unlocks "Envoyer aux musiciens" (mass_send_music_to_musicians
+     hard-blocks otherwise). Reached from the Mass board's "Chants &
+     partitions" card. Added 2026-08-29. -->
+<div id="chants-editor">
+  <div class="be-top">
+    <button class="be-back" onclick="ceClose()">← Retour au tableau de bord</button>
+    <h2 id="ce-title">Chants & partitions</h2>
+  </div>
+  <div class="ce-body">
+    <div class="ce-list">
+      <p style="font-size:.82em;color:#666;margin:0 0 12px">Vérifiez la partition et l'audio de chaque chant
+        (et du psaume) avant l'envoi aux musiciens — cliquez « 🔍 Changer/Choisir » si le fichier n'est pas
+        le bon. Chaque emplacement doit être approuvé avant que l'envoi soit possible.</p>
+      <div id="ce-bulletin-status" style="margin-bottom:12px"></div>
+      <div id="ce-items">Chargement…</div>
+    </div>
+  </div>
+  <div class="be-bottom">
+    <button class="btn btn-primary" id="ce-send-btn" onclick="ceSend(this)" disabled>✉️ Envoyer aux musiciens</button>
+    <div id="ce-send-hint" style="font-size:.82em;color:#8a6d3b"></div>
+  </div>
+</div>
+
+<!-- Chants & Partitions: search a Library doc to (re)link as a partition/audio -->
+<div id="ce-search-modal" onclick="if(event.target===this)ceSearchClose()">
+  <div class="ce-search-box">
+    <div style="display:flex;align-items:center;gap:10px;padding:11px 15px;border-bottom:1px solid #eee">
+      <div id="ce-search-title" style="font-weight:600;color:#3a1f00;flex:1;min-width:0">Choisir un fichier</div>
+      <button class="btn btn-secondary" style="font-size:.9em;padding:5px 11px" onclick="ceSearchClose()">✕</button>
+    </div>
+    <div style="padding:10px 15px 0">
+      <input id="ce-search-q" type="text" placeholder="Rechercher…" style="width:100%;padding:6px 8px;box-sizing:border-box;font:inherit"
+        oninput="ceSearchRun()">
+    </div>
+    <div class="ce-search-list" id="ce-search-results"></div>
+  </div>
+</div>
+
+<!-- Document preview modal (PDF/images native, .docx via mammoth.js client-side) -->
+<div id="pv-modal" onclick="if(event.target===this)closePreview()">
+  <div style="background:#fff;border-radius:10px;width:min(920px,96vw);height:min(88vh,940px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 44px rgba(0,0,0,.32)">
+    <div style="display:flex;align-items:center;gap:10px;padding:11px 15px;border-bottom:1px solid #eee">
+      <div id="pv-title" style="font-weight:600;color:#3a1f00;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Aperçu</div>
+      <a id="pv-open" href="#" target="_blank" rel="noopener" class="btn btn-secondary" style="font-size:.8em;padding:5px 12px">Ouvrir ↗</a>
+      <button class="btn btn-secondary" style="font-size:.9em;padding:5px 11px" onclick="closePreview()">✕</button>
+    </div>
+    <div id="pv-body" style="flex:1;overflow:auto;background:#fff"></div>
+  </div>
+</div>
+
+<script src="/_static/mammoth.browser.min.js?v=1"></script>
+<script>
+var token = sessionStorage.getItem('ccfnt_token') || '';
+var userRole = sessionStorage.getItem('ccfnt_role') || 'admin';
+var masses = [];
+var events = [];
+
+// ---------- helpers ----------
+function api(method, path, body) {
+  var opts = { method: method, headers: {'Content-Type': 'application/json'} };
+  if (token) opts.headers['Authorization'] = 'Bearer ' + token;
+  if (body !== undefined) opts.body = JSON.stringify(body);
+  return fetch(path, opts).then(function(r){ return r.json(); });
+}
+
+// Sunday lectionary cycle (A=Matthieu / B=Marc / C=Luc), Advent-aware — mirrors
+// liturgical_info() in subscribe.py. The year flips on the 1st Sunday of Advent.
+function liturgicalInfo(dateStr){
+  var p=(dateStr||'').split('-'); if(p.length<3) return null;
+  var Y=+p[0], M=+p[1], D=+p[2]; if(!Y||!M||!D) return null;
+  function advent1(y){
+    var x=new Date(Date.UTC(y,11,24));            // Dec 24
+    x.setUTCDate(x.getUTCDate()-x.getUTCDay());   // Sunday on/before Dec 24 = 4th Sunday of Advent
+    x.setUTCDate(x.getUTCDate()-21);              // 1st Sunday of Advent
+    return x;
+  }
+  var d=new Date(Date.UTC(Y,M-1,D));
+  var named=(d>=advent1(Y))?Y+1:Y;
+  return {year:"CAB".charAt(named%3), cycle:named};
+}
+function setLitBadge(){
+  var n=new Date();
+  var ds=n.getFullYear()+'-'+('0'+(n.getMonth()+1)).slice(-2)+'-'+('0'+n.getDate()).slice(-2);
+  var li=liturgicalInfo(ds), el=document.getElementById('lit-badge');
+  if(el) el.textContent = li ? ('Année liturgique '+li.year+' · '+li.cycle) : '';
+}
+
+function showDash() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  setLitBadge();
+  applyRole();
+}
+function applyRole() {
+  var libOnly = (userRole === 'library');
+  document.querySelectorAll('.tab-btn').forEach(function(b){
+    b.style.display = (libOnly && b.dataset.tab !== 'library') ? 'none' : '';
+    b.classList.remove('active');
+  });
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  if (!libOnly) {   // full admin: hydrate every tab
+    loadSubscribers(); loadMasses(); loadBalance(); loadConfig();
+    loadNtfy(); loadEvents(); loadRsvps(); loadPrep(); loadAiConfig();
+  }
+  // landing tab: library for library-only users or a deep-linked document, else Préparation
+  var landing = (libOnly || PENDING_DOC) ? 'library' : 'prep';
+  var lb = document.querySelector('.tab-btn[data-tab="' + landing + '"]'); if (lb) lb.classList.add('active');
+  document.getElementById('tab-' + landing).classList.add('active');
+  if (landing === 'library') loadLibrary();
+}
+
+function logout() {
+  token = ''; userRole = 'admin';
+  sessionStorage.removeItem('ccfnt_token');
+  sessionStorage.removeItem('ccfnt_role');
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.style.display = ''; });
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('otp-step').style.display = 'none';
+  document.getElementById('step-request').style.display = 'block';
+  document.getElementById('req-msg').textContent = '';
+  var rb = document.getElementById('btn-request'); rb.disabled = false; rb.textContent = '📱 Recevoir un code par SMS';
+  var mb = document.getElementById('btn-magic'); if (mb) { mb.disabled = false; mb.textContent = "📧 M'envoyer un lien par email"; }
+  loadAdminList();
+}
+
+// ---------- auth ----------
+var loginPerson = '';
+function loadAdminList(){
+  var sel = document.getElementById('admin-person');
+  var btn = document.getElementById('btn-request');
+  fetch('/api/admin-list').then(function(r){ return r.json(); }).then(function(d){
+    var admins = (d && d.admins) || [];
+    if (!admins.length) {
+      sel.innerHTML = '<option value="">Aucun administrateur configuré</option>';
+      btn.disabled = true;
+      var m = document.getElementById('req-msg');
+      m.style.color = '#8a6d3b';
+      m.textContent = 'Aucun compte admin : cochez « Admin » pour une personne (avec un téléphone) dans Rôles & Contacts.';
+      return;
+    }
+    sel.innerHTML = admins.map(function(a){
+      return '<option value="'+a.id+'">'+String(a.name).replace(/</g,'&lt;')+'</option>';
+    }).join('');
+    btn.disabled = false;
+    var mb = document.getElementById('btn-magic'); if (mb) mb.disabled = false;
+  }).catch(function(){ sel.innerHTML = '<option value="">Erreur de chargement</option>'; });
+}
+function requestMagic(){
+  var btn = document.getElementById('btn-magic'), msg = document.getElementById('req-msg');
+  loginPerson = document.getElementById('admin-person').value;
+  if (!loginPerson) { msg.style.color='#990000'; msg.textContent='Sélectionnez votre nom.'; return; }
+  btn.disabled = true; var old = btn.textContent; btn.textContent = 'Envoi…';
+  api('POST', '/api/admin/request-magic', {person: loginPerson}).then(function(d){
+    btn.disabled = false; btn.textContent = old;
+    if (d && d.status === 'sent') {
+      msg.style.color = '#2a7a2a';
+      msg.textContent = 'Lien de connexion envoyé' + (d.to ? ' à ' + d.to : '') + '. Ouvrez-le depuis votre boîte mail pour vous connecter.';
+    } else { msg.style.color = '#990000'; msg.textContent = (d && d.error) || 'Erreur.'; }
+  }).catch(function(){ btn.disabled = false; btn.textContent = old; msg.style.color = '#990000'; msg.textContent = 'Erreur réseau.'; });
+}
+function tryMagicLogin(){
+  var params; try { params = new URLSearchParams(location.search); } catch(e){ return; }
+  var mtok = params.get('login'); if (!mtok) return;
+  var msg = document.getElementById('req-msg'); if (msg) { msg.style.color='#666'; msg.textContent='Connexion via le lien…'; }
+  api('POST', '/api/admin/verify-magic', {token: mtok}).then(function(d){
+    if (d && d.status === 'ok') {
+      token = d.token; userRole = d.role || 'admin';
+      sessionStorage.setItem('ccfnt_token', token); sessionStorage.setItem('ccfnt_role', userRole);
+      try { params.delete('login'); var qs = params.toString(); history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '')); } catch(e){}
+      showDash();
+    } else if (msg) { msg.style.color = '#990000'; msg.textContent = (d && d.error) || 'Lien invalide ou expiré.'; }
+  }).catch(function(){ if (msg) { msg.style.color='#990000'; msg.textContent='Erreur réseau.'; } });
+}
+document.getElementById('btn-magic').addEventListener('click', requestMagic);
+loadAdminList();
+tryMagicLogin();
+
+document.getElementById('btn-request').addEventListener('click', function() {
+  var btn = this, msg = document.getElementById('req-msg');
+  loginPerson = document.getElementById('admin-person').value;
+  if (!loginPerson) { msg.style.color='#990000'; msg.textContent='Sélectionnez votre nom.'; return; }
+  btn.disabled = true; btn.textContent = 'Envoi…';
+  api('POST', '/api/admin/request-otp', {person: loginPerson}).then(function(d) {
+    if (d.status === 'sent') {
+      document.getElementById('step-request').style.display = 'none';
+      document.getElementById('otp-step').style.display = 'block';
+      document.getElementById('otp-sent-to').textContent = d.to ? ('Code envoyé au '+d.to) : '';
+      document.getElementById('otp-input').focus();
+    } else {
+      msg.style.color = '#990000';
+      msg.textContent = d.error || 'Erreur. Réessayez.';
+      btn.disabled = false; btn.textContent = '📱 Recevoir un code par SMS';
+    }
+  }).catch(function() {
+    msg.style.color = '#990000';
+    msg.textContent = 'Erreur réseau.';
+    btn.disabled = false; btn.textContent = '📱 Recevoir un code par SMS';
+  });
+});
+
+document.getElementById('btn-resend').addEventListener('click', function() {
+  document.getElementById('otp-step').style.display = 'none';
+  document.getElementById('step-request').style.display = 'block';
+  var btn = document.getElementById('btn-request');
+  btn.disabled = false; btn.textContent = '📱 Recevoir un code par SMS';
+  document.getElementById('req-msg').textContent = '';
+});
+
+document.getElementById('btn-verify').addEventListener('click', verifyOtp);
+document.getElementById('otp-input').addEventListener('keydown', function(e){ if(e.key==='Enter') verifyOtp(); });
+
+function verifyOtp() {
+  var code = document.getElementById('otp-input').value.trim();
+  var btn = document.getElementById('btn-verify');
+  var msg = document.getElementById('verify-msg');
+  if (!code) { msg.style.color='#990000'; msg.textContent='Entrez le code.'; return; }
+  btn.disabled = true; btn.textContent = 'Vérification…';
+  api('POST', '/api/admin/verify-otp', {code: code, person: loginPerson}).then(function(d) {
+    if (d.status === 'ok') {
+      token = d.token;
+      userRole = d.role || 'admin';
+      sessionStorage.setItem('ccfnt_token', token);
+      sessionStorage.setItem('ccfnt_role', userRole);
+      showDash();
+    } else {
+      msg.style.color = '#990000';
+      msg.textContent = d.error || 'Code invalide.';
+      btn.disabled = false; btn.textContent = 'Valider';
+    }
+  }).catch(function() {
+    msg.style.color = '#990000'; msg.textContent = 'Erreur réseau.';
+    btn.disabled = false; btn.textContent = 'Valider';
+  });
+}
+
+document.getElementById('btn-logout').addEventListener('click', logout);
+
+// ---------- tabs ----------
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ---------- subscribers ----------
+function loadSubscribers() {
+  api('GET', '/api/admin/subscribers').then(function(d) {
+    if (d.error) { logout(); return; }
+    document.getElementById('stat-count').textContent = d.count;
+    document.getElementById('stat-cap').textContent = d.cap;
+    document.getElementById('stat-remaining').textContent = d.cap - d.count;
+    document.getElementById('stat-opted-out').textContent = d.opted_out_count || 0;
+    var wrap = document.getElementById('sub-list-wrap');
+    if (!d.subscribers || d.subscribers.length === 0) {
+      wrap.innerHTML = '<p class="no-subs">Aucun abonné pour l\'instant.</p>';
+      return;
+    }
+    var html = '<table class="sub-table"><thead><tr>' +
+      '<th>#</th><th>Prénom</th><th>Nom</th><th>Téléphone</th><th>Statut</th><th></th>' +
+      '</tr></thead><tbody>';
+    var activeIdx = 0;
+    d.subscribers.forEach(function(s) {
+      var out = s.opted_out;
+      if (!out) activeIdx++;
+      var rowStyle = out ? ' style="opacity:.55"' : '';
+      var statusCell = out
+        ? '<td><span style="font-size:.78em;background:#eee;color:#888;padding:2px 7px;border-radius:10px;white-space:nowrap">Désabonné' +
+          (s.opted_out_at ? ' ' + s.opted_out_at.slice(0,10) : '') + '</span></td>'
+        : '<td><span style="font-size:.78em;background:#eaf5ea;color:#2a7a2a;padding:2px 7px;border-radius:10px">Actif</span></td>';
+      var actions = out
+        ? '<button class="btn btn-secondary" style="font-size:.78em;padding:3px 9px;margin-right:4px" onclick="reactivateSub(\'' + esc(s.phone) + '\')">Réactiver</button>' +
+          '<button class="btn btn-danger" onclick="removeSub(\'' + esc(s.phone) + '\')">Retirer</button>'
+        : '<button class="btn btn-secondary" style="font-size:.78em;padding:3px 9px;margin-right:4px;color:#888;border-color:#ccc" onclick="optOutSub(\'' + esc(s.phone) + '\')">Désabonner</button>' +
+          '<button class="btn btn-danger" onclick="removeSub(\'' + esc(s.phone) + '\')">Supprimer</button>';
+      var fn = s.first_name ? esc(s.first_name) : '<span style="color:#bbb">—</span>';
+      var ln = s.last_name  ? esc(s.last_name)  : '<span style="color:#bbb">—</span>';
+      if (s.source === 'rsvp') {
+        fn += ' <span title="Ajouté automatiquement suite à un RSVP" style="font-size:.72em;background:#f0ecff;color:#5b3fa0;padding:1px 6px;border-radius:8px;white-space:nowrap">via RSVP</span>';
+      }
+      html += '<tr' + rowStyle + '><td>' + (out ? '—' : activeIdx) + '</td>' +
+              '<td>' + fn + '</td><td>' + ln + '</td>' +
+              '<td>' + esc(formatPhone(s.phone)) + '</td>' + statusCell +
+              '<td style="white-space:nowrap">' + actions + '</td></tr>';
+    });
+    html += '</tbody></table>';
+    wrap.innerHTML = html;
+  }).catch(function(){ logout(); });
+}
+
+function removeSub(phone) {
+  if (!confirm('Retirer définitivement ' + phone + ' ?')) return;
+  api('POST', '/api/admin/remove-subscriber', {phone: phone}).then(function(d) {
+    if (d.status === 'ok') loadSubscribers();
+    else alert(d.error || 'Erreur');
+  });
+}
+
+function optOutSub(phone) {
+  api('POST', '/api/admin/opt-out-subscriber', {phone: phone}).then(function(d) {
+    if (d.status === 'ok') loadSubscribers();
+    else alert(d.error || 'Erreur');
+  });
+}
+
+function reactivateSub(phone) {
+  api('POST', '/api/admin/reactivate-subscriber', {phone: phone}).then(function(d) {
+    if (d.status === 'ok') loadSubscribers();
+    else alert(d.error || 'Erreur');
+  });
+}
+
+// ---------- rsvp ----------
+function eventTitle(slug) {
+  var ev = events.find(function(e){ return e.rsvp_slug === slug; });
+  return ev ? ev.title + ' (' + slug + ')' : slug;
+}
+
+function rsvpSentBadge(status, method, sentLabel) {
+  if (status === 'sent') {
+    var via = method === 'sms' ? 'SMS' : 'email';
+    return '<span style="font-size:.78em;background:#eaf5ea;color:#2a7a2a;padding:2px 7px;border-radius:10px;white-space:nowrap">✓ ' + sentLabel + ' (' + via + ')</span>';
+  }
+  if (status === 'failed') {
+    return '<span style="font-size:.78em;background:#fdf0f0;color:#990000;padding:2px 7px;border-radius:10px;white-space:nowrap">✗ Échec</span>';
+  }
+  return '<span style="color:#bbb">—</span>';
+}
+
+function rsvpApprovalBadge(r) {
+  // legacy entries predating the approval workflow (2026-08-30) were migrated to 'approved'
+  var s = r.approval_status || 'approved';
+  if (s === 'pending') return '<span style="font-size:.78em;background:#fff6e0;color:#8a6400;padding:2px 7px;border-radius:10px;white-space:nowrap">⏳ En attente</span>';
+  if (s === 'denied')  return '<span style="font-size:.78em;background:#fdf0f0;color:#990000;padding:2px 7px;border-radius:10px;white-space:nowrap">🚫 Refusé</span>';
+  return '<span style="font-size:.78em;background:#eaf5ea;color:#2a7a2a;padding:2px 7px;border-radius:10px;white-space:nowrap">✅ Approuvé</span>';
+}
+
+function loadRsvps() {
+  api('GET', '/api/admin/rsvps').then(function(d) {
+    if (d.error) { logout(); return; }
+    var wrap = document.getElementById('rsvp-list-wrap');
+    var rsvps = d.rsvps || [];
+    if (!rsvps.length) {
+      wrap.innerHTML = '<p class="no-subs">Aucune réponse pour l\'instant.</p>';
+      return;
+    }
+    var byEvent = {};
+    rsvps.forEach(function(r) {
+      (byEvent[r.event] = byEvent[r.event] || []).push(r);
+    });
+    var html = '';
+    Object.keys(byEvent).sort().forEach(function(event) {
+      var rows = byEvent[event];
+      var total = rows.reduce(function(sum, r){ return sum + (r.headcount || 1); }, 0);
+      var pendingCount = rows.filter(function(r){ return (r.approval_status || 'approved') === 'pending'; }).length;
+      html += '<div style="margin-bottom:22px">' +
+        '<div class="stat-row" style="margin-bottom:10px">' +
+          '<div class="stat" style="flex:none;padding:8px 18px"><div class="num" style="font-size:1.3em">' + rows.length + '</div><div class="lbl">Réponses</div></div>' +
+          '<div class="stat" style="flex:none;padding:8px 18px"><div class="num" style="font-size:1.3em">' + total + '</div><div class="lbl">Personnes</div></div>' +
+          (pendingCount ? '<div class="stat" style="flex:none;padding:8px 18px"><div class="num" style="font-size:1.3em;color:#8a6400">' + pendingCount + '</div><div class="lbl">⏳ À approuver</div></div>' : '') +
+          '<div style="flex:1;display:flex;align-items:center;font-weight:700;color:#3a1f00">' + esc(eventTitle(event)) + '</div>' +
+        '</div>' +
+        '<div style="overflow-x:auto"><table class="sub-table"><thead><tr>' +
+        '<th>Nom</th><th>Pers.</th><th>Contact</th><th>🍽️ Plat</th><th>🥤 Boisson</th><th>Reçu le</th><th>Statut</th><th>Accusé</th><th>Adresse</th><th></th>' +
+        '</tr></thead><tbody>';
+      // Pending entries surface first — that's the actionable queue.
+      rows.sort(function(a,b){
+        var pa = (a.approval_status || 'approved') === 'pending', pb = (b.approval_status || 'approved') === 'pending';
+        if (pa !== pb) return pa ? -1 : 1;
+        return a.submitted_at < b.submitted_at ? -1 : 1;
+      });
+      rows.forEach(function(r) {
+        var isPending = (r.approval_status || 'approved') === 'pending';
+        var actions = isPending
+          ? '<button class="btn" style="background:#2a7a2a;color:#fff" onclick="approveRsvp(\'' + esc(r.id) + '\')">✅ Approuver</button> ' +
+            '<button class="btn btn-danger" onclick="denyRsvp(\'' + esc(r.id) + '\')">🚫 Refuser</button>'
+          : '<button class="btn btn-danger" onclick="removeRsvp(\'' + esc(r.id) + '\')">Retirer</button>';
+        html += '<tr><td>' + esc(r.name) + '</td>' +
+          '<td>' + (r.headcount || 1) + '</td>' +
+          '<td>' + esc(formatPhone(r.contact)) + '</td>' +
+          '<td>' + (r.food ? esc(r.food) : '<span style="color:#bbb">—</span>') + '</td>' +
+          '<td>' + (r.beverage ? esc(r.beverage) : '<span style="color:#bbb">—</span>') + '</td>' +
+          '<td>' + esc(fmtCentral(r.submitted_at)) + '</td>' +
+          '<td>' + rsvpApprovalBadge(r) + '</td>' +
+          '<td>' + rsvpSentBadge(r.ack_status, r.ack_method, 'Envoyé') + '</td>' +
+          '<td>' + rsvpSentBadge(r.reply_status, r.reply_method, 'Envoyée') + '</td>' +
+          '<td style="white-space:nowrap">' + actions + '</td></tr>';
+      });
+      html += '</tbody></table></div></div>';
+    });
+    wrap.innerHTML = html;
+  }).catch(function(){ logout(); });
+}
+
+function approveRsvp(id) {
+  if (!confirm('Approuver cette RSVP ? L\'adresse sera envoyée automatiquement.')) return;
+  api('POST', '/api/admin/approve-rsvp', {id: id}).then(function(d) {
+    if (d.status === 'ok') loadRsvps();
+    else alert(d.error || 'Erreur');
+  });
+}
+
+function denyRsvp(id) {
+  if (!confirm('Refuser cette RSVP ? Aucun message ne sera envoyé.')) return;
+  api('POST', '/api/admin/deny-rsvp', {id: id}).then(function(d) {
+    if (d.status === 'ok') loadRsvps();
+    else alert(d.error || 'Erreur');
+  });
+}
+
+function removeRsvp(id) {
+  if (!confirm('Retirer cette réponse RSVP ?')) return;
+  api('POST', '/api/admin/remove-rsvp', {id: id}).then(function(d) {
+    if (d.status === 'ok') loadRsvps();
+    else alert(d.error || 'Erreur');
+  });
+}
+
+// Manual RSVP entry — for a response received outside the public form
+// (phone call, text, direct email). Fires the same approved-RSVP reply
+// (acknowledgment + address) as clicking "Approuver" on a normal entry.
+// Added 2026-08-31, user request.
+function fillRsvpManualEventSelect() {
+  var sel = document.getElementById('rsvp-manual-event');
+  if (!sel) return;
+  sel.innerHTML = events.map(function(e){
+    return '<option value="' + esc(e.rsvp_slug) + '">' + esc(e.title) + ' (' + esc(e.rsvp_slug) + ')</option>';
+  }).join('');
+}
+function addRsvpManual(btn) {
+  var event = document.getElementById('rsvp-manual-event').value;
+  var name = document.getElementById('rsvp-manual-name').value.trim();
+  var contact = document.getElementById('rsvp-manual-contact').value.trim();
+  var headcount = document.getElementById('rsvp-manual-headcount').value;
+  var food = document.getElementById('rsvp-manual-food').value.trim();
+  var beverage = document.getElementById('rsvp-manual-beverage').value.trim();
+  var resultEl = document.getElementById('rsvp-manual-result');
+  if (!event || !name || !contact) {
+    resultEl.innerHTML = '<span style="color:#990000">Événement, nom et contact sont requis.</span>';
+    return;
+  }
+  btn.disabled = true; btn.textContent = 'Envoi…';
+  api('POST', '/api/admin/rsvp/manual-add', {event: event, name: name, contact: contact,
+      headcount: headcount, food: food, beverage: beverage}).then(function(d) {
+    btn.disabled = false; btn.textContent = 'Ajouter et envoyer la confirmation';
+    if (d && d.status === 'ok') {
+      resultEl.innerHTML = '<span style="color:#2a7a2a">✓ Ajoutée — accusé + adresse en cours d\'envoi.</span>';
+      ['rsvp-manual-name','rsvp-manual-contact','rsvp-manual-food','rsvp-manual-beverage'].forEach(function(id){
+        document.getElementById(id).value = '';
+      });
+      document.getElementById('rsvp-manual-headcount').value = '1';
+      loadRsvps();
+    } else {
+      resultEl.innerHTML = '<span style="color:#990000">' + esc((d && d.error) || 'Erreur') + '</span>';
+    }
+  });
+}
+
+// ---------- events (3 recurring potlucks) ----------
+function loadEvents() {
+  api('GET', '/api/events').then(function(data) {
+    events = data || [];
+    fillRsvpManualEventSelect();
+    renderEvents();
+  });
+}
+
+function renderEvents() {
+  var ROWS = [
+    [{key: 'title', label: 'Titre'}, {key: 'rsvp_slug', label: 'Slug RSVP (dans le lien /rsvp/?event=…)'}],
+    [{key: 'when_label', label: 'Quand'}, {key: 'location', label: 'Où (public — pas d\'adresse complète)'}],
+    [{key: 'address', label: '🔒 Adresse (privée — RSVP approuvés uniquement)'}, {key: 'notes', label: 'Notes'}],
+  ];
+  var html = '';
+  events.forEach(function(ev, i) {
+    html += '<div class="event-card" data-idx="' + i + '">' +
+      '<div class="event-id">' + esc(ev.id || '') + '</div>';
+    ROWS.forEach(function(fields) {
+      var row = '<div class="event-field-row">';
+      fields.forEach(function(f) {
+        row += '<div class="event-field"><label>' + f.label + '</label>' +
+          '<input type="text" value="' + esc(ev[f.key] || '') + '" data-field="' + f.key + '" data-idx="' + i + '"></div>';
+      });
+      row += '</div>';
+      html += row;
+    });
+    html += '</div>';
+  });
+  var el = document.getElementById('events-list');
+  el.innerHTML = html || '<p class="no-subs">Aucun événement configuré.</p>';
+  el.querySelectorAll('input').forEach(function(inp) {
+    inp.addEventListener('input', function() {
+      var idx = parseInt(inp.dataset.idx);
+      events[idx][inp.dataset.field] = inp.value;
+    });
+  });
+}
+
+document.getElementById('btn-save-events').addEventListener('click', function() {
+  var msg = document.getElementById('events-save-msg');
+  msg.className = 'save-msg'; msg.textContent = 'Enregistrement…';
+  api('POST', '/api/admin/events', events).then(function(d) {
+    if (d.status === 'ok') {
+      msg.textContent = '✓ Enregistré (' + d.count + ' événements)';
+      setTimeout(function(){ msg.textContent=''; }, 4000);
+    } else {
+      msg.className = 'save-msg error';
+      msg.textContent = d.error || 'Erreur';
+    }
+  });
+});
+
+// ---------- masses ----------
+function loadMasses() {
+  api('GET', '/api/masses').then(function(data) {
+    masses = data;
+    renderMasses();
+    renderQuete();
+  });
+}
+
+function renderMasses() {
+  var html = '';
+  masses.forEach(function(m, i) {
+    html += '<div class="mass-row" data-idx="' + i + '">' +
+      '<input class="mass-date-input" type="date" value="' + esc(m.date) + '" data-field="date" data-idx="' + i + '">' +
+      '<input class="mass-label-input" type="text" value="' + esc(m.label) + '" placeholder="Libellé" data-field="label" data-idx="' + i + '">' +
+      '<button class="del-btn" title="Supprimer" data-idx="' + i + '">✕</button>' +
+      '</div>';
+  });
+  var el = document.getElementById('masses-list');
+  el.innerHTML = html;
+  el.querySelectorAll('input').forEach(function(inp) {
+    inp.addEventListener('input', function() {
+      var idx = parseInt(inp.dataset.idx);
+      masses[idx][inp.dataset.field] = inp.value;
+    });
+  });
+  el.querySelectorAll('.del-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var idx = parseInt(btn.dataset.idx);
+      if (confirm('Supprimer la messe du ' + masses[idx].label + ' ?')) {
+        masses.splice(idx, 1);
+        renderMasses();
+        renderQuete();
+      }
+    });
+  });
+}
+
+document.getElementById('btn-add-mass').addEventListener('click', function() {
+  var d = document.getElementById('new-mass-date').value;
+  var l = document.getElementById('new-mass-label').value.trim();
+  if (!d) { alert('Entrez une date.'); return; }
+  if (!l) l = d;
+  masses.push({date: d, label: l, quete: null});
+  masses.sort(function(a,b){ return a.date < b.date ? -1 : 1; });
+  document.getElementById('new-mass-date').value = '';
+  document.getElementById('new-mass-label').value = '';
+  renderMasses(); renderQuete();
+});
+
+document.getElementById('btn-save-masses').addEventListener('click', function() {
+  var msg = document.getElementById('masses-save-msg');
+  msg.className = 'save-msg'; msg.textContent = 'Enregistrement…';
+  api('POST', '/api/admin/masses', masses).then(function(d) {
+    if (d.status === 'ok') {
+      msg.textContent = '✓ Enregistré (' + d.count + ' messes)';
+      loadMasses();
+    } else {
+      msg.className = 'save-msg error';
+      msg.textContent = d.error || 'Erreur';
+    }
+  });
+});
+
+// ---------- quête ----------
+function renderQuete() {
+  var html = '';
+  masses.forEach(function(m, i) {
+    var val = m.quete != null ? m.quete : '';
+    html += '<div class="mass-row">' +
+      '<span class="mass-label">📅 ' + esc(m.label) + '</span>' +
+      '<input class="quete-input" type="text" value="' + esc(String(val)) + '" placeholder="ex: 342.50" data-idx="' + i + '">' +
+      '<button class="btn btn-secondary" style="font-size:.8em;padding:5px 12px" data-idx="' + i + '" onclick="saveQuete(' + i + ',this)">Enregistrer</button>' +
+      '</div>';
+  });
+  if (!masses.length) html = '<p class="no-subs">Aucune messe configurée.</p>';
+  document.getElementById('quete-list').innerHTML = html;
+}
+
+function saveQuete(idx, btn) {
+  var input = document.querySelector('.quete-input[data-idx="' + idx + '"]');
+  var raw = input.value.trim();
+  var amount = raw === '' ? null : parseFloat(raw.replace(',', '.'));
+  if (raw !== '' && isNaN(amount)) {
+    alert('Montant invalide.'); return;
+  }
+  var msg = document.getElementById('quete-save-msg');
+  btn.disabled = true; btn.textContent = '…';
+  api('POST', '/api/admin/quete', {date: masses[idx].date, amount: amount}).then(function(d) {
+    btn.disabled = false; btn.textContent = 'Enregistrer';
+    if (d.status === 'ok') {
+      masses[idx].quete = amount;
+      msg.className = 'save-msg';
+      msg.textContent = '✓ Quête du ' + masses[idx].label + ' : ' + (amount != null ? '$' + amount : 'effacée');
+      setTimeout(function(){ msg.textContent=''; }, 4000);
+    } else {
+      msg.className = 'save-msg error';
+      msg.textContent = d.error || 'Erreur';
+    }
+  });
+}
+
+// ---------- balance ----------
+function loadBalance() {
+  api('GET', '/api/admin/sms-balance').then(function(d) {
+    var n = d.quotaRemaining != null ? d.quotaRemaining : '?';
+    document.getElementById('stat-balance').textContent = n;
+    document.getElementById('settings-balance').textContent = n;
+    // cost estimate = subscriber count
+    var count = parseInt(document.getElementById('stat-count').textContent) || 0;
+    document.getElementById('cost-estimate').textContent = count;
+  }).catch(function() {
+    document.getElementById('stat-balance').textContent = 'err';
+    document.getElementById('settings-balance').textContent = 'err';
+  });
+}
+document.getElementById('btn-refresh-balance').addEventListener('click', loadBalance);
+document.getElementById('btn-refresh-balance2').addEventListener('click', loadBalance);
+
+// ---------- config / api key ----------
+function loadConfig() {
+  api('GET', '/api/admin/config').then(function(d) {
+    var inp = document.getElementById('key-input');
+    inp.value = d.key || '';
+    inp.placeholder = '';
+  });
+}
+
+document.getElementById('btn-toggle-key').addEventListener('click', function() {
+  var inp = document.getElementById('key-input');
+  var shown = inp.type === 'text';
+  inp.type = shown ? 'password' : 'text';
+  this.textContent = shown ? 'Afficher' : 'Masquer';
+});
+
+document.getElementById('btn-save-key').addEventListener('click', function() {
+  var key = document.getElementById('key-input').value.trim();
+  var msg = document.getElementById('key-save-msg');
+  if (!key) { msg.className = 'save-msg error'; msg.textContent = 'Clé vide.'; return; }
+  msg.className = 'save-msg'; msg.textContent = 'Enregistrement…';
+  api('POST', '/api/admin/config', {textbelt_key: key}).then(function(d) {
+    if (d.status === 'ok') {
+      msg.textContent = '✓ Clé enregistrée';
+      loadBalance();
+      setTimeout(function(){ msg.textContent = ''; }, 4000);
+    } else {
+      msg.className = 'save-msg error'; msg.textContent = d.error || 'Erreur';
+    }
+  });
+});
+
+// ---------- on-demand SMS broadcast ----------
+// Replaces the old J-offset auto-reminder (removed 2026-09-05 — it
+// duplicated the Préparation page's own community dispatch). Client-side
+// URL check is just an early warning so the sender isn't surprised by a
+// backend 400 -- /api/admin/sms/broadcast enforces the same rule for real
+// (Textbelt refuses to deliver a URL on an unverified key).
+var SMSB_URL_RE = /(https?:\/\/|www\.)|(\b[a-z0-9-]+\.(com|org|net|fr|io|co|info|biz|us|app)\b)/i;
+var SMSB_MAX = 480;
+
+function smsbUpdate() {
+  var text = document.getElementById('smsb-text').value;
+  document.getElementById('smsb-count').textContent = text.length + ' / ' + SMSB_MAX;
+  var hasUrl = SMSB_URL_RE.test(text);
+  document.getElementById('smsb-url-warn').hidden = !hasUrl;
+  document.getElementById('btn-send-broadcast').disabled = !text.trim() || hasUrl || text.length > SMSB_MAX;
+}
+
+document.getElementById('smsb-text').addEventListener('input', smsbUpdate);
+smsbUpdate();
+
+document.getElementById('btn-send-broadcast').addEventListener('click', function() {
+  var textEl = document.getElementById('smsb-text');
+  var message = textEl.value.trim();
+  var msg = document.getElementById('smsb-result');
+  if (!message) return;
+  if (SMSB_URL_RE.test(message)) { msg.className='save-msg error'; msg.textContent='Retirez le lien avant d\'envoyer.'; return; }
+  if (!confirm('Envoyer ce message à tous les abonnés SMS actifs ?\n\n« ' + message + ' »')) return;
+  var btn = this; btn.disabled = true; var label = btn.textContent; btn.textContent = 'Envoi…';
+  api('POST', '/api/admin/sms/broadcast', {message: message}).then(function(d) {
+    btn.disabled = false; btn.textContent = label;
+    if (d && d.status === 'ok') {
+      msg.className = 'save-msg';
+      msg.textContent = '✓ ' + d.sent + ' envoyé(s)' + (d.failed ? ', ' + d.failed + ' échec(s)' : '') + ' sur ' + d.total + ' abonné(s).';
+      textEl.value = ''; smsbUpdate();
+      setTimeout(function(){ msg.textContent=''; }, 8000);
+    } else {
+      msg.className = 'save-msg error'; msg.textContent = (d && d.error) || 'Erreur';
+      smsbUpdate();
+    }
+  });
+});
+
+// ---------- escape ----------
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ---------- timestamp formatting ----------
+// Every stored timestamp (now_iso() server-side) is UTC. Display them all
+// pinned to America/Chicago (CCFNT's own operating timezone, same as the
+// reminder/digest crons) regardless of the admin viewer's own browser
+// timezone -- was previously just string-stripped ('T'/'Z' removed) and
+// shown as if it were already local, which read as ~5-6h ahead of the real
+// Central time. Added 2026-08-31 (user screenshot: RSVP "Reçu le" showing
+// UTC mislabeled as local).
+function fmtCentral(iso){
+  if(!iso) return '—';
+  try{
+    var d=new Date(iso);
+    if(isNaN(d)) return String(iso).replace('T',' ').replace('Z','');
+    return d.toLocaleString('fr-FR',{timeZone:'America/Chicago',
+      year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'})
+      .replace(',', '');
+  }catch(e){ return String(iso).replace('T',' ').replace('Z',''); }
+}
+
+// ---------- phone formatting ----------
+function formatPhone(s) {
+  if (!s || s.indexOf('@') !== -1) return s; // not a phone number (email contact)
+  var digits = String(s).replace(/\D/g, '');
+  if (digits.length === 11 && digits.charAt(0) === '1') digits = digits.slice(1);
+  if (digits.length !== 10) return s; // doesn't look like a US number, leave as-is
+  return '+1 (' + digits.slice(0,3) + ') ' + digits.slice(3,6) + '-' + digits.slice(6);
+}
+
+
+// ---------- test SMS ----------
+document.getElementById('btn-test-sms').addEventListener('click', function() {
+  var phone = document.getElementById('test-phone').value.trim();
+  var type  = document.getElementById('test-type').value;
+  var res   = document.getElementById('test-sms-result');
+  if (!phone) { res.innerHTML = '<span style="color:#c00">Numéro requis.</span>'; return; }
+  var btn = this;
+  btn.disabled = true;
+  res.innerHTML = '<span style="color:#888">Envoi en cours…</span>';
+  api('POST', '/api/admin/test-sms', {phone: phone, type: type})
+    .then(function(d) {
+      if (d.status === 'ok') {
+        res.innerHTML = '<span style="color:#2a7a2a;font-weight:600">' + (d.sent ? '✓ SMS envoyé !' : '⚠ Réponse Textbelt : non envoyé') + '</span>' +
+          '<pre style="margin-top:8px;background:#f5f0eb;padding:10px;border-radius:4px;font-size:.82em;white-space:pre-wrap;border:1px solid #e8ddd0">' +
+          d.message.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</pre>';
+      } else {
+        res.innerHTML = '<span style="color:#c00">Erreur : ' + (d.error||'inconnue') + '</span>';
+      }
+    })
+    .catch(function(){ res.innerHTML = '<span style="color:#c00">Erreur réseau.</span>'; })
+    .finally(function(){ btn.disabled = false; });
+});
+
+// ---------- ntfy ----------
+var ntfyEvents = {};
+
+function loadNtfy() {
+  api('GET', '/api/admin/ntfy-config').then(function(d) {
+    document.getElementById('ntfy-url').value = d.url || '';
+    ntfyEvents = d.events || {};
+    ['new_subscriber','reactivation','opt_out','sms_broadcast','prep_ack','prep_done','prep_reminder'].forEach(function(k) {
+      var el = document.getElementById('evt-' + k);
+      if (el) el.checked = ntfyEvents[k] !== false;
+    });
+  });
+}
+
+document.getElementById('btn-save-ntfy').addEventListener('click', function() {
+  var msg = document.getElementById('ntfy-save-msg');
+  var url = document.getElementById('ntfy-url').value.trim();
+  var events = {};
+  ['new_subscriber','reactivation','opt_out','sms_broadcast','prep_ack','prep_done','prep_reminder'].forEach(function(k) {
+    var el = document.getElementById('evt-' + k);
+    events[k] = el ? el.checked : true;
+  });
+  msg.className = 'save-msg'; msg.textContent = 'Enregistrement…';
+  api('POST', '/api/admin/ntfy-config', {url: url, events: events}).then(function(d) {
+    if (d.status === 'ok') {
+      ntfyEvents = events;
+      msg.textContent = '✓ Configuration enregistrée';
+      setTimeout(function(){ msg.textContent = ''; }, 4000);
+    } else {
+      msg.className = 'save-msg error'; msg.textContent = d.error || 'Erreur';
+    }
+  });
+});
+
+document.getElementById('btn-test-ntfy').addEventListener('click', function() {
+  var msg = document.getElementById('ntfy-save-msg');
+  var btn = this;
+  btn.disabled = true;
+  msg.className = 'save-msg'; msg.textContent = 'Envoi…';
+  api('POST', '/api/admin/ntfy-test').then(function(d) {
+    if (d.status === 'ok') {
+      msg.textContent = '✓ Notification envoyée !';
+      setTimeout(function(){ msg.textContent = ''; }, 4000);
+    } else {
+      msg.className = 'save-msg error'; msg.textContent = d.error || 'Erreur';
+    }
+  }).finally(function(){ btn.disabled = false; });
+});
+
+// ---------- init ----------
+if (token) {
+  // Validate existing session
+  api('GET', '/api/admin/subscribers').then(function(d) {
+    if (d.error) { token = ''; sessionStorage.removeItem('ccfnt_token'); }
+    else showDash();
+  }).catch(function(){ token = ''; sessionStorage.removeItem('ccfnt_token'); });
+}
+// ---------- Mass board (rebuild 2026-07) ----------
+var MB = { mid:null, plan:null, songSlot:null, drawer:null };
+var MB_SONG_SLOTS = { chant_entree:'entree', chant_communion:'communion', chant_final:'final', priere_universelle:'universelle' };
+
+// esc() is defined once globally (near the RSVP code). Day helpers were in the old prep block:
+function todayISO(){ var n=new Date(); return n.getFullYear()+'-'+('0'+(n.getMonth()+1)).slice(-2)+'-'+('0'+n.getDate()).slice(-2); }
+function daysUntil(iso){ try{ return Math.round((new Date((iso||'').slice(0,10)+'T00:00:00')-new Date(todayISO()+'T00:00:00'))/86400000); }catch(e){ return null; } }
+function mbChip(cls,txt){ return '<span class="mb-chip '+cls+'">'+esc(txt)+'</span>'; }
+
+// loadPrep() keeps its name (called by applyRole) but now drives the mass board.
+function loadPrep(){
+  api('GET','/api/masses').then(function(list){
+    if(list && list.error){ logout(); return; }
+    var today=todayISO();
+    var up=(list||[]).filter(function(m){ return m.date>=today; })
+                     .sort(function(a,b){ return a.date<b.date?-1:1; });
+    var sel=document.getElementById('mb-mass');
+    if(!up.length){
+      sel.innerHTML='';
+      document.getElementById('mb-assets').innerHTML='<p style="color:#888">Aucune messe à venir. Ajoutez-en une dans « Dates des messes ».</p>';
+      document.getElementById('mb-team').innerHTML=''; document.getElementById('mb-dispatches').innerHTML='';
+      return;
+    }
+    var cur=sel.value;
+    sel.innerHTML=up.map(function(m){ return '<option value="'+m.date+'">'+(m.label||m.date)+'</option>'; }).join('');
+    if(cur && up.some(function(m){return m.date===cur;})) sel.value=cur;
+    mbLoad(sel.value);
+  }).catch(function(){ document.getElementById('mb-assets').innerHTML='<p style="color:#990000">Erreur réseau.</p>'; });
+}
+
+function mbLoad(mid){
+  if(!mid) return;
+  MB.mid=mid; mbCloseDrawer();
+  api('GET','/api/admin/mass/plan?mass='+encodeURIComponent(mid)).then(function(d){
+    if(!d || d.error){ document.getElementById('mb-assets').innerHTML='<p style="color:#888">'+((d&&d.error)||'Erreur')+'</p>'; return; }
+    MB.plan=d; mbRenderAll();
+  });
+}
+
+function mbRenderAll(){
+  var d=MB.plan;
+  // lit badge
+  var lb=document.getElementById('mb-lit'); var li=liturgicalInfo(d.mass_id);
+  var seasonLbl = (d.liturgical && d.liturgical.season_label) || '';
+  lb.textContent = (li ? ('Année '+li.year+' · '+li.cycle) : '') + (seasonLbl ? ' · '+seasonLbl : '');
+  // countdown
+  var n=daysUntil(d.mass_id);
+  document.getElementById('mb-countdown').innerHTML =
+    '🗓️ <b>'+esc(d.label)+'</b> — '+(n>0?('dans '+n+' jour'+(n>1?'s':'')):(n===0?"aujourd'hui":'passée'));
+  // célébrant dropdown (clergy only)
+  var cs=document.getElementById('mb-celebrant');
+  var cur=(d.liturgical&&d.liturgical.celebrant)||'';
+  var opts='<option value="">— non défini —</option>'+(d.clergy||[]).map(function(p){
+    return '<option value="'+esc(p.name)+'"'+(p.name===cur?' selected':'')+'>'+esc(p.name)+'</option>';
+  }).join('');
+  cs.innerHTML=opts;
+  mbRenderAssets(); mbRenderTeam(); mbRenderDispatches();
+}
+
+// ---- assets ----
+function mbAssetCard(icon,title,chip,meta,who,actions){
+  return '<div class="mb-asset"><h4>'+icon+' '+esc(title)+'</h4>'+
+    '<div>'+chip+'</div>'+
+    (meta?'<div class="meta">'+meta+'</div>':'')+
+    (who?'<div class="who">'+esc(who)+'</div>':'')+
+    '<div class="row">'+actions+'</div></div>';
+}
+function mbBtn(label,fn,style){ return '<button class="btn '+(style||'btn-secondary')+'" style="font-size:.78em;padding:5px 11px" onclick="'+fn+'">'+label+'</button>'; }
+
+function mbRenderAssets(){
+  var a=MB.plan.assets, roleName=mbRoleName;
+  var cont=document.getElementById('mb-assets');
+  var cards=[];
+  // Bulletin — content readiness + render/approval stage. No more "who" role
+  // here (the old "Mise en page" role + its Sabine hand-off drafts/deposit
+  // workflow retired 2026-08-29 -- the system renders the real final PDF
+  // itself now, see beOpen/beRender/beApprove); PZ approves it himself.
+  var b=a.bulletin;
+  var stageMap={pret_pour_approbation:['warn','PDF prêt — à approuver'],approuve:['ok','Approuvé'],impression:['ok','À l\'impression']};
+  var bs = stageMap[b.stage] || {vide:['neutral','À assembler'],en_cours:['warn','En cours'],pret:['ok','Contenu prêt'],approuve:['ok','Approuvé']}[b.status] || ['neutral',b.status];
+  cards.push(mbAssetCard('📄','Bulletin', mbChip(bs[0],bs[1]),
+    b.page_count ? (b.page_count+' page'+(b.page_count>1?'s':'')) : '',
+    '',
+    mbBtn('✏️ Éditer le bulletin','beOpen(MB.mid)','btn-primary')));
+  // Intentions
+  var it=a.intentions, is=(it.status==='prete')?['ok','Prêtes']:['neutral','À préparer'];
+  cards.push(mbAssetCard('🙏','Intentions', mbChip(is[0],is[1]),
+    (it.items&&it.items.length?it.items.length+' intention(s)':'aucune'),
+    roleName('pz'), mbBtn('Préparer les intentions','mbOpenIntentions()')));
+  // Chants + psaume (partition auto-récupérée sur psaumedudimanche.fr — 2026-08-22)
+  // "universelle" (prière universelle) added 2026-08-29 -- it's a chant slot
+  // like the other 3, see BULLETIN_REUSABLE_SECTIONS.
+  var ch=a.chants, psc=a.psaume_chant||{}, pReady=psc.status==='pret';
+  var chosen=['entree','universelle','communion','final'].filter(function(s){return ch[s];}).length+(pReady?1:0);
+  cards.push(mbAssetCard('🎵','Chants & partitions',
+    mbChip(chosen===5?'ok':'neutral', chosen+' / 5 prêts'),
+    'Entrée · Prière universelle · Communion · Final · Psaume'+(pReady?'':' <span style="color:#b0700a">(psaume : en attente)</span>'),
+    roleName('musicians'),
+    mbBtn('Choisir les chants','beOpen(MB.mid)')+' '+
+    mbBtn('🎼 Partitions & audio','ceOpen(MB.mid)')+' '+
+    mbBtn('✉️ Envoyer aux musiciens','mbSendMusic(this)')));
+  // Réception
+  var rc=a.reception, rn=(rc.items&&rc.items.length)?['ok',rc.items.length+' contributions']:['neutral','À organiser'];
+  cards.push(mbAssetCard('🍽️','Réception', mbChip(rn[0],rn[1]),
+    'Qui apporte quoi', roleName('reception_team'),
+    mbBtn('Voir l\'équipe réception','mbScrollTeam()')));
+  // Matériel & nettoyage
+  var mt=a.materiel;
+  cards.push(mbAssetCard('🧹','Matériel & nettoyage',
+    mbChip(mt.status==='ok'?'ok':'neutral', mt.status==='ok'?'Organisé':'À organiser'),
+    'Sono, matériel musique, ménage', roleName('cleaning_crew'),
+    mbBtn('Voir l\'équipe','mbScrollTeam()')));
+  cont.innerHTML=cards.join('');
+}
+function mbRoleName(rid){ var t=(MB.plan.team||[]).filter(function(x){return x.role===rid;})[0]; return t?(t.label+' : '+t.names):''; }
+function mbScrollTeam(){ document.getElementById('mb-team').scrollIntoView({behavior:'smooth'}); }
+
+// ---- team ----
+var MB_TEAM_STATUS={ a_demander:['neutral','À demander'], demande:['info','Demandé'],
+  confirme:['ok','Confirmé'], decline:['bad','Indisponible'], autre:['warn','À vérifier'] };
+var MB_RESP_ICON={oui:'✅',non:'❌',autre:'🤔'};
+function mbRenderTeam(){
+  var cont=document.getElementById('mb-team');
+  cont.innerHTML=(MB.plan.team||[]).map(function(t){
+    var st=MB_TEAM_STATUS[t.status]||['neutral',t.status];
+    var flag=t.degraded?' <span style="color:#b0700a;font-size:.8em">(remplaçant)</span>':'';
+    // still an actual rotation in effect (system picked a subset of the
+    // roster to ask THIS mass) -- distinct from a role that just has a
+    // bigger-than-needed roster but asks everyone (rotate:false, e.g.
+    // altar_server_parents since 2026-08-31). See `rotating` in the
+    // /api/admin/mass/plan payload.
+    if(t.rotating) flag+=' <span style="color:#999;font-size:.8em">(rotation '+t.needed+'/'+t.pool_size+')</span>';
+    // whole roster asked but only `needed` actually serve -- PZ picks who's
+    // on duty from the responses (2026-08-31, user request: "we will pick
+    // the first 2 to respond ... so PZ can choose them and manage directly")
+    var pickable=!t.rotating && t.pool_size>t.needed;
+    var acts='';
+    if(t.status!=='confirme') acts+=mbBtn('✉️ Demander','mbAsk(\''+t.role+'\',this)');
+    if(t.status!=='confirme') acts+=' '+mbBtn('✓ Confirmé','mbTeamSet(\''+t.role+'\',\'confirme\')');
+    if(t.status==='confirme') acts+=mbBtn('↺ Rouvrir','mbTeamSet(\''+t.role+'\',\'a_demander\')');
+    // per-person breakdown (who among the assigned people answered what) —
+    // added 2026-08-22 after a role with 2 lecteurs got a reply with no way
+    // to tell which of them sent it. Response order (1er/2e/...) and a
+    // pick-them-on-duty toggle added 2026-08-31 for no-rotation roles.
+    var namesLine=(t.people&&t.people.length)?'':'<div class="tn">'+esc(t.names)+'</div>';
+    var ORD=['1er','2e','3e','4e','5e','6e'];
+    var people=(t.people||[]).map(function(p){
+      var icon=p.response?(MB_RESP_ICON[p.response]||'•'):'⏳';
+      var status=p.response?'':' <span style="color:#999">(pas encore répondu)</span>';
+      var msg=p.message?(' <span style="font-style:italic;color:#666">— “'+esc(p.message)+'”</span>'):'';
+      var order=p.order?(' <span style="color:#999;font-size:.8em">('+((ORD[p.order-1])||(p.order+'e'))+' à répondre)</span>'):'';
+      var pick=pickable?(' '+mbBtn(p.picked?'★ Sur place':'☆ Choisir',
+        'mbTeamPick(\''+t.role+'\',\''+p.person+'\',this)')):'';
+      return '<div style="font-size:.85em;margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">'+
+        '<span>'+icon+' '+esc(p.name)+status+order+msg+'</span>'+pick+'</div>';
+    }).join('');
+    // rest of the rotation pool, greyed out -- not on duty this Mass, up
+    // next (2026-08-30, user request; only shown while `rotating` is true)
+    var nextUp=(t.next_up&&t.next_up.length)?
+      '<div style="font-size:.85em;margin-top:3px;color:#bbb">'+esc(t.next_up.join(', '))+
+      ' <span style="font-style:italic">(pour la prochaine messe)</span></div>' : '';
+    return '<div class="mb-trow"><div class="tl">'+esc(t.label)+' '+mbChip(st[0],st[1])+flag+'</div>'+
+      namesLine+people+nextUp+'<div class="row" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">'+acts+'</div></div>';
+  }).join('');
+}
+function mbAsk(role,btn){
+  btn.disabled=true; btn.textContent='…';
+  api('POST','/api/admin/mass/team/ask',{mass:MB.mid,role:role}).then(function(d){
+    if(d&&d.status==='ok'){ mbFlash('✓ demande envoyée ('+d.sent+')'); mbLoad(MB.mid); }
+    else { alert((d&&d.error)||'Erreur'); btn.disabled=false; btn.textContent='✉️ Demander'; }
+  });
+}
+function mbTeamSet(role,status){
+  api('POST','/api/admin/mass/team/set',{mass:MB.mid,role:role,status:status}).then(function(d){
+    if(d&&d.status==='ok') mbLoad(MB.mid); else alert((d&&d.error)||'Erreur');
+  });
+}
+// Toggle one person on/off this Mass's on-duty pick, for a no-rotation role
+// (whole roster asked, PZ picks who's actually serving). Added 2026-08-31.
+function mbTeamPick(role,person,btn){
+  btn.disabled=true;
+  api('POST','/api/admin/mass/team/pick',{mass:MB.mid,role:role,person:person}).then(function(d){
+    if(d&&d.status==='ok') mbLoad(MB.mid); else { alert((d&&d.error)||'Erreur'); btn.disabled=false; }
+  });
+}
+// Chants + psaume → email the musicians role with whatever partition/audio
+// Library links are matched so far (links, not attachments — added 2026-08-22)
+function mbSendMusic(btn){
+  var label=btn.textContent; btn.disabled=true; btn.textContent='…';
+  api('POST','/api/admin/mass/music/send',{mass:MB.mid}).then(function(d){
+    btn.disabled=false; btn.textContent=label;
+    if(d&&d.status==='ok') mbFlash('✓ envoyé aux musiciens ('+d.sent+')');
+    else alert((d&&d.error)||'Erreur');
+  });
+}
+
+// ---- Chants & Partitions (full-page review, 2026-08-29) ----
+// Same "full-page not a drawer" pattern as the Bulletin editor (BE) --
+// separate module (CE) so it can be reached straight from the Mass board.
+var CE = { mid:null, open:false, items:[], pick:null };
+function ceOpen(mid){
+  CE.mid=mid; CE.open=true;
+  document.getElementById('chants-editor').style.display='flex';
+  var m=(masses||[]).filter(function(x){return x.date===mid;})[0];
+  document.getElementById('ce-title').textContent='Chants & partitions — '+((m&&m.label)||mid);
+  ceLoad();
+}
+function ceClose(){ CE.open=false; document.getElementById('chants-editor').style.display='none'; }
+function ceLoad(){
+  document.getElementById('ce-items').innerHTML='Chargement…';
+  api('POST','/api/admin/mass/music/summary',{mass:CE.mid}).then(function(d){
+    if(!d||d.error){ alert((d&&d.error)||'Erreur de chargement.'); return; }
+    CE.items=d.items||[]; CE.allApproved=!!d.all_approved; CE.bulletin=d.bulletin||{approved:false};
+    ceRender();
+  });
+}
+// Bulletin status (PZ request, 2026-08-30): the approved bulletin PDF rides
+// along in the same email as the chants/partitions/audio -- shown here so
+// PZ sees, before sending, whether it'll actually be attached, and gets a
+// clear flag (not a hard block -- musicians still get their chants on time
+// either way) if the bulletin isn't approved yet.
+function ceBulletinStatusHtml(){
+  var b=CE.bulletin||{};
+  if(b.approved){
+    return '<div style="padding:9px 13px;background:#eaf5ea;border-radius:6px;font-size:.85em;color:#2a7a2a">'+
+      '✅ Bulletin approuvé — sera joint à l\'envoi ('+esc((b.doc&&b.doc.filename)||'Bulletin.pdf')+').</div>';
+  }
+  // ceClose() first: #chants-editor and #bulletin-editor are both full-page
+  // fixed overlays at the SAME z-index (50) -- opening the bulletin editor
+  // while chants-editor stays open left it rendering visually UNDERNEATH
+  // (later in DOM order wins a z-index tie), so the button looked broken --
+  // beOpen() was actually firing, just invisibly. Found 2026-08-30.
+  return '<div style="padding:9px 13px;background:#fdf6e3;border-radius:6px;font-size:.85em;color:#8a6d00">'+
+    '⚠️ Bulletin pas encore approuvé — il ne sera <strong>pas</strong> joint à cet envoi. '+
+    mbBtn('✏️ Éditer le bulletin','ceClose(); beOpen(CE.mid)')+'</div>';
+}
+function ceChip(it){
+  if(!it.partition && !it.audio) return mbChip('neutral','rien à joindre');
+  return it.approved ? mbChip('ok','Approuvé') : mbChip('warn','À vérifier');
+}
+function ceFileBlock(kind, it){
+  var ref=it[kind];
+  var label=kind==='partition' ? '📄 Partition' : '🔊 Audio';
+  var body;
+  if(ref){
+    body='<div class="ce-file-cur">'+esc(ref.filename)+'</div>'+
+      '<div class="row" style="margin-top:5px;display:flex;gap:6px;flex-wrap:wrap">'+
+      mbBtn('👁 Aperçu',"openPreview('"+ref.url+"','"+esc(ref.filename)+"','"+esc(it.title)+"','"+esc(ref.doc_id)+"')")+
+      mbBtn('🔍 Changer',"ceSearchOpen('"+it.moment+"','"+kind+"')")+'</div>';
+    // Paroles-non-alignées check (2026-09-04): flagged at fetch time on
+    // auto-imported psalm partitions (psaumedudimanche.fr) whose engraving
+    // only underlays words for the antienne, not the verses -- see
+    // PSAUME_DUDIMANCHE_LYRICS_NOTE in subscribe.py. Susan Bondy hit this
+    // for real on the 2026-09-20 psalm (couldn't sight-read words+music
+    // together) after it had already been approved blind.
+    if(kind==='partition' && ref.lyrics_integrated===false){
+      body+='<div style="margin-top:6px;padding:7px 9px;background:#fdf6e3;border-radius:6px;'+
+        'font-size:.8em;color:#8a6d00">⚠️ '+esc(ref.lyrics_note||'Les paroles ne sont peut-être pas alignées avec la musique.')+'</div>';
+    }
+  } else {
+    body='<div class="ce-file-cur" style="color:#999">Aucun'+(kind==='partition'?'e partition':' audio')+'</div>'+
+      '<div class="row" style="margin-top:5px">'+mbBtn('🔍 Choisir',"ceSearchOpen('"+it.moment+"','"+kind+"')")+'</div>';
+  }
+  return '<div class="ce-file"><div class="ce-file-label">'+label+'</div>'+body+'</div>';
+}
+// Section name before the song name (2026-08-29, on request) -- e.g. "Chant
+// d'entrée : « Appelés enfants de Dieu »", same as the bulletin itself.
+// Psaume has no separate song title (label===title) -- shown bare. The
+// prière universelle refrain's own "title" already carries its own « »
+// (it's really the sung text, not a proper title -- see the 2026-08-29
+// mass_history migration) -- don't double-wrap those in a 2nd pair.
+function ceHeading(it){
+  if (it.label===it.title) return esc(it.label);
+  var t = it.title || '';
+  var alreadyQuoted = /^[«"']/.test(t.trim());
+  return esc(it.label)+' : '+(alreadyQuoted ? esc(t) : '« '+esc(t)+' »');
+}
+function ceRender(){
+  document.getElementById('ce-bulletin-status').innerHTML=ceBulletinStatusHtml();
+  document.getElementById('ce-items').innerHTML = CE.items.length ? CE.items.map(function(it){
+    return '<div class="be-card">'+
+      '<div class="be-card-h"><span style="flex:1">🎵 '+ceHeading(it)+'</span>'+ceChip(it)+'</div>'+
+      '<div class="ce-file-row">'+ceFileBlock('partition',it)+ceFileBlock('audio',it)+'</div>'+
+      '<label class="ce-approve"><input type="checkbox" '+(it.approved?'checked':'')+
+        ' onchange="ceApprove(\''+it.moment+'\',this.checked)"> Approuvé — prêt pour l\'envoi</label>'+
+    '</div>';
+  }).join('') : '<p style="color:#888">Aucun chant choisi pour cette messe pour l\'instant — utilisez « Choisir les chants » d\'abord.</p>';
+  var btn=document.getElementById('ce-send-btn');
+  btn.disabled = !CE.allApproved || !CE.items.length;
+  document.getElementById('ce-send-hint').textContent = (!CE.items.length) ? ''
+    : (CE.allApproved ? '' : 'Approuvez chaque emplacement ci-dessus avant l\'envoi.');
+}
+function ceApprove(moment, approved){
+  api('POST','/api/admin/mass/music/approve',{mass:CE.mid,moment:moment,approved:approved}).then(function(d){
+    if(d&&d.status==='ok'){ ceLoad(); return; }
+    // Backend refused: the linked partition is flagged lyrics_integrated:false
+    // (2026-09-04) -- ask for an explicit "approve anyway" before retrying
+    // with confirm_lyrics. Cancelling just reloads (checkbox reverts, since
+    // nothing was saved). See ceFileBlock's own warning banner for the same flag.
+    if(d&&d.need_lyrics_confirm){
+      if(confirm((d.error||'Paroles non alignées avec la musique.')+'\n\nApprouver quand même ?')){
+        api('POST','/api/admin/mass/music/approve',
+            {mass:CE.mid,moment:moment,approved:approved,confirm_lyrics:true}).then(function(d2){
+          if(!(d2&&d2.status==='ok')) alert((d2&&d2.error)||'Erreur');
+          ceLoad();
+        });
+      } else ceLoad();
+      return;
+    }
+    alert((d&&d.error)||'Erreur'); ceLoad();
+  });
+}
+function ceSearchOpen(moment, kind){
+  CE.pick={moment:moment, kind:kind};
+  document.getElementById('ce-search-title').textContent=(kind==='partition'?'Choisir une partition — ':'Choisir un audio — ')+moment;
+  document.getElementById('ce-search-q').value='';
+  document.getElementById('ce-search-modal').style.display='flex';
+  ceSearchRun();
+}
+function ceSearchClose(){ document.getElementById('ce-search-modal').style.display='none'; }
+function ceSearchRun(){
+  var q=document.getElementById('ce-search-q').value;
+  var type=CE.pick.kind==='partition' ? 'score' : 'recording';
+  api('GET','/api/admin/library?type='+type+'&q='+encodeURIComponent(q)).then(function(d){
+    var docs=(d&&d.documents)||[];
+    document.getElementById('ce-search-results').innerHTML = docs.length ? docs.map(function(doc){
+      return '<div class="pv-link" style="cursor:pointer;padding:7px 0;border-bottom:1px dashed #eee" onclick="ceSearchPick(\''+doc.id+'\')">'+
+        esc(doc.title||doc.filename)+' <span style="color:#999">— '+esc((doc.date||'').slice(0,10))+'</span></div>';
+    }).join('') : '<p style="color:#888;padding:10px 0">Aucun résultat.</p>';
+  });
+}
+function ceSearchPick(docId){
+  api('POST','/api/admin/mass/music/link',{mass:CE.mid,moment:CE.pick.moment,kind:CE.pick.kind,doc_id:docId}).then(function(d){
+    if(d&&d.status==='ok'){ ceSearchClose(); mbFlash('✓ lien mis à jour'); ceLoad(); }
+    else alert((d&&d.error)||'Erreur');
+  });
+}
+function ceSend(btn){
+  var label=btn.textContent; btn.disabled=true; btn.textContent='…';
+  api('POST','/api/admin/mass/music/send',{mass:CE.mid}).then(function(d){
+    btn.disabled=false; btn.textContent=label;
+    if(d&&d.status==='ok'){
+      mbFlash('✓ envoyé aux musiciens ('+d.sent+')'+(d.bulletin_approved?' avec le bulletin':' — bulletin non joint (pas encore approuvé)'));
+      ceLoad();
+    } else alert((d&&d.error)||'Erreur');
+  });
+}
+
+// ---- dispatches ----
+var MB_DISP_STATUS={ pending:['neutral','À préparer'], draft:['warn','Brouillon prêt'], sent:['ok','Envoyé'] };
+function mbRenderDispatches(){
+  var cont=document.getElementById('mb-dispatches');
+  cont.innerHTML=(MB.plan.dispatch_defs||[]).map(function(dd){
+    var st=MB.plan.dispatches[dd.id]||{status:'pending'};
+    var s=MB_DISP_STATUS[st.status]||['neutral',st.status];
+    var chan=(dd.channels||[]).map(function(c){return c==='sms'?'SMS':'Email';}).join(' + ');
+    return '<div class="mb-disp"><h4>'+esc(dd.label)+'</h4>'+
+      '<div>'+mbChip(s[0],s[1])+' <span style="font-size:.75em;color:#999">'+chan+'</span></div>'+
+      '<div class="row" style="margin-top:9px">'+mbBtn('Composer','mbOpenDispatch(\''+dd.id+'\')','btn-primary')+'</div></div>';
+  }).join('');
+}
+
+// ---- drawer ----
+function mbCloseDrawer(){ document.getElementById('mb-drawer').style.display='none'; MB.drawer=null; }
+function mbOpenDrawer(title,html){
+  document.getElementById('mb-drawer-title').innerHTML=title;
+  document.getElementById('mb-drawer-body').innerHTML=html;
+  document.getElementById('mb-drawer').style.display='';
+  document.getElementById('mb-drawer').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function mbFlash(t){ var m=document.getElementById('mb-msg'); m.style.color='#2a7a2a'; m.textContent=t; setTimeout(function(){m.textContent='';},3500); }
+
+// ---- Bulletin editor (full page, 2026-08-29 -- replaces the drawer above for
+// bulletins). Only the 4 sections where "what did we use last year" is a real
+// question get a year picker (chant_entree/communion/final, priere_universelle)
+// -- readings are always the current year's AELF feed, bas_de_page is fully
+// computed, both have nothing year-specific to reuse. ----
+var BE = { mid:null, plan:null, open:false };
+var BE_SECTIONS = [
+  ['chant_entree',"Chant d'entrée"], ['chant_communion','Chant de Communion'],
+  ['chant_final','Chant final'], ['priere_universelle','Prière universelle']
+];
+function beOpen(mid){
+  BE.mid=mid; BE.open=true;
+  document.getElementById('bulletin-editor').style.display='flex';
+  beLoad();
+}
+function beClose(){ BE.open=false; document.getElementById('bulletin-editor').style.display='none'; }
+function beLoad(){
+  api('GET','/api/admin/mass/plan?mass='+encodeURIComponent(BE.mid)).then(function(d){
+    if(!d||d.error){ alert((d&&d.error)||'Erreur de chargement.'); return; }
+    BE.plan=d; MB.plan=d; beRenderAll();
+  });
+}
+function beRenderAll(){
+  document.getElementById('be-title').textContent='Bulletin — '+(BE.plan.label||BE.mid);
+  var pc=BE.plan.assets.bulletin.page_count;
+  document.getElementById('be-page-chip').innerHTML = pc ? mbChip(pc<=2?'ok':'warn', pc+' page'+(pc>1?'s':'')) : '';
+  beRenderSections();
+  document.getElementById('be-community-text').value=((BE.plan.assets.bulletin.sections||{}).communaute||{}).text||'';
+  beRenderResult();
+  beRefreshPreview();
+}
+function beSaveCommunity(btn){
+  btn.disabled=true;
+  api('POST','/api/admin/bulletin/section',{mass:BE.mid,section:'communaute',text:document.getElementById('be-community-text').value}).then(function(d){
+    btn.disabled=false;
+    if(d&&d.status==='ok'){ mbFlash('✓ enregistré'); beLoad(); } else alert((d&&d.error)||'Erreur');
+  });
+}
+function beSectionChip(sec){
+  if(!sec.locked) return mbChip('ok','auto');
+  return mbChip('info', sec.source_year ? ('verrouillé · '+sec.source_year) : 'verrouillé');
+}
+function beRenderSections(){
+  var secs=BE.plan.assets.bulletin.sections||{};
+  document.getElementById('be-sections').innerHTML = BE_SECTIONS.map(function(row){
+    var key=row[0], label=row[1], sec=secs[key]||{text:'',locked:false};
+    var slot=MB_SONG_SLOTS[key];
+    var preview = sec.title ? (esc(sec.title)+' — ') : '';
+    preview += sec.text ? esc(sec.text.length>140?sec.text.slice(0,140)+'…':sec.text) : '<em>vide</em>';
+    return '<div class="be-card"><div class="be-card-h">'+esc(label)+' '+beSectionChip(sec)+'</div>'+
+      '<div class="be-cur">'+preview+'</div>'+
+      '<div class="be-years" id="be-years-'+key+'">'+
+        '<button class="btn btn-secondary" style="font-size:.78em" onclick="beLoadCandidates(\''+key+'\')">📅 Années précédentes</button></div>'+
+      (slot?'<div style="margin-top:6px">'+mbBtn('🎵 Rechercher un autre chant',"mbPickSong('"+key+"')")+'</div>':'')+
+    '</div>';
+  }).join('');
+}
+function beLoadCandidates(key){
+  var box=document.getElementById('be-years-'+key);
+  box.innerHTML='Chargement…';
+  api('GET','/api/admin/bulletin/section/candidates?mass='+encodeURIComponent(BE.mid)+'&section='+encodeURIComponent(key)).then(function(d){
+    var cands=(d&&d.candidates)||[];
+    var slot=MB_SONG_SLOTS[key];
+    // A way BACK to "no song picked" is a real option, not just the years --
+    // 2026-08-29: locking a past year left no visible path to clear it again.
+    // Prepend it as year:null. All 4 reusable sections are song slots now
+    // (priere_universelle included, 2026-08-29 correction), so this is
+    // always "clear the pick", never a live-fetch fallback.
+    cands = [{year:null, title:'— Aucun (laisser vide) —', text:'', song_id:null}].concat(cands);
+    box.dataset.cands=JSON.stringify(cands);
+    // Pre-select whichever option actually matches what's in effect right now
+    // (locked+source_year -> that year; otherwise -> the auto entry) so the
+    // dropdown always reflects current state instead of defaulting to "most
+    // recent year" regardless of what's really active.
+    var sec=(BE.plan.assets.bulletin.sections||{})[key]||{};
+    var curYear = sec.locked ? sec.source_year : null;
+    var selIdx = 0;
+    cands.forEach(function(c,i){ if(c.year===curYear) selIdx=i; });
+    box.innerHTML='<select id="be-sel-'+key+'" onchange="beShowCandidate(\''+key+'\')">'+
+        cands.map(function(c,i){ if(c.year===null) return '<option value="'+i+'"'+(i===selIdx?' selected':'')+'>'+esc(c.title)+'</option>';
+          return '<option value="'+i+'"'+(i===selIdx?' selected':'')+(c.song_id===null&&c.text===''&&slot?' disabled':'')+'>'+
+          c.year+(c.title?' — '+esc(c.title):'')+(!c.song_id&&slot?' (hors catalogue)':'')+'</option>'; }).join('')+
+      '</select>'+
+      '<div class="be-cand-prev" id="be-prev-'+key+'"></div>'+
+      '<button class="btn btn-primary" style="font-size:.78em" onclick="beUseCandidate(\''+key+'\')">✓ Utiliser ce contenu</button>';
+    beShowCandidate(key);
+  });
+}
+function beShowCandidate(key){
+  var box=document.getElementById('be-years-'+key);
+  var cands=JSON.parse(box.dataset.cands||'[]');
+  var c=cands[+document.getElementById('be-sel-'+key).value];
+  document.getElementById('be-prev-'+key).textContent = c ? (c.year===null ? '(retire le contenu verrouillé — reprend la proposition automatique)' : (c.text||'(vide)')) : '';
+}
+function beUseCandidate(key){
+  var box=document.getElementById('be-years-'+key);
+  var cands=JSON.parse(box.dataset.cands||'[]');
+  var c=cands[+document.getElementById('be-sel-'+key).value];
+  if(!c) return;
+  var slot=MB_SONG_SLOTS[key];
+  var req;
+  if(c.year===null){
+    // revert: songs just get cleared (song_id:null -- there's no separate
+    // "auto-suggested song" concept); prière universelle unlocks so
+    // assemble_bulletin recomputes it from PWPN/Pope-intention/history again.
+    req = slot ? api('POST','/api/admin/chants',{mass:BE.mid,slot:slot,song_id:null})
+               : api('POST','/api/admin/bulletin/section',{mass:BE.mid,section:key,unlock:true});
+  } else {
+    req = slot
+      ? (c.song_id ? api('POST','/api/admin/chants',{mass:BE.mid,slot:slot,song_id:c.song_id,source_year:c.year})
+                   : Promise.resolve({error:"Ce chant de "+c.year+" n'est pas encore dans le catalogue — utilisez la recherche."}))
+      : api('POST','/api/admin/bulletin/section',{mass:BE.mid,section:key,text:c.text,source_year:c.year});
+  }
+  req.then(function(d){
+    if(d&&d.status==='ok'){ mbFlash(c.year===null ? '✓ revenu à la proposition automatique' : ('✓ contenu de '+c.year+' utilisé')); beLoad(); }
+    else alert((d&&d.error)||'Erreur');
+  });
+}
+function beRefreshPreview(){
+  var frame=document.getElementById('be-preview');
+  fetch('/api/admin/bulletin/html?mass='+encodeURIComponent(BE.mid),{headers:{'Authorization':'Bearer '+token}})
+    .then(function(r){ return r.text(); })
+    .then(function(html){
+      var doc=frame.contentDocument||frame.contentWindow.document;
+      doc.open(); doc.write(html); doc.close();
+    })
+    .catch(function(){});
+}
+function beOverflowHtml(pageCount, overflow){
+  var ov=overflow||{}; var sections=ov.sections||{};
+  var html='<div style="background:#fdecea;border:1px solid #e6a5a5;border-radius:8px;padding:9px 13px">'+
+    '<strong>⚠️ '+pageCount+' pages — trop long pour 2 pages.</strong>';
+  if(sections.note) html+='<p style="margin:6px 0 0;font-size:.85em">'+esc(sections.note)+'</p>';
+  if(sections.actionable&&sections.actionable.length){
+    html+='<p style="margin:8px 0 4px;font-size:.85em;font-weight:600">Sections à raccourcir :</p>'+
+      '<ul style="margin:0;padding-left:18px;font-size:.85em">'+sections.actionable.map(function(s){
+        return '<li>'+esc(s.label)+' — '+s.chars+' caractères</li>'; }).join('')+'</ul>';
+  }
+  return html+'</div>';
+}
+function beRenderResult(){
+  var b=BE.plan.assets.bulletin, box=document.getElementById('be-render-result'),
+      approveBtn=document.getElementById('be-approve-btn');
+  if(b.overflow){ box.innerHTML=beOverflowHtml(b.overflow.page_count,b.overflow); approveBtn.style.display='none'; return; }
+  if(b.stage==='pret_pour_approbation'&&b.pdf_doc_id){
+    var lib=BE.plan.bulletin_library||{finals:[]};
+    var f=lib.finals.filter(function(x){return x.id===b.pdf_doc_id;})[0];
+    box.innerHTML='<div style="color:#2a7a2a;font-size:.88em">✓ PDF prêt ('+(b.page_count||'?')+' page'+
+      (b.page_count===1?'':'s')+')'+(f?' — '+mbBtn('📄 Voir le PDF',"openPreview('"+f.url+"','Bulletin_"+BE.mid+".pdf','"+esc(BE.plan.label||'')+"','"+f.id+"')"):'')+'</div>';
+    approveBtn.style.display='';
+  } else if(b.stage==='approuve' || b.stage==='impression'){
+    // Next step after approval: hand off to the "Impression" role (2026-08-29
+    // -- was only wired into the dead mbOpenBulletin drawer, unreachable
+    // since beOpen replaced it; the /api/admin/bulletin/to-print endpoint +
+    // its printing-role-confirmed gate already existed, just had no live
+    // button anywhere). Same gate as before: don't offer the print button
+    // until someone assigned to Impression has actually confirmed (avoids a
+    // repeat of the 2026-08-22 incident where a bulletin went to print before
+    // the printer had accepted).
+    var html='<div style="color:#2a7a2a;font-size:.88em">✅ Bulletin approuvé.</div>';
+    approveBtn.style.display='none';
+    if(b.stage==='impression'){
+      html+='<div style="margin-top:6px">'+mbChip('ok','Transmis à l\'impression')+'</div>';
+      if(b.print_acked_at){
+        html+='<div style="margin-top:6px;font-size:.85em;color:#2a7a2a;background:#eaf5ea;'+
+          'border-radius:6px;padding:8px 12px">✅ Bulletin reçu pour impression le '+
+          esc(fmtDateTime(b.print_acked_at))+
+          (b.print_ack_message?(' — <span style="font-style:italic">“'+esc(b.print_ack_message)+'”</span>'):'')+
+          '</div>';
+      } else {
+        html+='<div style="margin-top:6px;font-size:.85em;color:#999">En attente de confirmation de réception.</div>';
+      }
+    } else {
+      var printTeam=(BE.plan.team||[]).filter(function(x){return x.role==='printing';})[0];
+      if(printTeam && printTeam.status!=='confirme'){
+        html+='<div style="margin-top:8px;font-size:.85em;color:#8a6d00;background:#fdf6e3;'+
+          'border-radius:6px;padding:8px 12px">⚠️ Le rôle « Impression » n\'est pas encore confirmé '+
+          '— demandez-le dans l\'équipe (tableau de bord) avant d\'envoyer à l\'impression.</div>';
+      } else {
+        html+='<div style="margin-top:8px">'+mbBtn('🖨️ Envoyer à l\'impression','beToPrint()','btn-secondary')+'</div>';
+      }
+    }
+    box.innerHTML=html;
+  } else {
+    box.innerHTML=''; approveBtn.style.display='none';
+  }
+}
+function beToPrint(){
+  api('POST','/api/admin/bulletin/to-print',{mass:BE.mid}).then(function(d){
+    if(d&&d.status==='ok'){ mbFlash('✓ envoyé à l\'impression'); beLoad(); }
+    else alert((d&&d.error)||'Erreur');
+  });
+}
+function beRender(){
+  var btn=document.getElementById('be-render-btn');
+  btn.disabled=true; btn.textContent='… génération';
+  api('POST','/api/admin/bulletin/render',{mass:BE.mid}).then(function(d){
+    btn.disabled=false; btn.textContent='🖨️ Générer le PDF final';
+    if(!d){ alert('Erreur.'); return; }
+    if(d.status==='overflow'){
+      document.getElementById('be-render-result').innerHTML=beOverflowHtml(d.page_count,d.overflow);
+      document.getElementById('be-approve-btn').style.display='none';
+    } else if(d.status==='ok'){
+      mbFlash('✓ PDF généré ('+d.page_count+' page'+(d.page_count>1?'s':'')+')'); beLoad();
+    } else alert(d.error||'Erreur.');
+  });
+}
+function beApprove(){
+  if(!confirm('Approuver ce bulletin final (PDF) ?')) return;
+  api('POST','/api/admin/bulletin/approve',{mass:BE.mid}).then(function(d){
+    if(d&&d.status==='ok'){ mbFlash('✓ bulletin approuvé'); beLoad(); }
+    else alert((d&&d.error)||'Erreur');
+  });
+}
+
+// mbOpenBulletin() (the old drawer -- section-by-section edit, "Fichiers
+// pour Sabine" hand-off, her manual-final-PDF approval) + its exclusive
+// helpers (mbToggleSec/mbEditSec/mbSaveSec/mbUnlockSec/MB_SECTIONS) deleted
+// 2026-08-29, along with the "Mise en page" role they existed for -- dead
+// since both Mass-board entry points were repointed at the full-page
+// Bulletin editor (beOpen) when it shipped. mbGenFiles/mbApproveFinal/the
+// old mbToPrint (this drawer's only callers) deleted too, further down;
+// beApprove()/beToPrint() are the live equivalents now.
+function mbAssemble(){
+  api('POST','/api/admin/bulletin/assemble',{mass:MB.mid}).then(function(d){
+    if(d&&d.status==='ok'){ mbFlash('✓ bulletin réassemblé'); mbReloadBulletin(); } else alert((d&&d.error)||'Erreur');
+  });
+}
+function mbDownload(url,filename){
+  fetch(url,{headers: token?{'Authorization':'Bearer '+token}:{}}).then(function(r){
+    if(!r.ok) throw new Error(r.status); return r.blob();
+  }).then(function(blob){
+    var obj=URL.createObjectURL(blob);
+    var a=document.createElement('a'); a.href=obj; a.download=filename||'document';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(obj); },4000);
+  }).catch(function(e){ alert('Téléchargement impossible ('+((e&&e.message)||e)+'). Reconnectez-vous si besoin.'); });
+}
+function mbReloadBulletin(){
+  api('GET','/api/admin/mass/plan?mass='+encodeURIComponent(MB.mid)).then(function(d){
+    if(d&&!d.error){ MB.plan=d; mbRenderAssets(); mbRenderDispatches();
+      if(BE.open && BE.mid===MB.mid){ BE.plan=d; beRenderAll(); } }
+  });
+}
+function mbPreview(){
+  fetch('/api/admin/bulletin/html?mass='+encodeURIComponent(MB.mid),{headers:{'Authorization':'Bearer '+token}})
+    .then(function(r){ return r.text(); })
+    .then(function(html){ var w=window.open('','_blank'); if(!w){alert('Autorisez les pop-ups pour l\'aperçu.');return;} w.document.open(); w.document.write(html); w.document.close(); })
+    .catch(function(){ alert('Erreur de chargement de l\'aperçu.'); });
+}
+
+// ---- song picker ----
+var SEASON_LABEL={avent:'Avent',noel:'Noël',careme:'Carême',paques:'Temps pascal',ordinaire:'Temps ordinaire'};
+function mbPickSong(sectionKey){
+  MB.songSlot=MB_SONG_SLOTS[sectionKey];
+  document.getElementById('mb-song-title').textContent='Choisir un chant — '+(MB.songSlot);
+  document.getElementById('mb-song-q').value='';
+  // default to the mass's own liturgical season so relevant chants surface
+  // first, without ever hiding songs whose season isn't known (2026-08-22)
+  document.getElementById('mb-song-season').value=(MB.plan.liturgical&&MB.plan.liturgical.season)||'';
+  document.getElementById('mb-song-modal').style.display='';
+  mbSongSearch();
+}
+function mbCloseSong(){ document.getElementById('mb-song-modal').style.display='none'; }
+function mbSongSearch(){
+  var q=document.getElementById('mb-song-q').value;
+  var season=document.getElementById('mb-song-season').value;
+  api('GET','/api/admin/songs?moment='+encodeURIComponent(MB.songSlot||'')+'&q='+encodeURIComponent(q)+
+    '&season='+encodeURIComponent(season)).then(function(d){
+    var list=document.getElementById('mb-song-list');
+    var songs=(d&&d.songs)||[];
+    if(!songs.length){ list.innerHTML='<p style="color:#888">Aucun chant. Élargissez la recherche ou changez de saison.</p>'; return; }
+    list.innerHTML='<div class="mb-song" onclick="mbSetSong(\'\')"><div><div class="t">— aucun (laisser vide) —</div></div></div>'+
+      songs.map(function(s){
+        var seasonTxt=(s.seasons&&s.seasons.length)?s.seasons.map(function(x){return SEASON_LABEL[x]||x;}).join(', ')
+          :'saison inconnue';
+        var badges=(s.has_partition?'📄 ':'')+(s.has_recording?'🎧 ':'')+(s.uses&&s.uses.length?('utilisé '+s.uses.length+'×'):'jamais utilisé');
+        return '<div class="mb-song" onclick="mbSetSong(\''+s.id+'\')"><div><div class="t">'+esc(s.title)+'</div>'+
+          '<div class="m">'+esc(badges)+' · '+esc(seasonTxt)+' · '+esc(s.preview||'')+'</div></div></div>';
+      }).join('');
+  });
+}
+function mbSetSong(sid){
+  api('POST','/api/admin/chants',{mass:MB.mid,slot:MB.songSlot,song_id:sid||null}).then(function(d){
+    if(d&&d.status==='ok'){ mbCloseSong(); mbFlash('✓ chant choisi'); mbReloadBulletin(); } else alert((d&&d.error)||'Erreur');
+  });
+}
+
+// ---- intentions ----
+function mbOpenIntentions(){
+  MB.drawer='intentions';
+  var it=MB.plan.assets.intentions;
+  var body='<div style="font-weight:600;color:#3a1f00;margin-bottom:4px">📰 Prière universelle (imprimée sur le bulletin)</div>'+
+    '<p style="font-size:.83em;color:#666">Refrain + intentions de la prière universelle. Le bouton propose la prière du dimanche (Réseau Mondial de Prière du Pape) et l\'intention du mois du Pape quand elles sont disponibles.</p>'+
+    '<div style="margin:10px 0">'+mbBtn('✨ Proposer (Réseau Mondial + Pape + an dernier)','mbSuggestIntentions()','btn-secondary')+'</div>'+
+    '<label style="font-weight:600;font-size:.85em">Refrain</label>'+
+    '<input id="mb-int-refrain" style="width:100%;padding:8px;border:1px solid #d9c8a5;border-radius:6px;margin:4px 0 12px;box-sizing:border-box" value="'+esc(it.refrain||'')+'">'+
+    '<label style="font-weight:600;font-size:.85em">Intentions (une par ligne)</label>'+
+    '<textarea id="mb-int-items" style="width:100%;min-height:160px;padding:8px;border:1px solid #d9c8a5;border-radius:6px;margin:4px 0;box-sizing:border-box;font:inherit;font-size:.9em">'+esc((it.items||[]).join('\n'))+'</textarea>'+
+    '<div id="mb-int-src" style="font-size:.78em;color:#8a6d3b;margin:6px 0"></div>'+
+    '<div style="margin-top:8px">'+mbBtn('💾 Enregistrer les intentions','mbSaveIntentions()','btn-primary')+'</div>'+
+    '<hr style="margin:20px 0;border:none;border-top:1px solid #ece0c8">'+
+    '<div style="font-weight:600;color:#3a1f00;margin-bottom:4px">🙏 Intentions locales / personnelles</div>'+
+    '<p style="font-size:.83em;color:#666">Pour les malades, les défunts, des situations particulières… <strong>lues à voix haute pendant la messe, jamais imprimées sur le bulletin.</strong> Enregistrer génère un document séparé dans la Bibliothèque (type « Intentions »), imprimable et modifiable par Philippe.</p>'+
+    '<textarea id="mb-int-local" style="width:100%;min-height:110px;padding:8px;border:1px solid #d9c8a5;border-radius:6px;margin:4px 0;box-sizing:border-box;font:inherit;font-size:.9em" placeholder="Une intention par ligne…">'+esc((it.local_items||[]).join('\n'))+'</textarea>'+
+    '<div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">'+
+      mbBtn('💾 Enregistrer + générer le document','mbSaveLocalIntentions(this)','btn-primary')+
+      '<span id="mb-int-local-link"></span>'+
+    '</div>';
+  mbOpenDrawer('🙏 Intentions — '+esc(MB.plan.label), body);
+}
+function mbSuggestIntentions(){
+  var src=document.getElementById('mb-int-src'); src.textContent='…';
+  api('POST','/api/admin/mass/intentions/suggest',{mass:MB.mid}).then(function(d){
+    if(!d||d.error){ src.textContent=(d&&d.error)||'Erreur'; return; }
+    if(d.refrain) document.getElementById('mb-int-refrain').value=d.refrain;
+    if(d.items&&d.items.length) document.getElementById('mb-int-items').value=d.items.join('\n');
+    src.textContent='Sources : '+((d.sources||[]).join(' · ')||'aucune disponible pour cette date (la prière du dimanche paraît ~1–2 semaines avant)');
+  });
+}
+function mbSaveIntentions(){
+  var refrain=document.getElementById('mb-int-refrain').value;
+  var items=document.getElementById('mb-int-items').value.split('\n');
+  api('POST','/api/admin/mass/intentions',{mass:MB.mid,refrain:refrain,items:items,source:'manual'}).then(function(d){
+    if(d&&d.status==='ok'){ mbFlash('✓ intentions enregistrées'); mbReloadBulletin(); } else alert((d&&d.error)||'Erreur');
+  });
+}
+function mbSaveLocalIntentions(btn){
+  var items=document.getElementById('mb-int-local').value.split('\n');
+  btn.disabled=true;
+  api('POST','/api/admin/mass/intentions/local',{mass:MB.mid,items:items}).then(function(d){
+    btn.disabled=false;
+    if(d&&d.status==='ok'){
+      mbFlash('✓ document généré');
+      document.getElementById('mb-int-local-link').innerHTML=
+        mbBtn('📄 Voir le document',"openPreview('"+d.url+"','Intentions_"+MB.mid+".pdf','Intentions locales','"+d.doc_id+"')");
+    } else alert((d&&d.error)||'Erreur');
+  });
+}
+
+// ---- célébrant ----
+function mbSetCelebrant(name){
+  api('POST','/api/admin/mass/celebrant',{mass:MB.mid,name:name}).then(function(d){
+    if(d&&d.status==='ok'){ mbFlash('✓ célébrant enregistré'); if(MB.plan) MB.plan.liturgical.celebrant=name; }
+  });
+}
+
+// ---- dispatch composer ----
+function mbOpenDispatch(did){
+  MB.drawer='dispatch:'+did;
+  var dd=(MB.plan.dispatch_defs||[]).filter(function(x){return x.id===did;})[0];
+  var topics=(MB.plan.dispatch_topics&&MB.plan.dispatch_topics[did])||[];
+  var st=MB.plan.dispatches[did]||{topics:[],extra_topics:[],draft:''};
+  var chosen=st.topics&&st.topics.length?st.topics:topics.filter(function(t){return t.req;}).map(function(t){return t.id;});
+  var body='<p style="font-size:.83em;color:#666">Cochez les sujets à inclure. Les <strong>obligatoires</strong> sont pré-cochés ; certains sont <strong>bloqués</strong> tant qu\'un préalable manque. L\'IA rédige, vous validez, puis on envoie.</p>';
+  body+='<div style="margin:10px 0 14px">';
+  topics.forEach(function(t){
+    var gated=(t.gate && !t.gate_open);
+    var checked=(chosen.indexOf(t.id)>=0 || t.req) && !gated;
+    body+='<label class="mb-topic'+(gated?' gated':'')+'">'+
+      '<input type="checkbox" value="'+t.id+'" '+(checked?'checked':'')+(t.req||gated?' disabled':'')+'>'+
+      esc(t.label)+
+      (t.req?'<span class="badge-req">obligatoire</span>':'')+
+      (gated?'<span class="badge-gate">🔒 '+esc(mbGateLabel(t.gate))+'</span>':'')+
+    '</label>';
+  });
+  body+='</div>';
+  body+='<label style="font-weight:600;font-size:.85em">Sujets libres supplémentaires (un par ligne)</label>'+
+    '<textarea id="mb-disp-extra" style="width:100%;min-height:60px;padding:8px;border:1px solid #d9c8a5;border-radius:6px;margin:4px 0 12px;box-sizing:border-box;font:inherit;font-size:.9em">'+esc((st.extra_topics||[]).join('\n'))+'</textarea>';
+  body+='<div style="display:flex;gap:8px;flex-wrap:wrap">'+mbBtn('✨ Générer le brouillon','mbDispatchDraft(\''+did+'\')','btn-primary')+'</div>';
+  body+='<div id="mb-disp-draftwrap" style="margin-top:14px">'+ (st.draft?mbDispatchDraftUI(did,st.draft):'') +'</div>';
+  mbOpenDrawer('✉️ '+esc(dd?dd.label:did)+' — '+esc(MB.plan.label), body);
+}
+function mbGateLabel(g){ return g==='quete'?'saisir la quête':(g==='bulletin'?'bulletin prêt':(g==='homily'?'homélie déposée':g)); }
+function mbCollectTopics(){
+  var ids=[]; document.querySelectorAll('#mb-drawer-body input[type=checkbox]:checked').forEach(function(c){ ids.push(c.value); });
+  // include disabled-but-checked required ones
+  document.querySelectorAll('#mb-drawer-body input[type=checkbox][disabled]:checked').forEach(function(c){ if(ids.indexOf(c.value)<0) ids.push(c.value); });
+  var extra=(document.getElementById('mb-disp-extra').value||'').split('\n').filter(function(x){return x.trim();});
+  return {topics:ids, extra:extra};
+}
+function mbDispatchDraft(did){
+  var t=mbCollectTopics();
+  var wrap=document.getElementById('mb-disp-draftwrap'); wrap.innerHTML='<p style="color:#666">Rédaction en cours… (~10 s)</p>';
+  api('POST','/api/admin/dispatch/draft',{mass:MB.mid,dispatch:did,topics:t.topics,extra_topics:t.extra}).then(function(d){
+    if(d&&d.status==='ok'){ wrap.innerHTML=mbDispatchDraftUI(did,d.draft); mbReloadDispatchChips(); }
+    else wrap.innerHTML='<p style="color:#990000">'+esc((d&&d.error)||'Erreur')+'</p>';
+  });
+}
+function mbDispatchDraftUI(did,draft){
+  return '<label style="font-weight:600;font-size:.85em">Brouillon (français + anglais + ligne SMS)</label>'+
+    '<textarea id="mb-disp-draft" style="width:100%;min-height:240px;padding:9px;border:1px solid #d9c8a5;border-radius:6px;margin:4px 0;box-sizing:border-box;font:inherit;font-size:.88em">'+esc(draft)+'</textarea>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">'+
+      mbBtn('💾 Enregistrer','mbDispatchSave(\''+did+'\')')+
+      mbBtn('📤 Envoyer à la communauté','mbDispatchSend(\''+did+'\')','btn-primary')+
+    '</div><p style="font-size:.76em;color:#999;margin-top:6px">L\'email part vers le groupe ; le SMS n\'est envoyé aux abonnés qu\'en mode « communauté en direct » (sinon aperçu à l\'admin).</p>';
+}
+function mbDispatchSave(did){
+  var txt=document.getElementById('mb-disp-draft').value;
+  api('POST','/api/admin/dispatch/save',{mass:MB.mid,dispatch:did,text:txt}).then(function(d){
+    if(d&&d.status==='ok') mbFlash('✓ brouillon enregistré'); else alert((d&&d.error)||'Erreur');
+  });
+}
+function mbDispatchSend(did){
+  var txt=document.getElementById('mb-disp-draft').value;
+  if(!confirm('Envoyer cette communication à la communauté ?')) return;
+  api('POST','/api/admin/dispatch/save',{mass:MB.mid,dispatch:did,text:txt}).then(function(){
+    api('POST','/api/admin/dispatch/send',{mass:MB.mid,dispatch:did}).then(function(d){
+      if(d&&d.status==='ok'){ mbFlash('✓ communication envoyée'); mbLoad(MB.mid); }
+      else alert((d&&d.error)||'Erreur');
+    });
+  });
+}
+function mbReloadDispatchChips(){
+  api('GET','/api/admin/mass/plan?mass='+encodeURIComponent(MB.mid)).then(function(d){ if(d&&!d.error){ MB.plan=d; mbRenderDispatches(); } });
+}
+
+// ---------- Rôles & Contacts ----------
+var ROLES_CACHE={roles:[],people:{}};
+function loadRoles(){
+  api('GET','/api/admin/roles').then(function(d){
+    if(!d||d.error){ if(d&&d.error) logout(); return; }
+    ROLES_CACHE=d; renderRoles(); renderPeople();
+  });
+}
+function personOptions(sel){
+  var ppl=ROLES_CACHE.people||{}; var o='<option value="">—</option>';
+  Object.keys(ppl).forEach(function(id){ var p=ppl[id];
+    o+='<option value="'+id+'"'+(id===sel?' selected':'')+'>'+esc(p.name||id)+(p.active?'':' (inactif)')+'</option>'; });
+  return o;
+}
+function methodOptions(sel){
+  return ['email','sms'].map(function(m){return '<option value="'+m+'"'+(m===sel?' selected':'')+'>'+m.toUpperCase()+'</option>';}).join('');
+}
+function assigneeRow(person,method){
+  return '<div class="assignee-row" style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'
+    +'<select class="a-person" style="max-width:180px">'+personOptions(person)+'</select>'
+    +'<select class="a-method" style="max-width:88px">'+methodOptions(method)+'</select>'
+    +'<button type="button" class="btn btn-secondary" title="Retirer" style="font-size:.85em;line-height:1;padding:2px 9px;color:#b00020;border-color:#e5c0c0" onclick="removeAssignee(this)">&times;</button>'
+    +'</div>';
+}
+function renderRoles(){
+  var rows=ROLES_CACHE.roles||[];
+  var html='';
+  rows.forEach(function(r){
+    var need=r.needed>1?(' <span style="color:#999;font-weight:400;font-size:.85em">('+((r.active||[]).length)+'/'+r.needed+' actifs)</span>'):'';
+    var st = r.degraded?'<span style="color:#b00020">⚠ remplaçant</span>':(((r.active||[]).length>=r.needed)?'<span style="color:#2a7a2a">● actif</span>':'<span style="color:#b8860b">incomplet</span>');
+    var assignees=(r.assignees&&r.assignees.length)?r.assignees:[{}];
+    var arows=assignees.map(function(a){return assigneeRow(a.person||'',a.method||'email');}).join('');
+    var bk=(r.backup&&r.backup.person)||'';
+    html+='<div class="role-block" data-role="'+r.id+'" style="border:1px solid #f0e6d3;border-radius:9px;padding:14px 16px;margin-bottom:12px;background:#fff">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">'
+        +'<div style="font-weight:700;color:#3a1f00">'+esc(r.label)+need+'</div>'
+        +'<div style="font-size:.85em">'+st+'</div>'
+      +'</div>'
+      +'<div class="assignees">'+arows+'</div>'
+      +'<button type="button" class="btn btn-secondary" style="font-size:.75em;padding:3px 10px;margin-top:2px" onclick="addAssignee(this)">+ Ajouter une personne</button>'
+      +'<div style="display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:10px;border-top:1px dashed #eee;flex-wrap:wrap">'
+        +'<span style="font-size:.82em;color:#888">Remplaçant</span>'
+        +'<select class="r-backup" style="max-width:170px">'+personOptions(bk)+'</select>'
+        +'<button class="btn btn-primary" style="font-size:.75em;padding:4px 14px;margin-left:auto" onclick="saveRole(this)">Enregistrer</button>'
+        +'<span class="role-msg" style="font-size:.82em"></span>'
+      +'</div>'
+    +'</div>';
+  });
+  document.getElementById('roles-table').innerHTML=html;
+}
+function addAssignee(btn){
+  var wrap=btn.closest('.role-block').querySelector('.assignees');
+  var d=document.createElement('div'); d.innerHTML=assigneeRow('','email');
+  wrap.appendChild(d.firstChild);
+}
+function removeAssignee(btn){
+  var row=btn.closest('.assignee-row'); var wrap=row.parentNode; row.remove();
+  if(!wrap.querySelector('.assignee-row')){ var d=document.createElement('div'); d.innerHTML=assigneeRow('','email'); wrap.appendChild(d.firstChild); }
+}
+function saveRole(btn){
+  var block=btn.closest('.role-block'); var rid=block.dataset.role; var assignees=[];
+  block.querySelectorAll('.assignee-row').forEach(function(row){
+    var p=row.querySelector('.a-person').value, m=row.querySelector('.a-method').value;
+    if(p) assignees.push({person:p,method:m});
+  });
+  var backup=block.querySelector('.r-backup').value;
+  var body={role:rid,assignees:assignees,backup:backup?{person:backup,method:'email'}:null};
+  var msg=block.querySelector('.role-msg'); btn.disabled=true; msg.style.color='#666'; msg.textContent='…';
+  api('POST','/api/admin/roles/assign',body).then(function(d){
+    btn.disabled=false;
+    if(d&&d.status==='ok'){ msg.style.color='#2a7a2a'; msg.textContent='✓ enregistré'; setTimeout(loadRoles,700); }
+    else { msg.style.color='#990000'; msg.textContent=(d&&d.error)||'Erreur'; }
+  }).catch(function(){ btn.disabled=false; msg.style.color='#990000'; msg.textContent='Erreur réseau'; });
+}
+function renderContactsModeBanner(){
+  var testMode = ROLES_CACHE.test_mode !== false; // default true (safe) if ever missing
+  var wrap = document.getElementById('contacts-mode-banner');
+  if (testMode) {
+    wrap.innerHTML =
+      '<div style="background:#eaf5ea;border-left:4px solid #2a7a2a;padding:10px 14px;border-radius:4px;'+
+      'display:flex;align-items:center;gap:14px;flex-wrap:wrap">'+
+      '<span style="font-weight:700;color:#2a7a2a">🧪 Mode TEST</span>'+
+      '<span style="font-size:.85em;color:#555;flex:1">Les envois (dispatch, RSVP, préparation, connexion admin…) utilisent les colonnes <strong>TEST</strong> ci-dessous.</span>'+
+      '<button class="btn" style="background:#990000;color:#fff;font-size:.82em" onclick="toggleContactsMode(\'prod\')">🔴 Passer en PRODUCTION</button>'+
+      '</div>';
+  } else {
+    wrap.innerHTML =
+      '<div style="background:#fdf0f0;border-left:4px solid #990000;padding:10px 14px;border-radius:4px;'+
+      'display:flex;align-items:center;gap:14px;flex-wrap:wrap">'+
+      '<span style="font-weight:700;color:#990000">🔴 Mode PRODUCTION</span>'+
+      '<span style="font-size:.85em;color:#555;flex:1">Les envois utilisent les <strong>vraies coordonnées</strong> des personnes ci-dessous.</span>'+
+      '<button class="btn btn-secondary" style="font-size:.82em" onclick="toggleContactsMode(\'test\')">🧪 Repasser en TEST</button>'+
+      '</div>';
+  }
+}
+function toggleContactsMode(mode){
+  var label = mode==='prod' ? 'PRODUCTION (les vraies personnes recevront de vrais emails/SMS)' : 'TEST';
+  if (!confirm('Passer tous les envois en mode '+label+' ?\n\nCeci change les coordonnées actives de TOUTES les personnes d\'un coup.')) return;
+  api('POST','/api/admin/contacts-mode',{mode:mode}).then(function(d){
+    if (!d || d.status!=='ok') { alert((d&&d.error)||'Erreur'); return; }
+    if (mode==='prod' && d.incomplete && d.incomplete.length) {
+      alert('⚠️ ' + d.incomplete.length + ' personne(s) active(s) sans coordonnées PROD (retombent sur TEST en attendant) :\n\n' + d.incomplete.join('\n'));
+    }
+    loadRoles();
+  });
+}
+function renderPeople(){
+  renderContactsModeBanner();
+  var ppl=ROLES_CACHE.people||{};
+  var html='<p style="font-size:.82em;color:#888;margin:0 0 10px"><strong>Admin</strong> = accès complet au site. <strong>Bibliothèque</strong> = accès à la seule bibliothèque de documents (téléverser, classer, retirer) — idéal pour déléguer la gestion des documents. Les deux nécessitent un téléphone (le code de connexion y est envoyé par SMS) et apparaissent sur la page de connexion. Colonnes <strong>TEST</strong>/<strong>PROD</strong> : préparez les vraies coordonnées à l\'avance sans risque — seul le bouton ci-dessus change ce qui est réellement utilisé.</p>'
+    +'<div style="overflow-x:auto"><table class="sub-table"><thead><tr><th>Nom</th><th>🧪 Email TEST</th><th>🔴 Email PROD</th><th>🧪 Tél. TEST</th><th>🔴 Tél. PROD</th><th>Actif</th><th>Admin</th><th>Biblio.</th><th></th></tr></thead><tbody>';
+  Object.keys(ppl).forEach(function(id){ var p=ppl[id];
+    html+='<tr data-pid="'+id+'">'
+      +'<td><input class="p-name" value="'+esc(p.name||'')+'" style="width:130px;padding:4px 6px;border:1px solid #ddd;border-radius:4px"></td>'
+      +'<td><input class="p-email-test" value="'+esc(p.email_test||'')+'" style="width:170px;padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:.85em"></td>'
+      +'<td><input class="p-email-prod" value="'+esc(p.email_prod||'')+'" placeholder="—" style="width:170px;padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:.85em"></td>'
+      +'<td><input class="p-phone-test" value="'+esc(p.phone_test||'')+'" style="width:115px;padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:.85em"></td>'
+      +'<td><input class="p-phone-prod" value="'+esc(p.phone_prod||'')+'" placeholder="—" style="width:115px;padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:.85em"></td>'
+      +'<td style="text-align:center"><input type="checkbox" class="p-active"'+(p.active?' checked':'')+'></td>'
+      +'<td style="text-align:center"><input type="checkbox" class="p-admin" title="Accès complet à l\'admin"'+(p.admin?' checked':'')+'></td>'
+      +'<td style="text-align:center"><input type="checkbox" class="p-library" title="Accès à la bibliothèque seulement"'+(p.library?' checked':'')+'></td>'
+      +'<td style="white-space:nowrap"><button class="btn btn-primary" style="font-size:.72em;padding:3px 9px" onclick="savePerson(this)">Enregistrer</button> '
+      +'<button class="btn btn-secondary" style="font-size:.72em;padding:3px 8px" title="Retirer cette personne" onclick="deletePerson(this,\''+id+'\')">🗑</button></td></tr>';
+  });
+  html+='</tbody>'
+    +'<tfoot><tr style="background:#faf6ee"><td><input id="np-name" placeholder="Nouveau nom" style="width:130px;padding:4px 6px;border:1px solid #c9a87c;border-radius:4px"></td>'
+    +'<td><input id="np-email-test" placeholder="email test" style="width:170px;padding:4px 6px;border:1px solid #c9a87c;border-radius:4px;font-size:.85em"></td>'
+    +'<td><input id="np-email-prod" placeholder="email réel (optionnel)" style="width:170px;padding:4px 6px;border:1px solid #c9a87c;border-radius:4px;font-size:.85em"></td>'
+    +'<td><input id="np-phone-test" placeholder="tél. test" style="width:115px;padding:4px 6px;border:1px solid #c9a87c;border-radius:4px;font-size:.85em"></td>'
+    +'<td><input id="np-phone-prod" placeholder="tél. réel" style="width:115px;padding:4px 6px;border:1px solid #c9a87c;border-radius:4px;font-size:.85em"></td>'
+    +'<td style="text-align:center"><input type="checkbox" id="np-active" checked></td>'
+    +'<td style="text-align:center"><input type="checkbox" id="np-admin"></td>'
+    +'<td style="text-align:center"><input type="checkbox" id="np-library"></td>'
+    +'<td><button class="btn btn-primary" style="font-size:.72em;padding:3px 9px" onclick="addPerson(this)">➕ Ajouter</button></td></tr></tfoot>';
+  html+='</table></div>';
+  html+='<p style="font-size:.78em;color:#999;margin:8px 0 0">🗑 retire définitivement la personne et la désassigne de tous ses rôles. Un téléphone est requis pour qu\'un admin ou un bibliothécaire puisse se connecter (code par SMS) — utilise sa valeur TEST ou PROD selon le mode actif.</p>';
+  document.getElementById('people-table').innerHTML=html;
+}
+function savePerson(btn){
+  var tr=btn.closest('tr'); var pid=tr.dataset.pid;
+  var body={id:pid,name:tr.querySelector('.p-name').value,
+    email_test:tr.querySelector('.p-email-test').value, email_prod:tr.querySelector('.p-email-prod').value,
+    phone_test:tr.querySelector('.p-phone-test').value, phone_prod:tr.querySelector('.p-phone-prod').value,
+    active:tr.querySelector('.p-active').checked,admin:tr.querySelector('.p-admin').checked,library:tr.querySelector('.p-library').checked};
+  btn.disabled=true; btn.textContent='…';
+  api('POST','/api/admin/people',body).then(function(){ loadRoles(); btn.disabled=false; btn.textContent='✓'; setTimeout(function(){btn.textContent='Enregistrer';},1200); });
+}
+function addPerson(btn){
+  var name=document.getElementById('np-name').value.trim();
+  if(!name){ alert('Indiquez un nom.'); return; }
+  var body={name:name,
+    email_test:document.getElementById('np-email-test').value.trim(), email_prod:document.getElementById('np-email-prod').value.trim(),
+    phone_test:document.getElementById('np-phone-test').value.trim(), phone_prod:document.getElementById('np-phone-prod').value.trim(),
+    active:document.getElementById('np-active').checked,admin:document.getElementById('np-admin').checked,library:document.getElementById('np-library').checked};
+  btn.disabled=true; btn.textContent='…';
+  api('POST','/api/admin/people',body).then(function(d){
+    btn.disabled=false; btn.textContent='➕ Ajouter';
+    if(d&&d.status==='ok'){ loadRoles(); } else alert((d&&d.error)||'Erreur');
+  }).catch(function(){ btn.disabled=false; btn.textContent='➕ Ajouter'; alert('Erreur réseau'); });
+}
+function deletePerson(btn,pid){
+  var name=((ROLES_CACHE.people||{})[pid]||{}).name||'cette personne';
+  if(!confirm('Retirer '+name+' ? Elle sera désassignée de tous ses rôles. Cette action est définitive.')) return;
+  btn.disabled=true; btn.textContent='…';
+  api('POST','/api/admin/people/delete',{id:pid}).then(function(d){
+    if(d&&d.status==='ok'){
+      var freed=(d.freed_roles&&d.freed_roles.length)?(' (rôles libérés : '+d.freed_roles.join(', ')+')'):'';
+      loadRoles(); if(freed) setTimeout(function(){alert('Personne retirée.'+freed);},200);
+    } else { btn.disabled=false; btn.textContent='🗑'; alert((d&&d.error)||'Erreur'); }
+  }).catch(function(){ btn.disabled=false; btn.textContent='🗑'; alert('Erreur réseau'); });
+}
+function importPeopleBulk(btn){
+  var rows=document.getElementById('people-import-rows').value;
+  var out=document.getElementById('people-import-result');
+  if(!rows.trim()){ out.innerHTML='<span style="color:#990000">Collez au moins une ligne.</span>'; return; }
+  btn.disabled=true; var label=btn.textContent; btn.textContent='…';
+  api('POST','/api/admin/people/bulk-import',{rows:rows}).then(function(d){
+    btn.disabled=false; btn.textContent=label;
+    if(!d||d.status!=='ok'){ out.innerHTML='<span style="color:#990000">'+esc((d&&d.error)||'Erreur')+'</span>'; return; }
+    var html='';
+    if(d.updated.length) html+='<div style="color:#2a7a2a">✓ '+d.updated.length+' mis à jour : '+esc(d.updated.join(', '))+'</div>';
+    if(d.not_found.length) html+='<div style="color:#b0700a;margin-top:4px">⚠ Nom introuvable ('+d.not_found.length+') : '+esc(d.not_found.join(', '))+' — vérifiez l\'orthographe dans la colonne Nom.</div>';
+    if(d.ambiguous.length) html+='<div style="color:#b0700a;margin-top:4px">⚠ Nom ambigu, plusieurs personnes correspondent ('+d.ambiguous.length+') : '+esc(d.ambiguous.join(', '))+'</div>';
+    if(d.bad_phone.length) html+='<div style="color:#b0700a;margin-top:4px">⚠ Téléphone illisible, non enregistré ('+d.bad_phone.length+') : '+esc(d.bad_phone.join(', '))+'</div>';
+    if(!html) html='<span style="color:#888">Aucune ligne reconnue.</span>';
+    out.innerHTML=html;
+    if(d.updated.length){ document.getElementById('people-import-rows').value=''; loadRoles(); }
+  }).catch(function(){ btn.disabled=false; btn.textContent=label; out.innerHTML='<span style="color:#990000">Erreur réseau.</span>'; });
+}
+
+// ---------- Bibliothèque (Phase 2 document library) ----------
+var LIB_TYPE = {
+  bulletin:    {i:'📰', l:'Bulletins'},
+  homily:      {i:'🕊️', l:'Homélies'},
+  chant:       {i:'🎶', l:'Chants'},
+  score:       {i:'🎼', l:'Partitions'},
+  recording:   {i:'🎵', l:'Enregistrements'},
+  intentions:  {i:'🙏', l:'Intentions'},
+  announcement:{i:'📣', l:'Annonces'},
+  other:       {i:'📄', l:'Autres'}
+};
+var LIB_TYPE_ORDER = ['bulletin','homily','chant','score','recording','intentions','announcement','other'];
+// shelves pinned in the browse bar even when empty (key liturgical types for filing/retrieval)
+var LIB_ALWAYS_SHOW = ['bulletin','intentions'];
+var LIB_STATE = {type:'', year:'', q:'', trash:false};
+var PENDING_DOC = (function(){ try { return (new URLSearchParams(location.search)).get('doc') || ''; } catch(e){ return ''; } })();
+var LIB_ADD_MODE = 'upload';
+var LIB_CACHE = null;
+
+function fmtDateTime(iso){
+  if(!iso) return '—';
+  try{ var d=new Date(iso); if(isNaN(d)) return String(iso).slice(0,16).replace('T',' ');
+       // pinned to America/Chicago, not the viewer's browser timezone — see fmtCentral()
+       return d.toLocaleDateString('fr-FR',{timeZone:'America/Chicago'})+' '+
+              d.toLocaleTimeString('fr-FR',{timeZone:'America/Chicago',hour:'2-digit',minute:'2-digit'}); }
+  catch(e){ return String(iso).slice(0,16).replace('T',' '); }
+}
+function libTypeBadge(t){
+  var m=LIB_TYPE[t]||LIB_TYPE.other;
+  return '<span class="lib-badge" style="background:#f3ece0;color:#8a6d3b">'+m.i+' '+m.l.replace(/s$/,'')+'</span>';
+}
+function fillTypeSelect(sel){
+  sel.innerHTML=LIB_TYPE_ORDER.map(function(t){return '<option value="'+t+'">'+LIB_TYPE[t].i+' '+LIB_TYPE[t].l+'</option>';}).join('');
+}
+function setAddMode(mode){
+  LIB_ADD_MODE=mode;
+  document.querySelectorAll('#tab-library [data-addmode]').forEach(function(b){ b.classList.toggle('active', b.dataset.addmode===mode); });
+  document.getElementById('lib-add-upload-row').style.display = mode==='upload'?'block':'none';
+  document.getElementById('lib-add-url-row').style.display = mode==='reference'?'block':'none';
+}
+function loadLibrary(){
+  var qs='?type='+encodeURIComponent(LIB_STATE.type)+'&year='+encodeURIComponent(LIB_STATE.year)
+    +'&q='+encodeURIComponent(LIB_STATE.q)+(LIB_STATE.trash?'&deleted=1':'');
+  api('GET','/api/admin/library'+qs).then(function(d){
+    if(!d||d.error){ if(d&&d.error) logout(); return; }
+    LIB_CACHE=d; renderLibTypeTabs(d); renderLibYears(d); renderLibList(d);
+    if(PENDING_DOC){
+      var doc=(d.documents||[]).filter(function(x){return x.id===PENDING_DOC;})[0];
+      if(doc){ openPreview(doc.public_url, doc.filename||doc.public_url, doc.title, doc.id); }
+      PENDING_DOC='';
+    }
+  }).catch(function(){ document.getElementById('lib-list').innerHTML='<p style="color:#990000">Erreur réseau.</p>'; });
+}
+function libToggleTrash(){ LIB_STATE.trash=!LIB_STATE.trash; LIB_STATE.type=''; loadLibrary(); }
+function renderLibTypeTabs(d){
+  var counts=d.counts||{};
+  var tabs='<button class="subtab-btn'+(!LIB_STATE.trash&&LIB_STATE.type===''?' active':'')+'" onclick="libSetType(\'\')">Tous ('+(d.total||0)+')</button>';
+  LIB_TYPE_ORDER.forEach(function(t){
+    if(!counts[t] && LIB_ALWAYS_SHOW.indexOf(t)<0) return;
+    tabs+='<button class="subtab-btn'+(!LIB_STATE.trash&&LIB_STATE.type===t?' active':'')+'" onclick="libSetType(\''+t+'\')">'+LIB_TYPE[t].i+' '+LIB_TYPE[t].l+' ('+(counts[t]||0)+')</button>';
+  });
+  if(d.is_admin && (d.trash_count || LIB_STATE.trash)){
+    tabs+='<button class="subtab-btn'+(LIB_STATE.trash?' active':'')+'" style="'+(LIB_STATE.trash?'background:#8a6d3b;border-color:#8a6d3b':'')+'" onclick="libToggleTrash()">🗑 Corbeille ('+(d.trash_count||0)+')</button>';
+  }
+  document.getElementById('lib-typetabs').innerHTML=tabs;
+}
+function renderLibYears(d){
+  var sel=document.getElementById('lib-year'); if(!sel) return;
+  var cur=LIB_STATE.year;
+  sel.innerHTML='<option value="">Toutes les années</option>'+(d.years||[]).map(function(y){return '<option value="'+y+'"'+(y===cur?' selected':'')+'>'+y+'</option>';}).join('');
+}
+function libSetType(t){ LIB_STATE.type=t; LIB_STATE.trash=false; loadLibrary(); }
+function renderLibList(d){
+  var docs=d.documents||[];
+  var head='<p style="font-size:.8em;color:#999;margin:0 0 10px">'+(d.shown||0)+' document(s) affiché(s) sur '+(d.total||0)+'.</p>';
+  document.getElementById('lib-list').innerHTML = docs.length ? head+docs.map(libRow).join('') : '<p style="color:#888">Aucun document.</p>';
+}
+function libRow(x){
+  var url=x.public_url||'';
+  var gated=isApiFile(url);   // login-gated uploaded file
+  var pvAttrs=' data-pv-url="'+esc(url)+'" data-pv-name="'+esc(x.filename||url)+'" data-pv-id="'+esc(x.id||'')+'" data-pv-title="'+esc(x.title||'')+'"';
+  var tags=(x.tags||[]).map(function(g){return '<span style="font-size:.75em;background:#eef;color:#557;padding:1px 7px;border-radius:9px;margin-right:3px">'+esc(g)+'</span>';}).join('');
+  var srcLabel={gaggle:'groupe',upload:'téléchargé',reference:'lien',draft:'brouillon IA'}[x.source]||x.source||'';
+  var trash=!!(LIB_CACHE&&LIB_CACHE.trash);
+  var titleHtml=url?'<a class="pv-link" href="'+esc(url)+'"'+pvAttrs+' style="color:#3a1f00;text-decoration:none">'+esc(x.title)+'</a>':esc(x.title);
+  var delInfo=(trash&&x.deleted_at)?'<div style="font-size:.75em;color:#b8860b;margin-top:4px">🗑 retiré le '+esc((x.deleted_at||'').slice(0,10))+(x.deleted_by?' par '+esc(x.deleted_by):'')+'</div>':'';
+  var actions;
+  if(trash){
+    actions='<button class="btn btn-secondary" style="font-size:.75em;padding:3px 10px;color:#2a7a2a;border-color:#bcdcbc" onclick="libRestore(\''+esc(x.id)+'\')">↩ Restaurer</button>'
+      +'<button class="btn btn-danger" style="font-size:.75em;padding:3px 10px" onclick="libPurge(\''+esc(x.id)+'\')">Supprimer déf.</button>';
+  } else {
+    actions=(url?'<button class="btn btn-secondary pv-link"'+pvAttrs+' style="font-size:.75em;padding:3px 10px">👁 Aperçu</button>':'')
+      +(gated?'<button class="btn btn-secondary" style="font-size:.75em;padding:3px 10px" onclick="libShare(\''+esc(x.id)+'\',this)" title="Copier un lien qui exige une connexion à la bibliothèque">🔗 Lien</button>':'')
+      +'<button class="btn btn-secondary" style="font-size:.75em;padding:3px 10px" onclick="libEdit(this)">Modifier</button>'
+      +'<button class="btn btn-danger" style="font-size:.75em;padding:3px 10px" onclick="libDelete(\''+esc(x.id)+'\')">Retirer</button>';
+  }
+  return '<div class="lib-row" data-id="'+esc(x.id)+'"'+(trash?' style="opacity:.75"':'')+'>'
+    +'<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">'
+      +'<div style="flex:1;min-width:0">'
+        +'<div style="font-weight:600;font-size:.92em">'+titleHtml+(gated?' <span title="Connexion requise" style="font-size:.72em;color:#8a6d3b">🔒</span>':'')+'</div>'
+        +'<div style="font-size:.8em;color:#888;margin-top:3px">'+libTypeBadge(x.type)+' &nbsp; '+esc(x.date||'—')+(x.sunday?' · '+esc(x.sunday):'')+(x.liturgical_slot?' · '+esc(x.liturgical_slot):'')+' · <span style="color:#aaa">'+esc(srcLabel)+'</span></div>'
+        +'<div style="font-size:.74em;color:#aaa;margin-top:2px">🕒 '+esc(fmtDateTime(x.added_at))+' · par '+esc(x.by||srcLabel||'—')+((x.updated_at&&x.updated_at!==x.added_at)?' · modifié '+esc(fmtDateTime(x.updated_at)):'')+'</div>'
+        +(tags?'<div style="margin-top:5px">'+tags+'</div>':'')+delInfo
+      +'</div>'
+      +'<div style="display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end">'+actions+'</div>'
+    +'</div>'
+    +'<div class="lib-edit" style="display:none;margin-top:10px;padding-top:10px;border-top:1px dashed #eee"></div>'
+  +'</div>';
+}
+function libShare(id,btn){
+  var link=location.origin+'/admin/?doc='+encodeURIComponent(id);
+  function done(){ var o=btn.textContent; btn.textContent='✓ lien copié'; setTimeout(function(){btn.textContent=o;},1400); }
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(link).then(done,function(){ window.prompt('Lien (connexion requise) :', link); }); }
+  else { window.prompt('Lien (connexion requise) :', link); }
+}
+function libRestore(id){ api('POST','/api/admin/library/restore',{id:id}).then(function(d){ if(d&&d.error){alert(d.error);} loadLibrary(); }); }
+function libPurge(id){
+  var x=libFind(id)||{};
+  if(!confirm('Supprimer DÉFINITIVEMENT « '+(x.title||'ce document')+' » et son fichier ? Cette action est irréversible.')) return;
+  api('POST','/api/admin/library/purge',{id:id}).then(function(d){ if(d&&d.error){alert(d.error);} loadLibrary(); });
+}
+function libFind(id){ return ((LIB_CACHE&&LIB_CACHE.documents)||[]).filter(function(d){return d.id===id;})[0]; }
+function libEdit(btn){
+  var row=btn.closest('.lib-row'); var box=row.querySelector('.lib-edit');
+  if(box.style.display==='block'){ box.style.display='none'; return; }
+  var x=libFind(row.dataset.id)||{};
+  box.innerHTML='<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end">'
+    +'<div><label class="lib-l">Type</label><br><select class="le-type lib-i"></select></div>'
+    +'<div><label class="lib-l">Titre</label><br><input class="le-title lib-i" style="width:220px" value="'+esc(x.title||'')+'"></div>'
+    +'<div><label class="lib-l">Date</label><br><input class="le-date lib-i" type="date" value="'+esc((x.date||'').slice(0,10))+'"></div>'
+    +'<div><label class="lib-l">Dimanche</label><br><input class="le-sunday lib-i" style="width:150px" value="'+esc(x.sunday||'')+'"></div>'
+    +'<div><label class="lib-l">Slot</label><br><input class="le-slot lib-i" style="width:120px" value="'+esc(x.liturgical_slot||'')+'"></div>'
+    +'<div><label class="lib-l">Tags (,)</label><br><input class="le-tags lib-i" style="width:150px" value="'+esc((x.tags||[]).join(', '))+'"></div>'
+    +'<button class="btn btn-primary" style="font-size:.78em;padding:5px 14px" onclick="libSave(this,\''+esc(x.id)+'\')">Enregistrer</button>'
+    +'<span class="le-msg" style="font-size:.82em"></span>'
+  +'</div>';
+  fillTypeSelect(box.querySelector('.le-type')); box.querySelector('.le-type').value=x.type||'other';
+  box.style.display='block';
+}
+function libSave(btn,id){
+  var box=btn.closest('.lib-edit');
+  var body={id:id,type:box.querySelector('.le-type').value,title:box.querySelector('.le-title').value,
+    date:box.querySelector('.le-date').value,sunday:box.querySelector('.le-sunday').value,
+    liturgical_slot:box.querySelector('.le-slot').value,tags:box.querySelector('.le-tags').value};
+  var msg=box.querySelector('.le-msg'); btn.disabled=true; msg.style.color='#666'; msg.textContent='…';
+  api('POST','/api/admin/library',body).then(function(d){
+    btn.disabled=false;
+    if(d&&d.status==='ok'){ msg.style.color='#2a7a2a'; msg.textContent='✓'; setTimeout(loadLibrary,500); }
+    else { msg.style.color='#990000'; msg.textContent=(d&&d.error)||'Erreur'; }
+  }).catch(function(){ btn.disabled=false; msg.style.color='#990000'; msg.textContent='Erreur réseau'; });
+}
+function libDelete(id){
+  var x=libFind(id)||{};
+  if(!confirm('Retirer « '+(x.title||'ce document')+' » de la bibliothèque ?\n\nLe fichier est conservé — un administrateur pourra le restaurer depuis la Corbeille.')) return;
+  api('POST','/api/admin/library/delete',{id:id}).then(function(){ loadLibrary(); });
+}
+function libAdd(){
+  var msg=document.getElementById('lib-add-msg'); var btn=document.getElementById('lib-add-btn');
+  var type=document.getElementById('lib-add-type').value;
+  var title=document.getElementById('lib-add-title').value.trim();
+  var date=document.getElementById('lib-add-date').value;
+  var slot=document.getElementById('lib-add-slot').value.trim();
+  var tags=document.getElementById('lib-add-tags').value.trim();
+  msg.style.color='#666';
+  if(LIB_ADD_MODE==='reference'){
+    var url=document.getElementById('lib-add-url').value.trim();
+    if(!url||!title){ msg.style.color='#990000'; msg.textContent='Titre et URL requis.'; return; }
+    btn.disabled=true; msg.textContent='…';
+    api('POST','/api/admin/library',{type:type,title:title,date:date,liturgical_slot:slot,tags:tags,url:url}).then(function(d){
+      btn.disabled=false;
+      if(d&&d.status==='ok'){ msg.style.color='#2a7a2a'; msg.textContent='✓ ajouté'; libResetAdd(); loadLibrary(); }
+      else { msg.style.color='#990000'; msg.textContent=(d&&d.error)||'Erreur'; }
+    }).catch(function(){ btn.disabled=false; msg.style.color='#990000'; msg.textContent='Erreur réseau'; });
+    return;
+  }
+  var file=document.getElementById('lib-add-file').files[0];
+  if(!file){ msg.style.color='#990000'; msg.textContent='Choisissez un fichier.'; return; }
+  if(file.size>30*1024*1024){ msg.style.color='#990000'; msg.textContent='Fichier trop volumineux (max 30 Mo).'; return; }
+  btn.disabled=true; msg.textContent='Téléchargement…';
+  var qs='?type='+encodeURIComponent(type)+'&title='+encodeURIComponent(title||file.name)
+    +'&date='+encodeURIComponent(date)+'&slot='+encodeURIComponent(slot)+'&tags='+encodeURIComponent(tags)
+    +'&filename='+encodeURIComponent(file.name);
+  fetch('/api/admin/library/upload'+qs,{method:'POST',headers:{'Authorization':'Bearer '+token},body:file})
+    .then(function(r){return r.json();}).then(function(d){
+      btn.disabled=false;
+      if(d&&d.status==='ok'){ msg.style.color='#2a7a2a'; msg.textContent='✓ téléchargé'; libResetAdd(); loadLibrary(); }
+      else { msg.style.color='#990000'; msg.textContent=(d&&d.error)||'Erreur'; }
+    }).catch(function(){ btn.disabled=false; msg.style.color='#990000'; msg.textContent='Erreur réseau'; });
+}
+function libResetAdd(){
+  ['lib-add-title','lib-add-date','lib-add-slot','lib-add-tags','lib-add-url'].forEach(function(id){var e=document.getElementById(id); if(e) e.value='';});
+  var f=document.getElementById('lib-add-file'); if(f) f.value='';
+}
+
+// ---------- document preview (PDF/images native, .docx via mammoth) ----------
+function fileExt(s){ s=(s||'').split('?')[0].split('#')[0]; var i=s.lastIndexOf('.'); return i>=0?s.slice(i+1).toLowerCase():''; }
+function pvFallback(url,msg){
+  return '<div style="padding:44px 30px;text-align:center;color:#666"><p>'+esc(msg)+'</p>'
+    +'<a href="'+esc(url)+'" target="_blank" rel="noopener" class="btn btn-primary" style="display:inline-block;margin-top:12px">Ouvrir / télécharger le fichier</a></div>';
+}
+function closePreview(){ var m=document.getElementById('pv-modal'); m.style.display='none'; document.getElementById('pv-body').innerHTML=''; }
+function isApiFile(url){ return typeof url==='string' && url.indexOf('/api/library/file/')===0; }
+function pvMd(md){
+  md=(md||'').replace(/\r\n?/g,'\n');
+  function escH(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var blocks=[];
+  md=md.replace(/```[^\n]*\n([\s\S]*?)```/g,function(m,code){blocks.push(code.replace(/\n$/,''));return '%%CB'+(blocks.length-1)+'%%';});
+  function inline(t){
+    t=escH(t);
+    t=t.replace(/`([^`]+)`/g,function(_,c){return '<code>'+c+'</code>';});
+    t=t.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+    t=t.replace(/(^|[^*])\*([^*\s][^*]*?)\*/g,'$1<em>$2</em>');
+    t=t.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+    return t;
+  }
+  var L=md.split('\n'),o=[],i=0;
+  while(i<L.length){
+    var ln=L[i], ph=ln.match(/^%%CB(\d+)%%$/);
+    if(ph){o.push('<pre class="pv-code"><code>'+escH(blocks[+ph[1]])+'</code></pre>');i++;continue;}
+    if(/^\s*$/.test(ln)){i++;continue;}
+    if(/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(ln)){o.push('<hr>');i++;continue;}
+    var h=ln.match(/^(#{1,6})\s+(.*)$/);
+    if(h){o.push('<h'+h[1].length+'>'+inline(h[2])+'</h'+h[1].length+'>');i++;continue;}
+    if(/^\s*>/.test(ln)){var q=[];while(i<L.length&&/^\s*>/.test(L[i])){q.push(L[i].replace(/^\s*>\s?/,''));i++;}o.push('<blockquote>'+inline(q.join(' '))+'</blockquote>');continue;}
+    if(/^\s*[-*+]\s+/.test(ln)){var it=[];while(i<L.length&&/^\s*[-*+]\s+/.test(L[i])){it.push('<li>'+inline(L[i].replace(/^\s*[-*+]\s+/,''))+'</li>');i++;}o.push('<ul>'+it.join('')+'</ul>');continue;}
+    if(/^\s*\d+[.)]\s+/.test(ln)){var oi=[];while(i<L.length&&/^\s*\d+[.)]\s+/.test(L[i])){oi.push('<li>'+inline(L[i].replace(/^\s*\d+[.)]\s+/,''))+'</li>');i++;}o.push('<ol>'+oi.join('')+'</ol>');continue;}
+    var p=[];while(i<L.length&&!/^\s*$/.test(L[i])&&!/^#{1,6}\s/.test(L[i])&&!/^\s*[-*+]\s+/.test(L[i])&&!/^\s*\d+[.)]\s+/.test(L[i])&&!/^\s*>/.test(L[i])&&!/^%%CB\d+%%$/.test(L[i])){p.push(L[i]);i++;}
+    o.push('<p>'+inline(p.join(' '))+'</p>');
+  }
+  return o.join('\n');
+}
+function pvText(arrayBufFn, body, url, asMd){
+  arrayBufFn().then(function(buf){
+    var txt=new TextDecoder('utf-8').decode(buf);
+    body.innerHTML='<div class="pv-doc">'+(asMd
+      ? pvMd(txt)
+      : '<pre style="white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0">'+esc(txt)+'</pre>')+'</div>';
+  }).catch(function(){ body.innerHTML=pvFallback(url,'Impossible de lire ce document.'); });
+}
+function pvDocText(id, body, dlurl){
+  fetch('/api/admin/library/text?id='+encodeURIComponent(id), {headers: token?{'Authorization':'Bearer '+token}:{}})
+    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(d){
+      var t=(d.text||'').trim();
+      if(!t){ body.innerHTML=pvFallback(dlurl,'Aperçu texte indisponible — utilisez « Ouvrir / télécharger ».'); return; }
+      body.innerHTML='<div class="pv-doc"><p style="color:#999;font-size:.85em;margin:0 0 10px">📄 Aperçu texte (extrait automatiquement du document — mise en page d\'origine non conservée). « Ouvrir / télécharger » donne la version d\'origine.</p><pre style="white-space:pre-wrap;word-wrap:break-word;font-family:inherit;margin:0">'+esc(t)+'</pre></div>';
+    })
+    .catch(function(){ body.innerHTML=pvFallback(dlurl,'Impossible de charger l\'aperçu texte.'); });
+}
+function pvRender(ext, src, arrayBufFn, body, url, id){
+  if(ext==='pdf'||ext==='html'||ext==='htm'){
+    body.innerHTML='<iframe src="'+esc(src)+(ext==='pdf'?'#toolbar=1':'')+'" style="width:100%;height:100%;border:0"></iframe>';
+  } else if(['jpg','jpeg','png','gif','svg','webp','avif','bmp'].indexOf(ext)>=0){
+    body.innerHTML='<div style="height:100%;overflow:auto;text-align:center;background:#faf7f2;padding:10px"><img src="'+esc(src)+'" style="max-width:100%;height:auto"></div>';
+  } else if(['mp3','wav','m4a','ogg','oga','aac','flac','wma'].indexOf(ext)>=0){
+    // Recordings (Chants & Partitions page, 2026-08-29) -- native <audio>.
+    // ⚠️ .wma isn't decodable by Chrome/most browsers -- the element just
+    // won't play, so point at the download fallback too rather than leave a
+    // dead player. All 35 imported recordings were themselves .wma and were
+    // batch-converted to .mp3 the same day (~/convert_wma_to_mp3.py on pi03,
+    // originals kept in library/_wma_backup/) -- this branch stays only as a
+    // safety net for any FUTURE .wma upload (nothing converts on upload).
+    body.innerHTML='<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#faf7f2;padding:20px">'+
+      '<audio controls preload="metadata" style="width:100%;max-width:440px" src="'+esc(src)+'"></audio>'+
+      (ext==='wma'?'<p style="color:#999;font-size:.85em;text-align:center;margin:0;max-width:420px">Format .wma — illisible dans la plupart des navigateurs (dont Chrome). Si la lecture ne démarre pas, utilisez « Ouvrir / télécharger ».</p>':'')+
+      '</div>';
+  } else if(ext==='docx'){
+    if(!window.mammoth){ body.innerHTML=pvFallback(src,'Le convertisseur n\'a pas pu être chargé.'); return; }
+    arrayBufFn().then(function(buf){ return mammoth.convertToHtml({arrayBuffer:buf}); })
+      .then(function(res){ body.innerHTML='<div class="pv-doc">'+(res.value||'<p style="color:#888">Document vide.</p>')+'</div>'; })
+      .catch(function(){ body.innerHTML=pvFallback(src,'Impossible de convertir ce document.'); });
+  } else if(ext==='md'||ext==='markdown'){
+    pvText(arrayBufFn, body, src, true);
+  } else if(ext==='txt'||ext==='text'||ext==='csv'||ext==='log'){
+    pvText(arrayBufFn, body, src, false);
+  } else if(ext==='doc' && id){
+    pvDocText(id, body, src);
+  } else {
+    body.innerHTML=pvFallback(src, ext==='doc'?'Les anciens fichiers .doc (Word) ne peuvent pas être affichés en aperçu — utilisez « Ouvrir / télécharger » ci-dessous.':'Aperçu non disponible pour ce type de fichier.');
+  }
+}
+function openPreview(url,name,title,id){
+  if(!url) return;
+  var ext=fileExt(name)||fileExt(url);
+  var body=document.getElementById('pv-body');
+  var openBtn=document.getElementById('pv-open');
+  document.getElementById('pv-title').textContent=title||name||'Aperçu';
+  document.getElementById('pv-modal').style.display='flex';
+  body.innerHTML='<p style="color:#888;padding:34px;text-align:center">Chargement…</p>';
+  if(isApiFile(url)){
+    openBtn.textContent='⬇ Télécharger'; openBtn.removeAttribute('href');
+    fetch(url,{headers: token?{'Authorization':'Bearer '+token}:{}}).then(function(r){
+      if(!r.ok) throw new Error(r.status); return r.blob();
+    }).then(function(blob){
+      var obj=URL.createObjectURL(blob);
+      openBtn.href=obj; openBtn.setAttribute('download', name||title||'document');
+      pvRender(ext, obj, function(){ return blob.arrayBuffer(); }, body, url, id);
+    }).catch(function(e){
+      body.innerHTML='<div style="padding:44px 30px;text-align:center;color:#666"><p>Impossible d\'accéder au fichier ('+esc(String((e&&e.message)||e))+').</p><p style="font-size:.9em;color:#999">Connexion à la bibliothèque requise — reconnectez-vous si besoin.</p></div>';
+    });
+  } else {
+    openBtn.textContent='Ouvrir ↗'; openBtn.removeAttribute('download'); openBtn.href=url;
+    pvRender(ext, url, function(){ return fetch(url).then(function(r){ if(!r.ok) throw 0; return r.arrayBuffer(); }); }, body, url, id);
+  }
+}
+function libToggleBySunday(){
+  var p=document.getElementById('lib-bysunday-picker');
+  if(p.style.display!=='none'){ p.style.display='none'; loadLibrary(); return; }
+  p.style.display='flex';
+  var sel=document.getElementById('lib-bysunday-date');
+  sel.innerHTML=masses.slice().sort(function(a,b){ return a.date<b.date?1:-1; })
+    .map(function(m){ return '<option value="'+m.date+'">'+esc(m.label||m.date)+'</option>'; }).join('');
+}
+function libShowBySunday(){
+  var date=document.getElementById('lib-bysunday-date').value;
+  if(!date) return;
+  document.getElementById('lib-list').innerHTML='Chargement…';
+  api('GET','/api/admin/library/by-sunday?date='+encodeURIComponent(date)).then(function(d){
+    var years=(d&&d.years)||{};
+    var yearKeys=Object.keys(years).sort(function(a,b){ return b-a; });
+    var html='<p style="font-size:.8em;color:#999;margin:0 0 10px">Documents groupés par année pour le même dimanche (± 3 semaines de calendrier).</p>';
+    if(!yearKeys.length){
+      html+='<p style="color:#888">Aucun document trouvé pour ce dimanche, toutes années confondues.</p>';
+    } else {
+      yearKeys.forEach(function(y){
+        html+='<div style="margin-bottom:16px"><div style="font-weight:700;color:#8E1B26;font-size:1.05em;margin-bottom:6px">'+esc(y)+'</div>';
+        var types=years[y];
+        Object.keys(types).forEach(function(t){
+          var tl=LIB_TYPE[t]||{i:'',l:t};
+          html+='<div style="margin:2px 0 10px 10px"><div style="font-size:.8em;font-weight:600;color:#555;margin-bottom:4px">'+tl.i+' '+esc(tl.l)+'</div>';
+          html+=types[t].map(function(x){
+            var url=x.url||'';
+            var attrs=' data-pv-url="'+esc(url)+'" data-pv-name="'+esc(x.filename||url)+'" data-pv-id="'+esc(x.id||'')+'" data-pv-title="'+esc(x.title||'')+'"';
+            return '<div class="pv-link" role="button"'+attrs+' style="cursor:pointer;font-size:.85em;padding:4px 0;border-bottom:1px dashed #eee">'+
+              esc(x.title||x.filename||'(sans titre)')+' <span style="color:#999">— '+esc((x.date||'').slice(0,10))+'</span></div>';
+          }).join('');
+          html+='</div>';
+        });
+        html+='</div>';
+      });
+    }
+    html+='<button class="btn btn-secondary" style="font-size:.8em" onclick="libToggleBySunday()">← Retour à la liste normale</button>';
+    document.getElementById('lib-list').innerHTML=html;
+  }).catch(function(){ document.getElementById('lib-list').innerHTML='<p style="color:#990000">Erreur réseau.</p>'; });
+}
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') closePreview(); });
+document.addEventListener('click',function(e){
+  var a=e.target.closest('.pv-link'); if(!a) return;
+  e.preventDefault();
+  openPreview(a.getAttribute('data-pv-url'), a.getAttribute('data-pv-name'), a.getAttribute('data-pv-title'), a.getAttribute('data-pv-id'));
+});
+
+// ---------- Paramètres → IA (Claude) ----------
+var AI_CFG=null;
+function usd(n){ n=Math.round(n*100)/100; return '$'+n.toFixed(n<1?3:2); }
+function aiModel(id){ return ((AI_CFG&&AI_CFG.models)||[]).filter(function(m){return m.id===id;})[0]; }
+function loadBulletinConsignes(){
+  api('GET','/api/admin/bulletin/consignes').then(function(d){
+    document.getElementById('bulletin-consignes-input').value=(d&&d.text)||'';
+  });
+}
+function saveBulletinConsignes(){
+  var msg=document.getElementById('consignes-save-msg'), btn=document.getElementById('btn-save-consignes');
+  btn.disabled=true;
+  api('POST','/api/admin/bulletin/consignes',{text:document.getElementById('bulletin-consignes-input').value}).then(function(d){
+    btn.disabled=false;
+    msg.style.color = (d&&d.status==='ok') ? '#2a7a2a' : '#c0392b';
+    msg.textContent = (d&&d.status==='ok') ? '✓ enregistré' : ((d&&d.error)||'Erreur');
+    setTimeout(function(){msg.textContent='';},3000);
+  });
+}
+function loadAiConfig(){
+  api('GET','/api/admin/ai-config').then(function(d){
+    if(!d||d.error){ if(d&&d.error) logout(); return; }
+    AI_CFG=d;
+    var sel=document.getElementById('ai-model-select');
+    sel.innerHTML=(d.models||[]).map(function(m){return '<option value="'+m.id+'"'+(m.id===d.model?' selected':'')+'>'+esc(m.label)+'</option>';}).join('');
+    var inp=document.getElementById('ai-key-input'); inp.value='';
+    inp.placeholder = d.key_set ? ('Clé enregistrée : '+d.key_masked+' — saisir pour remplacer') : 'sk-ant-…';
+    renderAiModelNote(); renderAiUsage();
+  }).catch(function(){});
+}
+function renderAiModelNote(){
+  var m=aiModel(document.getElementById('ai-model-select').value); if(!m) return;
+  var intro = m.in_intro ? (' · tarif de lancement '+usd(m.in_intro)+' / '+usd(m.out_intro)+' par M jusqu\'au '+m.intro_until) : '';
+  document.getElementById('ai-model-note').innerHTML =
+    esc(m.note||'')+'<br>Tarif : <strong>'+usd(m.in)+'</strong> (entrée) / <strong>'+usd(m.out)+'</strong> (sortie) par million de tokens'+intro+'.';
+  renderAiCostEst();
+}
+function renderAiUsage(){
+  var u=(AI_CFG&&AI_CFG.usage)||{drafts:0,input_tokens:0,output_tokens:0,cost_usd:0};
+  function tile(n,l){ return '<div class="stat" style="min-width:108px"><div class="num">'+n+'</div><div class="lbl">'+l+'</div></div>'; }
+  document.getElementById('ai-usage').innerHTML =
+    '<div style="display:flex;gap:16px;flex-wrap:wrap">'
+    +tile(u.drafts||0,'Brouillons')
+    +tile(((u.input_tokens||0)/1000).toFixed(0)+'k','Tokens entrée')
+    +tile(((u.output_tokens||0)/1000).toFixed(0)+'k','Tokens sortie')
+    +tile('$'+(u.cost_usd||0).toFixed(2),'Coût total')
+    +'</div>'
+    +(u.drafts?'':'<p style="font-size:.82em;color:#aaa;margin-top:8px">Aucune génération pour l\'instant — l\'IA s\'activera en Phase&nbsp;3.</p>');
+}
+function renderAiCostEst(){
+  if(!AI_CFG||!AI_CFG.est) return;
+  var m=aiModel(document.getElementById('ai-model-select').value); if(!m) return;
+  var inR=m.in_intro||m.in, outR=m.out_intro||m.out, e=AI_CFG.est;
+  var perDraft=(e.input/1e6*inR)+(e.output/1e6*outR), perMass=perDraft*e.per_mass;
+  document.getElementById('ai-cost-est').innerHTML =
+    '💡 <strong>Estimation</strong> (au tarif actuel de '+esc(m.label.split(' — ')[0])+')&nbsp;: environ <strong>'+usd(perDraft)
+    +'</strong> par brouillon, soit <strong>≈ '+usd(perMass)+' par messe</strong> ('+e.per_mass+' brouillons). '
+    +'À raison de quelques brouillons par mois, le coût reste négligeable.';
+}
+function saveAiKey(){
+  var inp=document.getElementById('ai-key-input'), msg=document.getElementById('ai-key-msg'), btn=document.getElementById('btn-save-ai-key');
+  var k=inp.value.trim();
+  if(!k){ msg.style.color='#990000'; msg.textContent='Saisissez une clé.'; return; }
+  btn.disabled=true; msg.style.color='#666'; msg.textContent='…';
+  api('POST','/api/admin/ai-config',{key:k}).then(function(d){
+    btn.disabled=false;
+    if(d&&d.status==='ok'){ msg.style.color='#2a7a2a'; msg.textContent='✓ clé enregistrée'; loadAiConfig(); }
+    else { msg.style.color='#990000'; msg.textContent=(d&&d.error)||'Erreur'; }
+  }).catch(function(){ btn.disabled=false; msg.style.color='#990000'; msg.textContent='Erreur réseau'; });
+}
+function saveAiModel(){
+  var msg=document.getElementById('ai-model-msg'), btn=document.getElementById('btn-save-ai-model');
+  var model=document.getElementById('ai-model-select').value;
+  btn.disabled=true; msg.style.color='#666'; msg.textContent='…';
+  api('POST','/api/admin/ai-config',{model:model}).then(function(d){
+    btn.disabled=false;
+    if(d&&d.status==='ok'){ msg.style.color='#2a7a2a'; msg.textContent='✓ enregistré'; if(AI_CFG) AI_CFG.model=model; }
+    else { msg.style.color='#990000'; msg.textContent=(d&&d.error)||'Erreur'; }
+  }).catch(function(){ btn.disabled=false; msg.style.color='#990000'; msg.textContent='Erreur réseau'; });
+}
+
+// ---------- Journal d'activité (Logs) ----------
+var LOG_META = {
+  login:{i:'🔓',l:'Connexion'}, login_request:{i:'🔑',l:'Demande de connexion'},
+  library_uploaded:{i:'📤',l:'Document téléversé'}, library_saved:{i:'✏️',l:'Document modifié'},
+  library_soft_deleted:{i:'🗑',l:'Document retiré'}, library_restored:{i:'↩',l:'Document restauré'},
+  library_purged:{i:'❌',l:'Suppression définitive'}, person_saved:{i:'👤',l:'Personne modifiée'},
+  role_assigned:{i:'🗂',l:'Rôle réattribué'}, draft_generated:{i:'✨',l:'Brouillon IA généré'},
+  draft_edited:{i:'📝',l:'Brouillon modifié'}, draft_failed:{i:'⚠️',l:'Échec brouillon IA'},
+  owner_sent:{i:'📨',l:'Tâche envoyée'}, owner_nudged:{i:'🔔',l:'Relance envoyée'},
+  owner_send_failed:{i:'⚠️',l:'Échec envoi tâche'}, marked_done:{i:'✅',l:'Tâche marquée faite'},
+  ack_done:{i:'✅',l:'Confirmée par lien'}, ack_comment:{i:'💬',l:'Message reçu'},
+  skipped:{i:'⏭️',l:'Tâche sautée'}, reopened:{i:'↺',l:'Tâche rouverte'},
+  mass_instantiated:{i:'🆕',l:'Messe initialisée'}, status_change:{i:'🔄',l:'Changement de statut'},
+  run_complete:{i:'⚙️',l:'Cron exécuté'},
+  rsvp_approved:{i:'✅',l:'RSVP approuvée'}, rsvp_denied:{i:'🚫',l:'RSVP refusée'},
+  rsvp_auto_subscribed:{i:'📲',l:'Abonné SMS ajouté (via RSVP)'},
+  contacts_mode_switch:{i:'🔀',l:'Mode contacts changé'}
+};
+function logWho(e){ return e.by || e.person || '—'; }
+function logDetail(e){
+  var t=e.event||'';
+  if(t==='login') return 'via ' + (e.via==='magic'?'lien email':e.via==='sms'?'code SMS':e.via==='legacy'?'ntfy (secours)':(e.via||'—')) + (e.role?' · rôle '+e.role:'');
+  if(t==='login_request') return 'canal : ' + (e.channel==='email'?'email':'SMS + ntfy');
+  if(t.indexOf('library')===0) return e.title || e.doc || '';
+  if(t==='person_saved') return e.name || e.person || '';
+  if(t==='role_assigned') return e.role || '';
+  if(t.indexOf('draft')===0) return (e.task||'') + (e.model?' ('+e.model+')':'');
+  if(t==='rsvp_approved'||t==='rsvp_denied') return (e.name||'') + (e.event_slug?' · '+e.event_slug:'');
+  if(t==='rsvp_auto_subscribed') return (e.name||'') + ' (' + (e.phone||'') + ')' + (e.reactivated?' · réactivé':'') + (e.event_slug?' · '+e.event_slug:'');
+  if(t==='contacts_mode_switch') return '→ ' + (e.mode||'').toUpperCase() + (e.incomplete&&e.incomplete.length ? ' (' + e.incomplete.length + ' sans coord. PROD)' : '');
+  if(e.task) return (e.mass_id?e.mass_id+' · ':'') + e.task;
+  if(e.error) return String(e.error);
+  return '';
+}
+// pinned to America/Chicago, not the viewer's browser timezone — see fmtCentral()
+function fmtTs(ts){ try { return new Date(ts).toLocaleString('fr-FR',{timeZone:'America/Chicago',dateStyle:'short',timeStyle:'short'}); } catch(e){ return String(ts||'').replace('T',' ').slice(0,16); } }
+function loadLogs(){
+  document.getElementById('logs-list').innerHTML='<p style="color:#888">Chargement…</p>';
+  api('GET','/api/admin/logs?limit=300').then(function(d){
+    if(!d||d.error){ if(d&&d.error) logout(); return; }
+    renderLogs(d.logs||[]);
+    document.getElementById('logs-count').textContent=(d.count||0)+' entrée(s)';
+  }).catch(function(){ document.getElementById('logs-list').innerHTML='<p style="color:#990000">Erreur réseau.</p>'; });
+}
+function renderLogs(logs){
+  if(!logs.length){ document.getElementById('logs-list').innerHTML='<p style="color:#888">Aucune activité enregistrée.</p>'; return; }
+  var rows=logs.map(function(e){
+    var m=LOG_META[e.event]||{i:'•',l:e.event};
+    return '<tr>'
+      +'<td style="white-space:nowrap;color:#888;font-size:.85em">'+esc(fmtTs(e.ts))+'</td>'
+      +'<td style="white-space:nowrap"><strong>'+esc(logWho(e))+'</strong></td>'
+      +'<td style="white-space:nowrap">'+m.i+' '+esc(m.l)+'</td>'
+      +'<td style="color:#555">'+esc(logDetail(e))+'</td>'
+      +'<td style="color:#bbb;font-size:.75em;white-space:nowrap">'+esc(e.ip||'')+'</td>'
+      +'</tr>';
+  }).join('');
+  document.getElementById('logs-list').innerHTML=
+    '<div style="overflow-x:auto"><table class="sub-table" style="font-size:.9em"><thead><tr>'
+    +'<th>Quand</th><th>Qui</th><th>Action</th><th>Détail</th><th>IP</th></tr></thead><tbody>'
+    +rows+'</tbody></table></div>';
+}
+
+// wire up the new tabs / controls
+(function(){
+  var tlogs=document.querySelector('.subtab-btn[data-subtab="roles-logs"]'); if(tlogs) tlogs.addEventListener('click',loadLogs);
+  var lgr=document.getElementById('logs-refresh'); if(lgr) lgr.addEventListener('click',loadLogs);
+  var tp=document.querySelector('.tab-btn[data-tab="prep"]'); if(tp) tp.addEventListener('click',loadPrep);
+  var tr=document.querySelector('.tab-btn[data-tab="roles"]'); if(tr) tr.addEventListener('click',loadRoles);
+  var tl=document.querySelector('.tab-btn[data-tab="library"]'); if(tl) tl.addEventListener('click',loadLibrary);
+  var lt=document.getElementById('lib-add-type'); if(lt) fillTypeSelect(lt);
+  var ly=document.getElementById('lib-year'); if(ly) ly.addEventListener('change',function(){LIB_STATE.year=this.value; loadLibrary();});
+  var lr=document.getElementById('lib-refresh'); if(lr) lr.addEventListener('click',loadLibrary);
+  var lsr=document.getElementById('lib-search'); if(lsr) lsr.addEventListener('input',function(){LIB_STATE.q=this.value; clearTimeout(window._libT); window._libT=setTimeout(loadLibrary,300);});
+  var ts=document.querySelector('.tab-btn[data-tab="settings"]'); if(ts) ts.addEventListener('click',loadAiConfig);
+  if(ts) ts.addEventListener('click',loadBulletinConsignes);
+  var bsc=document.getElementById('btn-save-consignes'); if(bsc) bsc.addEventListener('click',saveBulletinConsignes);
+  var ams=document.getElementById('ai-model-select'); if(ams) ams.addEventListener('change',renderAiModelNote);
+  var bsk=document.getElementById('btn-save-ai-key'); if(bsk) bsk.addEventListener('click',saveAiKey);
+  var bsm=document.getElementById('btn-save-ai-model'); if(bsm) bsm.addEventListener('click',saveAiModel);
+  var tak=document.getElementById('btn-toggle-ai-key'); if(tak) tak.addEventListener('click',function(){var i=document.getElementById('ai-key-input'); if(i.type==='password'){i.type='text'; this.textContent='Masquer';}else{i.type='password'; this.textContent='Afficher';}});
+  document.querySelectorAll('.subtab-btn[data-subtab]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var host=btn.closest('.tab-panel');
+      host.querySelectorAll('.subtab-btn[data-subtab]').forEach(function(b){ b.classList.remove('active'); });
+      host.querySelectorAll('.subtab-panel').forEach(function(p){ p.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('sub-'+btn.dataset.subtab).classList.add('active');
+    });
+  });
+})();
+</script>
+</body>
+</html>

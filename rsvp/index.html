@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RSVP — CCFNT</title>
+<meta name="robots" content="noindex">
+<style>
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: #fdf8f2; color: #333;
+    margin: 0; padding: 24px 16px 60px;
+  }
+  .wrap { max-width: 480px; margin: 0 auto; }
+  .logo-link { display:block; text-align:center; margin-bottom:18px; text-decoration:none; color:#990000; font-size:.9em; }
+  h1 { color: #990000; font-size: 1.4em; text-align:center; margin: 0 0 4px; }
+  #event-title { text-align:center; color:#6b4226; font-size:1em; margin: 0 0 20px; }
+  form {
+    background: #fff; border: 1px solid #c9a87c; border-radius: 10px;
+    padding: 22px 20px; display:flex; flex-direction:column; gap:14px;
+  }
+  label { font-size: .85em; color:#555; display:block; margin-bottom:4px; }
+  input, textarea {
+    width:100%; box-sizing:border-box; padding:10px;
+    border:1px solid #c9a87c; border-radius:6px; font-size:16px;
+    font-family: inherit; outline:none;
+  }
+  input:focus, textarea:focus { border-color:#990000; }
+  textarea { resize: vertical; min-height: 50px; }
+  #rsvp-submit {
+    min-height:46px; padding:10px; background:#990000; color:#fff;
+    border:none; border-radius:6px; font-size:1em; font-weight:700;
+    cursor:pointer; letter-spacing:.03em; transition:background .2s;
+  }
+  #rsvp-submit:hover { background:#c00; }
+  #rsvp-submit:disabled { background:#c9a87c; cursor:default; }
+  #rsvp-msg { font-size:.9em; text-align:center; min-height:1.2em; margin-top:14px; line-height:1.5; }
+  .hint { font-size:.78em; color:#888; margin-top:-8px; }
+  .lang-en { color:#666; font-size:.82em; margin-top:22px; text-align:center; line-height:1.5; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="logo-link" href="/">← www.ccfnt.org</a>
+  <h1 id="rsvp-heading">🙋 On se voit bientôt&nbsp;!</h1>
+  <p id="event-title"></p>
+
+  <form id="rsvp-form" autocomplete="off">
+    <div>
+      <label for="r-name">Votre nom</label>
+      <input type="text" id="r-name" required autocomplete="name">
+    </div>
+    <div>
+      <label for="r-headcount">Combien de personnes (vous inclus·e)</label>
+      <input type="number" id="r-headcount" min="1" max="20" value="1" required>
+    </div>
+    <div>
+      <label for="r-contact">Téléphone ou courriel</label>
+      <input type="text" id="r-contact" required autocomplete="tel">
+      <div class="hint">Pour vous transmettre les détails (ex. l'adresse).</div>
+    </div>
+    <div>
+      <label for="r-food">🍽️ Plat / nourriture (optionnel)</label>
+      <textarea id="r-food" placeholder="Ex. salade de riz, tarte aux pommes…"></textarea>
+    </div>
+    <div>
+      <label for="r-beverage">🥤 Boisson (optionnel)</label>
+      <textarea id="r-beverage" placeholder="Ex. une bouteille de rosé, jus de fruit…"></textarea>
+    </div>
+    <button type="submit" id="rsvp-submit">✅&nbsp; Je confirme ma présence</button>
+  </form>
+  <div id="rsvp-msg"></div>
+
+  <div class="lang-en" id="lang-en-hint">
+    🇬🇧 RSVP in English? Just fill the form above — name, headcount, phone/email, and what food and drink you're bringing. It works the same way.
+  </div>
+</div>
+
+<script>
+function qs(name) {
+  var m = new URLSearchParams(window.location.search).get(name);
+  return m ? decodeURIComponent(m) : '';
+}
+var eventId    = qs('event') || 'general';
+var eventTitle = qs('title');
+document.getElementById('event-title').textContent = eventTitle || '';
+
+document.getElementById('rsvp-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var name      = document.getElementById('r-name').value.trim();
+  var headcount = document.getElementById('r-headcount').value;
+  var contact   = document.getElementById('r-contact').value.trim();
+  var food      = document.getElementById('r-food').value.trim();
+  var beverage  = document.getElementById('r-beverage').value.trim();
+  var msg = document.getElementById('rsvp-msg');
+  var btn = document.getElementById('rsvp-submit');
+  msg.textContent = '';
+
+  if (!name || !contact) {
+    msg.style.color = '#990000';
+    msg.textContent = 'Merci d\'indiquer votre nom et un moyen de vous contacter.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Envoi…';
+
+  fetch('/api/rsvp', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      event: eventId, name: name, headcount: headcount,
+      contact: contact, food: food, beverage: beverage
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if (d.status === 'ok') {
+      document.getElementById('rsvp-form').style.display = 'none';
+      document.getElementById('lang-en-hint').style.display = 'none';
+      msg.style.color = '#2a7a2a';
+      msg.style.fontSize = '1.05em';
+      msg.innerHTML = '✅ Merci ! Votre RSVP a bien été reçu. L\'adresse vous sera envoyée sous peu, une fois votre réponse confirmée.' +
+        '<br><span style="font-size:.85em;color:#888;font-weight:normal">Par courriel ? Cherchez un message de <strong>contact@ccfnt.org</strong> — pensez à vérifier vos Indésirables/Spam si vous ne le voyez pas.</span>' +
+        '<hr style="border:none;border-top:1px solid #e8ddd0;margin:16px 0;">' +
+        '🇬🇧 Thank you! Your RSVP has been received. The address will be sent shortly, once your response is confirmed.' +
+        '<br><span style="font-size:.85em;color:#888;font-weight:normal">By email? Look for a message from <strong>contact@ccfnt.org</strong> — check your Junk/Spam folder if you don\'t see it.</span>';
+    } else {
+      msg.style.color = '#990000';
+      msg.textContent = d.error || 'Erreur. Réessayez.';
+      btn.disabled = false;
+      btn.textContent = '✅  Je confirme ma présence';
+    }
+  })
+  .catch(function(){
+    msg.style.color = '#990000';
+    msg.textContent = 'Erreur réseau. Réessayez.';
+    btn.disabled = false;
+    btn.textContent = '✅  Je confirme ma présence';
+  });
+});
+</script>
+</body>
+</html>

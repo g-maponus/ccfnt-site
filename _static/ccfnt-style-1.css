@@ -1,0 +1,3471 @@
+
+
+
+
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big,
+cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, hr, button {
+	background: transparent;
+	border: 0;
+	font-size: 100%;
+	margin: 0;
+	outline: 0;
+	padding: 0;
+	vertical-align:  baseline;
+}
+:focus {
+	outline: 0;
+}
+body {
+	background: #fff;
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+h1, h2, h3, h4, h5, h6, li {
+	line-height: 100%;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+caption, th, td {
+	font-weight: normal;
+	text-align: left;
+}
+input,
+textarea,
+button {
+	font-family: inherit;
+	font-size: 1em;
+}
+textarea {
+	overflow: auto;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: "";
+}
+blockquote, q {
+	quotes: "" "";
+}
+a img {
+	border: 0;
+}
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+
+
+
+
+.clear {
+	clear: both;
+	display: block;
+}
+.clear-fix:after {
+	clear: both;
+	content: ".";
+	display: block;
+	height: 0;
+	visibility: hidden;
+}
+
+
+
+
+#page-inner,
+#footer-inner,
+#copyright-inner {
+	margin: 0 auto;
+	max-width: 1000px;
+}
+#branding,
+#main,
+#footer-inner-inner,
+#copyright-inner-inner {
+	padding: 0 2%;
+}
+#primary {
+	float: right;
+	margin: 0 0 0 -21.66%;
+	width: 100%;
+}
+#secondary {
+	float: left;
+	padding: 34px 0px 90px;
+	width: 19.68%;
+}
+#content {
+	border-left: 3px double #ddd;
+	margin: 0 0 0 21.66%;
+	padding: 25px 0 70px 2.09%;
+	width: 76.1%;
+}
+
+.content-sidebar #primary {
+	float: left;
+	margin: 0 -21.66% 0 0;
+}
+.content-sidebar #secondary {
+	float: right;
+	padding: 34px 0px 90px;
+}
+.content-sidebar #content {
+	border-left: none;
+	border-right: 3px double #ddd;
+	margin: 0 21.66% 0 0;
+	padding: 25px 2.083% 70px 0;
+}
+
+
+
+
+body {
+	color: #000;
+	font: 76% Verdana, Arial, Helvetica, sans-serif;
+}
+#page {
+	border-top: 4px solid #990000;
+}
+
+.alignleft {
+	display: inline;
+	float: left;
+	margin-right: 1.666em;
+}
+.alignright {
+	display: inline;
+	float: right;
+	margin-left: 1.666em;
+}
+.aligncenter {
+	clear: both;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+a {
+	text-decoration: none;
+}
+
+.assistive-text {
+	position: absolute !important;
+	clip: rect(1px 1px 1px 1px); 
+	clip: rect(1px, 1px, 1px, 1px);
+}
+
+input:focus,
+textarea:focus {
+	outline: 0;
+}
+
+#main-title,
+.post-title h1,
+.post-title h2,
+.hentry .post-date,
+.post-extras strong,
+.post-entry h3,
+.post-entry blockquote,
+.post-entry cite,
+.comment-text h3,
+.comment-text blockquote,
+.comment-text cite,
+.more-posts .page-title,
+.more-posts .notice,
+#more-posts-inner h1,
+#more-posts-inner article span,
+#comments h3,
+#respond h3,
+#upper-footer-widgets .widget_text,
+#error404 {
+	font-family: "Adobe Garamond Pro", Garamond, Palatino, "Palatino Linotype", Times, "Times New Roman", Georgia, serif;
+}
+
+
+
+
+
+#menu {
+	padding: 30px 0 17px;
+}
+#menu li {
+	background-color: #fff;
+	float: left;
+	margin-right: 10px;
+	position: relative;
+	text-transform: uppercase;
+}
+#menu > ul > li {
+	margin-bottom: 15px;
+}
+#menu a {
+	border-bottom: 1px solid #fff;
+	border-top: 1px solid #fff;
+	color: #999;
+	display: block;
+	font-size: 0.9em;
+	padding: 3px 10px 5px;
+}
+#menu a:hover {
+	color: #000;
+}
+#menu ul ul {
+	display: none;
+	float: left;
+	margin: 0;
+	position: absolute;
+	top: 22px;
+	left: 0;
+	width: 140px;
+	z-index: 99999;
+}
+#menu ul ul ul {
+	left: 100%;
+	top: 0;
+}
+#menu ul li:hover > ul {
+	display: block;
+}
+#menu li li {
+	float: none;
+	margin-right: 0;
+}
+#menu .current-menu-item > a,
+#menu .current_page_item > a,
+#menu .current-menu-ancestor > a {
+	border-bottom-color: #ccc;
+	border-top-color: #ddd;
+	color: #990000;
+	font-weight: bold;
+}
+#menu .current-menu-parent > a,
+#menu .current_page_ancestor > a,
+#menu .current-menu-item > a {
+	font-weight: bold;
+}
+.custom-background #menu li li a {
+	background: rgba( 255, 255, 255, 0.8 );
+}
+
+#main-title {
+	clear: both;
+	float: left;
+	font-style: italic;
+	margin: -9px 0 0 0;
+	width: 76%;
+}
+#main-title #site-title {
+	display: inline;
+	font-size: 3.2em;
+}
+#main-title #site-title a{
+	color: #000;
+}
+#main-title #site-title a:hover{
+	color: #990000;
+}
+#main-title #site-description {
+	color: #555;
+	display: inline;
+	font-size: 2.3em;
+	font-weight: normal;
+	line-height: 39px;
+}
+
+#search {
+	float: right;
+	margin: 0 0 20px 0;
+	width: 22%;
+}
+#search #s {
+	background-color: transparent;
+	border: 1px solid;
+	border-color: #ddd #ddd #ccc #ccc;
+	color: #777;
+	font-style: italic;
+	padding: 3px 5px;
+	width: 73.5%;
+}
+#search #s:focus {
+	border-color: #ccc #ccc #b0b0b0 #b0b0b0;
+	color: #000;
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+}
+
+#main-image {
+	border-top: 1px dotted #ddd;
+	clear: both;
+	max-width: 960px;
+	padding: 20px 0;
+}
+#main-image img {
+	border: 1px solid #ddd;
+	display: block;
+	height: auto;
+	width: 100%;
+}
+
+.single .post {
+	border-bottom: 1px solid #ddd;
+	margin: 0 0 30px 0;
+}
+.page .page .post-title h1 {
+	padding-left: 10.7142857%;
+}
+.page .page .post-entry {
+	width: 86.6574965%;
+}
+
+.post-title {
+	padding: 0 0 20px;
+	position: relative;
+}
+
+.post-title h1 {
+	border-bottom: 1px solid #ddd;
+	color: #990000;
+	font-size: 3em;
+	font-style: italic;
+	font-weight: normal;
+	min-height: 1em;
+	padding: 6px 0 16px 24.5%;
+}
+.post-title h1 a {
+	color: #990000;
+}
+.post-title h1 a:hover {
+	text-decoration: underline;
+}
+
+.sticky .entry-format,
+.more-posts .sticky h2.entry-format,
+.more-posts h2.entry-format,
+.featured {
+	background-color: #fff;
+	border: none;
+	color: #000;
+	font-size: 1.9em;
+	font-style: italic;
+	font-weight: normal;
+	left: 25px;
+	letter-spacing: 0;
+	line-height: 1.9em;
+	margin: 0;
+	padding: 0 15px;
+	position: absolute;
+	text-align: center;
+	text-transform: none;
+	top: 36px;
+	z-index: 1;
+}
+.featured a {
+	color: #000;
+}
+
+.hentry .post-date {
+	font-style: italic;
+	left: 30px;
+	line-height: 1.9em;
+	position: absolute;
+	text-align: center;
+	top: 15px;
+	z-index: 1;
+}
+.post-permalink {
+	color: #000;
+}
+.hentry .post-date * {
+	display: block;
+	padding: 0 15px;
+	position: relative;
+}
+.post-date strong {
+	font-size: 4.9em;
+	font-weight: normal;
+	letter-spacing: -0.1em;
+	position: relative;
+	z-index: 2;
+}
+.post-date em {
+	background: white;
+	font-size: 1.9em;
+	top: 9px;
+}
+.post-date span {
+	color: #555;
+	font-size: 1.1em;
+	font-variant: small-caps;
+	top: 4px;
+}
+.post-date.one-line {
+	background: #fff;
+	color: #555;
+	font-size: 1.0em;
+	font-variant: small-caps;
+	padding: 0 5px;
+	top: auto;
+	bottom: 34px;
+	left: 10px;
+}
+.image-attachment .post-date.one-line {
+	left: 0;
+}
+
+
+.post-info {
+	color: #555;
+	font-variant: small-caps;
+	padding: 10px 2.8% 0 24.5%;
+}
+.post-info p {
+	float: left;
+	width: 75.1%;
+}
+.post-info a {
+	color: #675f34;
+}
+.post-info .post-com-count {
+	float: right;
+	text-align: right;
+	width: 24.5%;
+}
+.post-info .post-com-count a {
+	color: #555;
+}
+.post-info .post-com-count span {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+.post-info a:hover {
+	color: #000;
+	text-decoration: underline;
+}
+.post-content {
+	margin: 0 0 30px 0;
+}
+
+.post-extras {
+	color: #333;
+	float: left;
+	font-style: italic;
+	line-height: 170%;
+	padding: 61px 0 50px;
+	text-align: right;
+	width: 19.2%;
+}
+.post-extras p,
+.post-extras li {
+	clear: both;
+	float: right;
+	font-size: 0.9em;
+	padding-bottom: 5px;
+	width: 100%;
+}
+.post-extras ul {
+	clear: both;
+	padding-top: 5px;
+}
+.post-extras strong {
+	border-bottom: 1px solid #ddd;
+	float: right;
+	font-size: 1.6em;
+	font-weight: normal;
+	margin-top: 15px;
+}
+.post-extras .post-edit-link {
+	color: #990000;
+}
+.post-extras p a {
+	color: #333;
+}
+.post-extras a:hover {
+	color: #000;
+	text-decoration: underline;
+}
+
+.post-entry {
+	color: #333;
+	float: right;
+	font-size: 13px;
+	padding: 15px 2.8% 0 0;
+	width: 72.8%;
+}
+
+.post-entry h1 {
+	font-size: 0.9236em;
+}
+.post-entry h2 {
+	font-size: 0.9236em;
+}
+.post-entry h3,
+.post-entry h4,
+.post-entry h5,
+.post-entry h6,
+.comment-text h3,
+.comment-text h4,
+.comment-text h5,
+.comment-text h6 {
+	text-transform: uppercase;
+}
+.post-entry h3,
+#comments .comment-text h3 {
+	border-bottom: 1px dotted #ccc;
+	color: #675f34;
+	font-size: 1.5em;
+	font-variant: small-caps;
+	margin: 10px 0;
+	padding: 0 10px 2px 0!important;
+	text-transform: none;
+}
+.post-entry h4 {
+	color: #000;
+	font-size: 0.7692em;
+	letter-spacing: 0.2em;
+}
+.post-entry h5,
+.post-entry h6 {
+	font-size: 0.7692em;
+	font-weight: normal;
+}
+.post-entry hr {
+	background-color: #ccc;
+	border: 0;
+	height: 1px;
+}
+
+.post-entry p,
+.post-entry li,
+.post-entry dt,
+.post-entry dd,
+.comment-text p,
+.comment-text li,
+.comment-text dt,
+.comment-text dd {
+	line-height: 180%;
+}
+.post-entry p {
+	margin-bottom: 23px;
+}
+.post-entry ul,
+.comment-text ul {
+	list-style: square;
+	margin: 0 0 23px 1.5em;
+}
+.post-entry ol,
+.comment-text ol {
+	list-style: decimal;
+	margin: 0 0 23px 1.5em;
+}
+.post-entry ol ol,
+.comment-text ol ol {
+	list-style: upper-alpha;
+}
+.post-entry ol ol ol,
+.comment-text ol ol ol {
+	list-style: lower-roman;
+}
+.post-entry ol ol ol ol,
+.comment-text ol ol ol ol {
+	list-style: lower-alpha;
+}
+.post-entry dl,
+.comment-text dl {
+	margin: 0 0 23px 0;
+}
+.post-entry dt,
+.comment-text dt {
+	font-weight: bold;
+}
+.post-entry dd,
+.comment-text dd {
+	margin-bottom: 23px;
+}
+.post-entry strong,
+.comment-text strong {
+	font-weight: bold;
+}
+.post-entry cite,
+.post-entry em,
+.post-entry i,
+.comment-text cite,
+.comment-text em,
+.comment-text i {
+	font-style: italic;
+}
+.post-entry big,
+.comment-text big {
+	font-size: 131.25%;
+}
+.post-entry ins,
+.comment-text ins {
+	background: #ccc;
+	text-decoration: none;
+}
+.post-entry blockquote,
+.comment-text blockquote {
+	font-style: italic;
+	padding: 0 3em;
+}
+.post-entry blockquote cite,
+.post-entry blockquote em,
+.post-entry blockquote i,
+.comment-text blockquote cite,
+.comment-text blockquote em,
+.comment-text blockquote i {
+	font-style: normal;
+}
+.post-entry pre,
+.comment-text pre {
+	background: #eee;
+	line-height: 23px;
+	margin-bottom: 23px;
+	overflow: auto;
+	padding: 20px;
+}
+.post-entry abbr,
+.post-entry acronym,
+.comment-text abbr,
+.comment-text acronym {
+	border-bottom: 1px dotted #666;
+	cursor: help;
+}
+.post-entry sup,
+.post-entry sub,
+.comment-text sup,
+.comment-text sub {
+	height: 0;
+	line-height: 1;
+	position: relative;
+	vertical-align: baseline;
+}
+.post-entry sup,
+.comment-text sup {
+	bottom: 1ex;
+}
+.post-entry sub,
+.comment-text sub {
+	top: .5ex;
+}
+.post-entry p,
+.post-entry ul,
+.post-entry ol,
+.post-entry dd,
+.post-entry pre,
+.post-entry hr {
+	margin-bottom: 23px;
+}
+.post-entry ul ul,
+.post-entry ol ol,
+.post-entry ul ol,
+.post-entry ol ul,
+.comment-text ul ul,
+.comment-text ol ol,
+.comment-text ul ol,
+.comment-text ol ul {
+	margin-bottom: 0;
+}
+.post-entry pre,
+.post-entry kbd,
+.post-entry tt,
+.post-entry var,
+.comment-text pre,
+.comment-text kbd,
+.comment-text tt,
+.comment-text var {
+	font-size: 12px;
+	line-height: 15px;
+}
+.post-entry code,
+.comment-text code {
+	font-size: 12px;
+}
+.post-entry h1,
+.post-entry h2,
+.post-entry h3,
+.post-entry h4,
+.post-entry h5,
+.post-entry h6,
+.comment-text h1,
+.comment-text h2,
+.comment-text h3,
+.comment-text h4,
+.comment-text h5,
+.comment-text h6 {
+	line-height: 1.0em;
+	padding: 10px 0;
+}
+.post-entry table,
+.comment-text table {
+	border: 1px solid #ccc;
+	margin: 0 -1px 20px 0;
+	text-align: left;
+	width: 100%;
+}
+.post-entry tr th,
+.post-entry thead th,
+.comment-text tr th,
+.comment-text thead th {
+	color: #888;
+	font-size: 13px;
+	font-weight: bold;
+	line-height: 20px;
+	padding: 9px 4.54554545%;
+}
+.post-entry tr td,
+.comment-text tr td {
+	border-top: 1px solid #ccc;
+	padding: 6px 4.54554545%;
+}
+.post-entry tr.alternate td,
+.comment-text tr.alternate td {
+	background: #eee;
+}
+.post-entry sup,
+.post-entry sub,
+.comment-text sup,
+.comment-text sub {
+	font-size: 10px;
+}
+
+.post-entry a {
+	color: #990000;
+	text-decoration: underline;
+}
+.post-entry a:hover {
+	color: #000;
+}
+.post-entry .more-link {
+	border-bottom: none;
+	color: #000;
+	font-style: italic;
+	font-weight: bold;
+	text-decoration: underline;
+}
+.post-entry .more-link:hover {
+	color: #990000;
+}
+
+.post-entry img {
+	border: 1px solid;
+	border-color: #ddd #ccc #ccc #ddd;
+	height: auto;
+	left: -4px;
+	max-width: 100%;
+	padding: 3px;
+	position: relative;
+	-moz-box-shadow: 4px 4px 12px #ccc;
+	-webkit-box-shadow: 4px 4px 12px #ccc;
+	box-shadow: 4px 4px 12px #ccc;
+}
+img[class*="align"],
+img[class*="wp-image-"] {
+	height: auto; 
+}
+img.size-full {
+	max-width: 100%;
+	width: auto; 
+}
+img.alignleft,
+img.alignright,
+img.aligncenter {
+	margin-bottom: 1.625em;
+}
+p img,
+.wp-caption {
+	margin-top: 0.5em;
+}
+.wp-caption {
+	margin-bottom: 1.625em;
+	max-width: 100%;
+}
+.wp-caption img {
+	display: block;
+	max-width: 100%;
+}
+.wp-caption .wp-caption-text,
+.gallery-caption {
+	color: #666;
+	font-size: 13px;
+}
+.wp-caption .wp-caption-text {
+	margin-bottom: 0.6em;
+	padding: 10px 0px 5px 20px;
+	position: relative;
+}
+.wp-caption .wp-caption-text:before {
+	color: #666;
+	content: '\2014';
+	font-size: 11px;
+	font-style: normal;
+	margin-right: 5px;
+	position: absolute;
+	left: 0px;
+	top: 9px;
+}
+.post-entry .wp-smiley {
+	border: 0;
+	padding: 0;
+	position: static;
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+}
+.post-entry embed,
+.post-entry object,
+.post-entry video {
+	max-width: 100%;
+}
+
+.post-entry pre {
+	background: #eee;
+	font-family: Monaco, Courier New, Courier, monospace;
+	margin-bottom: 20px;
+	padding: 20px 3.78071833%;
+}
+
+.post-entry blockquote,
+.comment-text blockquote {
+	border-bottom: 1px solid #cac7b8;
+	border-top: 1px solid #b3af99;
+	margin-bottom: 15px;
+	padding: 2px 0 0;
+}
+.post-entry blockquote p:first-child,
+.comment-text blockquote p:first-child {
+	border-top: 1px solid #cac7b8;
+}
+.post-entry blockquote p:first-child:first-line,
+.comment-text blockquote p:first-child:first-line {
+	text-transform: none;
+}
+.post-entry blockquote p:first-child:before,
+.comment-text blockquote p:first-child:before {
+	content: "“";
+}
+.post-entry blockquote p:last-child:after,
+.comment-text blockquote p:last-child:after {
+	content: "”";
+}
+.post-entry blockquote p,
+.comment-text blockquote p {
+	border-right: 1px solid #b3af99;
+	color: #665f33;
+	font-size: 1.6153em;
+	font-style: italic;
+	line-height: 128%;
+	margin: 0;
+	padding: 20px 3.78071833%;
+}
+
+.post-entry cite,
+.comment-text cite {
+	color: #666;
+	display: block;
+	font-size: 1.4em;
+	padding: 15px 3.68324125% 20px;
+	text-align: right;
+}
+.post-password-required input[type=submit] {
+	margin-top: 10px;
+}
+
+.post-meta {
+	border-top: 1px solid #ddd;
+}
+#author-info {
+	padding: 30px 0 28px 24.5%;
+	width: 75.5%;
+}
+#author-avatar {
+	float: left;
+	margin-right: -40px;
+}
+#author-description {
+	float: left;
+	font-size: 0.9em;
+	line-height: 1.8181em;
+	margin: -5px 0 0 50px;
+	padding: 0 3.64% 0 0;
+	width: 87.27%;
+}
+#author-description h2 {
+	line-height: 1.8181em;
+}
+#author-description a {
+	color: #990000;
+}
+.category-archive-meta {
+	padding: 20px 0 0 162px;
+}
+.category-archive-meta p {
+	color: #666;
+	font-size: 0.9em;
+	line-height: 140%;
+	padding: 0 15px;
+}
+
+
+
+
+.format-image .post-date,
+.format-gallery .post-date,
+.format-quote .post-date,
+.format-video .post-date {
+	top: 39px;
+}
+.format-image .featured,
+.format-gallery .featured,
+.format-quote .featured,
+.format-video .featured {
+	top: 61px;
+}
+a.entry-format-link,
+a.entry-format-link:visited
+ {
+ 	color: #000;
+	display: block;
+	font-variant: small-caps;
+	font-size: 16px;
+	margin: 0 0 5px;
+	padding: 0 0 0 24.5%;
+	position: relative;
+	text-decoration: none;
+}
+a.entry-format-link:hover {
+	color: #000;
+	text-decoration: underline;
+}
+.one-column a.entry-format-link {
+	padding-left: 18.3125%;
+}
+.more-posts a.entry-format-link,
+.more-posts a.entry-format-link {
+	padding-left: 0 !important;
+}
+
+.blog .format-aside a.entry-format-link,
+.archive .format-aside a.entry-format-link  {
+	padding-left: 25.3%;
+}
+.one-column.blog .format-aside a.entry-format-link,
+.one-column.archive .format-aside a.entry-format-link {
+	padding-left: 16.0125%;
+}
+.format-aside .post-title h1,
+.format-aside .post-info {
+	display: none;
+}
+.single .format-aside .post-title h1,
+.single .format-aside .post-info {
+	display: block;
+}
+.format-aside .post-title,
+.format-aside .post-entry {
+	padding: 6px 2.8% 0 0;
+}
+.single .format-aside .post-title {
+	padding: 0 0 20px 0;
+}
+.single .format-aside .post-entry {
+	padding: 15px 2.8% 0 0;
+}
+.format-aside .post-extras {
+	padding-top: 120px;
+}
+.single .format-aside .post-extras {
+	padding-top: 61px;
+}
+
+.gallery-thumb {
+	float: left;
+	margin: 0 15px 10px 0;
+}
+.gallery-columns-1 img {
+	
+	max-width: 541px;
+}
+.gallery-columns-2 img {
+	max-width: 254px;
+}
+.gallery-columns-3 img {
+	max-width: 158px;
+}
+.gallery-columns-4 img {
+	max-width: 110px;
+}
+.gallery-columns-5 img {
+	max-width: 81px;
+}
+.gallery-columns-6 img {
+	max-width: 62px;
+}
+.gallery-columns-7 img {
+	max-width: 49px;
+}
+.gallery-columns-8 img {
+	max-width: 38px;
+}
+.gallery-columns-9 img {
+	max-width: 30px;
+}
+
+.format-image .post-info {
+	clear: both;
+	border-bottom: 1px solid #ddd;
+	border-top: 1px solid #ddd;
+	float: right;
+	margin: 0 2.7434842% 23px 0;
+	padding: 18px 0 18px;
+	width: 72.8%;
+}
+.format-image .post-entry {
+	padding: 0px 2.8% 0 0;
+}
+.single .format-image .post-info {
+	border: none;
+	float: none;
+	margin: 0;
+	padding: 10px 2.8% 0 24.5%;
+	width: auto;
+}
+.single .format-image .post-entry {
+	padding: 15px 2.8% 0 0;
+}
+
+.format-link .post-title {
+	padding-bottom: 0;
+}
+.format-link .post-title h1,
+.format-link .post-info {
+	display: none;
+}
+.format-link .post-entry {
+	padding: 6px 2.8% 0 0;
+}
+.format-link .post-extras {
+	padding-top: 120px;
+}
+
+
+
+
+.more-posts .page-title,
+.more-posts .notice {
+	border-bottom: 1px solid #ddd;
+	border-top: 1px solid #ddd;
+	color: #666;
+	letter-spacing: 0.15em;
+	margin: 0 0 35px 0;
+	padding: 20px 0 18px 24.5%;
+	text-transform: uppercase;
+	word-spacing: 0.3em;
+}
+.more-posts .page-title em {
+	color: #990000;
+}
+#more-posts-inner {
+	padding: 0 0 0 22.2%;
+}
+#more-posts-inner article {
+	color: #333;
+	float: left;
+	margin:  0 3.6% 20px 0;
+	min-height: 160px;
+	width: 46.3%;
+}
+#more-posts-inner h1 {
+	padding: 0 5.72519083%;
+	font-size: 2em;
+	font-weight: normal;
+	word-wrap: break-word;
+}
+#more-posts-inner span {
+	border-bottom: 1px solid #ddd;
+	display: block;
+	margin-bottom: 10px;
+	padding: 3px 5.72519083% 5px;
+	text-transform: uppercase;
+}
+#more-posts-inner p {
+	font-size: 0.9em;
+	line-height: 140%;
+	padding: 0 5.72519083% 5px;
+}
+#more-posts-inner p a {
+	font-style: italic;
+	text-decoration: underline;
+}
+#more-posts-inner a {
+	color: #000;
+}
+#more-posts-inner a:hover {
+	color: #990000;
+	text-decoration: underline;
+}
+
+
+
+#main .full-width {
+	border-left: none;
+	margin: 0;
+	width: 100%;
+}
+#main .full-width .post-title h1 {
+	padding: 6px 0 16px 0;
+}
+#main .full-width .post-entry {
+	padding: 15px 0 30px;
+	width: 100%;
+}
+.full-width #comments h3 {
+	padding: 20px 0 18px 6.25%;
+}
+.full-width #comments h3 span {
+	left: -81px;
+}
+.full-width .comment-heading {
+	padding: 2px 3.125% 10px;
+}
+.full-width .comment-text {
+	padding: 15px 3.125% 5px;
+}
+.full-width #comments #respond h3 {
+	padding: 0 3.125% 18px;
+}
+.full-width #comments #respond form {
+	width: 97%!important;
+}
+
+
+
+
+.attachment #content {
+	border-left: none;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+.attachment .post-extras {
+	width: 11.354166%;
+}
+.attachment .post-entry {
+	width: 79.9791666%;
+	padding: 15px 2.083333% 0 0;
+}
+.attachment .post-info,
+.attachment #nav-below,
+.attachment .post-title h1,
+.attachment .nocomments,
+.attachment .nopassword {
+	padding-left: 18.3125%;
+}
+.attachment .post-info,
+.attachment #nav-below {
+	padding-right: 2.0833333%
+}
+.image-attachment div.attachment img {
+	display: block;
+	height: auto;
+	margin: 0 0 1.625em;
+	max-width: 100%;
+}
+.attachment #comments #respond form {
+	width: 96%!important;
+}
+
+
+
+
+.post-entry .gallery dd {
+	margin-bottom: 0;
+}
+
+
+
+
+#comments {
+	float: right;
+	padding: 0 0px 30px 0;
+	width: 100%;
+}
+
+#comments h3 {
+	border-bottom: 1px solid #ccc;
+	color: #000;
+	letter-spacing: 0.15em;
+	margin: 3px 0 25px 16.2087912%;
+	padding: 20px 0 18px 8.2417582%;
+	position: relative;
+	text-transform: uppercase;
+}
+#comments h3 span {
+	background: #fff;
+	bottom: -10px;
+	font-size: 4.9em;
+	font-style: italic;
+	font-weight: normal;
+	left: -85px;
+	letter-spacing: 0em;
+	padding: 1.041666%;
+	position: absolute;
+	text-align: right;
+	width: 95px;
+	z-index: 1;
+}
+
+#comments ol {
+	padding-bottom: 20px;
+}
+#comments .comment-text ol {
+	padding-bottom: 0;
+}
+#comments li {
+	border-top: 4px solid #eee;
+	margin-left: 20.329670%;
+	padding: 10px 0 0;
+}
+#comments .comment-text li {
+	border: none;
+	margin-left: 0;
+	padding: 0;
+}
+#comments li:first-child {
+	border-top: 0;
+}
+#comments li a:hover {
+	color: #990000;
+	text-decoration: underline;
+}
+#comments #reply-title a,
+#comment-nav-above a,
+#comment-nav-below a,
+.comment-text table a {
+	color: #000;
+}
+
+.comment-heading {
+	padding: 2px 5.17241379% 10px;
+}
+
+.comment-author {
+	color: #000;
+	float: left;
+}
+.comment-author img,
+.comment-author span,
+.comment-author em {
+	float: left;
+	margin-top: 3px;
+}
+.comment-author img {
+	margin: 0 10px 0 0;
+}
+.comment-author em {
+	margin-left: 5px;
+}
+.comment-author a {
+	color: #000;
+	text-decoration: underline;
+}
+
+.comment-date {
+	float: right;
+	font-size: 0.9em;
+	padding-top: 3px;
+}
+.comment-date a {
+	color: #999;
+}
+.comment-date a:hover {
+	color: #666 !important;
+}
+
+.comment-text {
+	border-bottom: 1px solid #eee;
+	border-top: 1px dotted #ccc;
+	padding: 15px 5.17241379% 5px;
+}
+.comment-text p {
+	color: #333;
+	line-height: 170%;
+	padding-bottom: 10px;
+}
+.comment-text p a {
+	border-bottom: 1px dotted;
+	color: #990000;
+}
+.comment-text p a:hover {
+	border-style: solid;
+	color: #000 !important;
+	text-decoration: none !important;
+}
+.comment-text .reply-link a {
+	color: #000;
+	font-size: 0.8em;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+.comment-text .reply-link a:hover {
+	color: #990000;
+}
+.comment-text .edit-comment {
+	font-size: 0.8em;
+	margin-top: -8px;
+}
+.comment-text .edit-comment a {
+	border: 0;
+	color: #666;
+}
+
+#comments li .children li {
+	border-top: 0;
+}
+#comments li.depth-2,
+#comments li.depth-3 {
+	margin-left: 80px;
+}
+
+#comments li.byuser .comment-author {
+	color: #990000;
+	font-weight: bold;
+}
+#comments li.byuser .comment-text {
+	border-top-color: #b8b8b8;
+}
+#comments li.bypostauthor {
+	border-top: 4px solid #111;
+}
+
+#comments li.pingback a{
+	border: 0;
+	color: #000;
+	text-decoration: underline;
+}
+#comments li.pingback .comment-text {
+	border: 0;
+	padding: 5px 30px 5px;
+}
+#comments li.pingback .comment-text .edit-comment a {
+	border: 0;
+	color: #666;
+	text-decoration: none;
+}
+.nocomments,
+.nopassword {
+	padding: 17px 2.8% 0 24.5%;
+}
+
+
+
+#comments #respond {
+		padding: 48px 0 0 20.329670%;
+}
+#comments #respond h3 {
+	border-bottom: 1px solid #ccc;
+	color: #990000;
+	letter-spacing: 0.15em;
+	margin: 0 0 30px 0;
+	padding: 0 5.17241379% 18px;
+	position: relative;
+	text-transform: uppercase;
+}
+#comments #respond form {
+	float: right;
+	width: 96%!important;
+}
+
+#commentform p {
+	margin: 0 0 10px 0;
+	text-align: left;
+}
+#commentform label {
+	color: #333;
+	font-size: 0.8em;
+	font-weight: bold;
+	letter-spacing: 0.1em;
+	line-height: 1.8em;
+	text-transform: uppercase;
+}
+.comment-notes,
+.form-allowed-tags,
+.logged-in-as,
+.must-log-in {
+	font-size: 11px;
+}
+#commentform input[type="text"],
+#commentform textarea {
+	border-bottom: 1px solid #dadada;
+	border-left: 1px solid #999;
+	border-right: 1px solid #dadada;
+	border-top: 1px solid #999;
+	padding: 3px 5px;
+	width: 98%;
+}
+#commentform input[type="text"]:focus,
+#commentform input[type="text"]:hover,
+#commentform textarea:focus,
+#commentform textarea:hover {
+	background: #f7f7f7;
+	border-bottom: 1px solid #dadada;
+	border-left: 1px solid #999;
+	border-right: 1px solid #dadada;
+	border-top: 1px solid #999;
+}
+#commentform textarea {
+	height: 180px;
+}
+#reply-title a#cancel-comment-reply-link {
+	font-size: 1em;
+	margin: 0 0 0 10px;
+}
+
+
+
+
+
+.sidebar-widget {
+	clear: both;
+	font-size: 0.9em;
+	padding-bottom: 25px;
+}
+.sidebar-widget h1 {
+	color: #8D8767;
+	font-size: 0.9em;
+	letter-spacing: 0.1em;
+	padding-bottom: 10px;
+	text-transform: uppercase;
+}
+.sidebar-widget h1 a {
+	color: #8d8767;
+}
+.sidebar-widget h1.widget-title:before {
+	content: "\002663 ";
+	display: inline;
+	margin: 0 3px 0;
+}
+.sidebar-widget li {
+	border-bottom: 1px solid #ddd;
+	color: #8c8b8b;
+	line-height: 1.5em;
+	list-style: inside square;
+	padding: 6px 0 7px;
+}
+.sidebar-widget ul ul {
+	margin: 4px 0 0 1.0em;
+}
+.sidebar-widget li li {
+	border-bottom: none;
+	padding: 4px 0;
+}
+.sidebar-widget a {
+	color: #333;
+}
+.sidebar-widget a:hover {
+	color: #000;
+	text-decoration: underline;
+}
+.sidebar-widget a:active {
+	color: #990000;
+}
+.sidebar-widget img {
+	height: auto;
+	max-width: 100%;
+	width: auto;
+}
+.sidebar-widget .wp-caption {
+	margin-bottom: 0;
+}
+.sidebar-widget p.wp-caption-text {
+	margin-bottom: 0;
+	padding-bottom: 0;
+}
+
+#subscribe-item h1 {
+	color: #c9774a;
+}
+
+#recent-comments em {
+	color: #999;
+	display: block;
+	padding: 3px 0 0 12px;
+}
+#recent-comments a:hover em {
+	text-decoration: underline;
+}
+
+.sidebar-widget p {
+	color: #333;
+	font-size: 0.9em;
+	line-height: 140%;
+	margin: 0 0 10px 0;
+}
+
+#calendar_wrap caption {
+	border: none;
+	font-weight: bold;
+	padding: 6px 0;
+	text-align: center;
+	text-transform: uppercase;
+}
+#calendar_wrap table {
+	border: 1px solid #ccc;
+	font-size: 0.9em;
+	width: 187px;
+}
+#calendar_wrap table th {
+	border-bottom: 1px solid #ddd;
+	color: #333;
+	padding: 5px 0;
+	text-align: center;
+}
+#calendar_wrap table td {
+	color: #666;
+	padding: 3px 0;
+	text-align: center;
+}
+#calendar_wrap table td a {
+	color: #990000;
+	text-decoration: underline;
+}
+#calendar_wrap table td a:hover {
+	color: #000;
+}
+#calendar_wrap table tfoot td {
+	padding: 5px 6px 12px;
+}
+#calendar_wrap table tfoot #prev {
+	text-align: left;
+}
+#calendar_wrap table tfoot #next {
+	text-align: right;
+}
+
+table.recentcommentsavatar img.avatar {
+	max-width: none;
+}
+td.recentcommentstexttop,
+td.recentcommentstextend {
+	vertical-align: top;
+}
+
+.widget_authors li {
+	list-style: none;
+	list-style-position: outside;
+}
+.widget_authors li:after {
+	clear: both;
+	content: ".";
+	display: block;
+	height: 0;
+	visibility: hidden;
+}
+.widget_authors img {
+	float: left;
+	padding-right: 10px;
+}
+
+.widget_twitter li{
+	line-height:140%;
+}
+
+
+.widget_tag_cloud,
+.wp_widget_tag_cloud {
+	word-wrap: break-word;
+}
+
+
+
+
+#nav-below {
+	padding: 0 2.75103163% 16px 24.5%;
+}
+#nav-below a {
+	background: #eee;
+	border: 1px solid;
+	border-color: #ddd #ccc #ccc #ddd;
+	color: #666;
+	display: block;
+	padding: 3px 10px;
+}
+#nav-below a:hover {
+	border-color: #ccc #999 #999 #ccc;
+	color: #000;
+}
+#nav-below a:active {
+	color: #990000;
+}
+.nav-previous {
+	float: left;
+}
+.nav-next {
+	float: right;
+}
+
+
+
+
+#colophon {
+	background: #000;
+	border-top: 2px double #333;
+}
+#footer {
+	border-bottom: 1px solid #222;
+}
+
+#upper-footer-widgets {
+	border-bottom: 1px dotted #1a1a1a;
+	padding: 35px 0 0 0;
+}
+#upper-footer-widgets aside {
+	color: #666;
+	font-size: 0.9em;
+	margin: 0 0 35px 0;
+	padding: 0;
+}
+#upper-footer-widgets aside h1 {
+	color: #fff;
+	font-size: 0.9em;
+	font-weight: normal;
+	letter-spacing: 0.1em;
+	padding-bottom: 15px;
+	text-transform: uppercase;
+}
+#upper-footer-widgets aside li {
+	color: #bbb;
+	list-style: none;
+	padding: 4px 0;
+}
+#upper-footer-widgets aside a,
+#upper-footer-widgets aside li a {
+	color: #666;
+}
+#upper-footer-widgets .widget_text h1 {
+	color: #fff;
+	float: left;
+	font-size: 3.4em;
+	font-style: italic;
+	font-weight: normal;
+	letter-spacing: -0.03em;
+	margin: 0 0 20px 0;
+	text-transform: none;
+}
+#upper-footer-widgets .textwidget {
+	color: #666;
+	float: right;
+	font-size: 1.8em;
+	font-style: italic;
+	line-height: 140%;
+	padding: 0 2.0833333% 0 0;
+	width: 75.9375%;
+}
+#footer-widgets-holder {
+	padding: 35px 0 20px;
+}
+#footer-widgets {
+	margin: 0 auto;
+	padding: 0 0 0 19.8958333%;
+	width: 80.1041666%;
+}
+.footer-widget-item {
+	color: #666;
+	float: left;
+	font-size: 0.9em;
+	margin: 0 0 0 2.6007802%;
+	width: 22.399219%;
+	padding: 1px 0 0 0;
+}
+.footer-widget-item aside {
+	margin: 0 0 30px 0;
+}
+.footer-widget-item h1 {
+	color: #fff;
+	font-size: 0.9em;
+	font-weight: normal;
+	letter-spacing: 0.1em;
+	padding-bottom: 15px;
+	text-transform: uppercase;
+}
+.footer-widget-item li {
+	color: #bbb;
+	list-style: none;
+	padding: 4px 0;
+}
+.footer-widget-item a,
+.footer-widget-item li a {
+	color: #666;
+}
+.footer-widget-item h1 a {
+	color: #fff;
+}
+.footer-widget-item a:hover,
+.footer-widget-item li a:hover {
+	color: #fff;
+	text-decoration: underline;
+}
+.footer-widget-item ul ul {
+	margin: 0 0 0 1.5em;
+}
+.footer-widget-item p {
+	line-height:1.4em;
+	margin: 0 0 15px 0;
+}
+.footer-widget-item #calendar_wrap table {
+	border: 1px solid #222;
+	font-size: 0.9em;
+	width: 100%;
+}
+.footer-widget-item img {
+	height: auto;
+	max-width: 100%;
+}
+.footer-widget-item #flickr_badge_uber_wrapper,
+.footer-widget-item #flickr_badge_wrapper {
+	background-color: #000!important;
+}
+.footer-widget-item .widget_twitter li{
+	color: #bbb;
+	line-height:1.4em;
+}
+.footer-widget .wp-caption {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+.footer-widget p.wp-caption-text {
+	font-size: 0.9em;
+	margin-bottom: 0;
+	padding-bottom: 0;
+}
+.footer-widget #calendar_wrap caption {
+	border: none;
+}
+.footer-widget #calendar_wrap table th,
+.footer-widget #calendar_wrap table td {
+	color: #bbb;
+}
+.footer-widget #calendar_wrap table th {
+	border-bottom: 1px solid #222;
+}
+.footer-widget #calendar_wrap table td a {
+	color: #666;
+}
+.footer-widget #calendar_wrap table td a:hover {
+	color: #fff;
+}
+.footer-widget-item #flickr_badge_uber_wrapper {
+	max-width: 100%!important;
+}
+
+#copyright {
+	background: #222;
+	border-top: 1px solid #2c2c2c;
+	margin-top: 1px;
+	padding: 12px 0 14px;
+}
+
+#copyright p {
+	padding: 0 2.0833333% 0 22.0833333%;
+	color: #4d4d4d;
+}
+#copyright a {
+	border-bottom: 1px dotted;
+	color: #4d4d4d;
+}
+#copyright a:hover {
+	border-color: #fff;
+	color: #fff;
+}
+
+
+
+
+.content-sidebar #footer-widgets {
+	padding: 0 19.8958333% 0 0;
+	width: 80.1041666%;
+}
+.content-sidebar .footer-widget-item {
+	margin-left: 0;
+	margin: 0 2.6007802% 0 0;
+}
+.content-sidebar #upper-footer-widgets .widget_text h1 {
+	float: right;
+	text-align: right;
+	width: 190px;
+}
+.content-sidebar #upper-footer-widgets .widget_text p {
+	float: left;
+	padding: 0 2.0833333% 0 0;
+}
+.content-sidebar #upper-footer-widgets .textwidget {
+	float: left;
+}
+.content-sidebar #copyright p {
+	padding: 0 22.0833333% 0 0;
+}
+
+
+
+
+.content #content {
+	border-left: none;
+	border-right: none;
+	float: none;
+	margin: 0;
+	padding: 25px 0 70px 0;
+	width: 100%;
+}
+.content .hentry .post-date,
+.content .entry-format {
+	left: 15px;
+}
+.content .post-extras {
+	width: 11.3541666%;
+}
+.content .post-entry {
+	padding: 15px 2.083333% 0 0;
+	width: 79.395833%;
+}
+.content .post-info {
+	padding: 10px 2.083333% 0 18.3125%;
+}
+.content .format-image .post-info {
+	float: right;
+	margin: 0 2.083333% 23px 0;
+	padding: 20px 0;
+	width: 79.395833%;
+}
+.content #nav-below,
+.content .post-title h1,
+.content .more-posts h2,
+.content .more-posts .page-title,
+.content .nocomments,
+.content .nopassword,
+.search.content .page .post-title h1 {
+	padding-left: 18.3125%;
+}
+.content .page .post-title h1 {
+	padding-left: 8.125%;;
+}
+.content .page .post-entry {
+	width: 89.791666%;
+}
+.search.content .page .post-entry {
+	width: 79.395833%;
+}
+.content #more-posts-inner {
+	padding: 0 0 0 11.5625%;
+}
+.content #more-posts-inner article {
+	margin: 0 0 20px 2.355712%;
+	width: 30.98%
+}
+.content .more-posts h2.entry-format {
+	left: 15px;
+	padding-left: 15px;
+}
+.content #footer-widgets {
+	padding: 0 0 0 13.4375%;
+	width: 86.5625%;
+}
+.content .textwidget {
+	width: 79.395833%;
+}
+.content #comments h3 {
+	margin: 3px 0 25px 8.958333%;
+	padding: 20px 0 18px 6.25%;
+}
+.content #comments li {
+	margin-left: 12.1875%;
+}
+.content .comment-heading {
+	padding: 2px 3.5587188% 10px;
+}
+.content .comment-text {
+	padding: 15px 3.5587188% 5px;
+}
+.content #comments #respond h3 {
+	padding: 0 3.5587188% 18px;
+}
+.content #comments #respond {
+	padding: 48px 0 0 12.1875%;
+}
+.content #comments #respond form {
+	width: 97%!important;
+}
+
+
+
+
+#error404 {
+	font-style: italic;
+	padding: 40px 0;
+	text-align: center;
+}
+#error404 h1 {
+	color: #000;
+	font-size: 7em;
+	font-weight: normal;
+	letter-spacing: -0.05em;
+	padding-bottom: 20px;
+}
+#error404 p {
+	color: #333;
+	font-size: 1.9em;
+}
+#error404 span {
+	color: #666;
+}
+#error404 a {
+	color: #675f34;
+	text-decoration: underline;
+}
+#error404 a:hover {
+	color: #990000;
+}
+
+
+
+
+@media (max-width: 800px) {
+	
+	#main #content {
+		border: none;
+		margin: 0;
+		padding-left: 0;
+		width: auto;
+	}
+	#main #secondary {
+		float: none;
+		margin: 0 7%;
+		padding: 0;
+		width: auto;
+	}
+	.hentry .post-date * {
+		background-color: transparent;
+		color: #333;
+		display: inline;
+		padding: 0 2px 0 0;
+	}
+	.hentry .post-date {
+		line-height: 1.5em;
+		text-align: right;
+		top: 7px;
+		width: 15%;
+	}
+	.post-date strong,
+	.post-date em,
+	.post-date span {
+		font-size: 1.3em;
+		letter-spacing: 0;
+	}
+	.post-date span,
+	.post-date em {
+		top: 0;
+	}
+	.post-date span {
+		color: #333;
+		font-variant: normal;
+	}
+	.sticky .entry-format,
+	.more-posts .sticky h2.entry-format,
+	.more-posts h2.entry-format	 {
+		background-color: transparent;
+		color: #333;
+		font-size: 1.5em;
+		padding: 0;
+		text-align: right;
+		top: 0px;
+		width: 15%;
+	}
+	.format-image .featured,
+	.format-gallery .featured,
+	.format-quote .featured,
+	.format-video .featured {
+		top: 24px;
+	}
+	.content .sticky .entry-format,
+	.content .more-posts .sticky h2.entry-format,
+	.content .more-posts h2.entry-format {
+		background-color: transparent;
+		text-align: left;
+	}
+	.content .hentry .post-date {
+		left: 0;
+		text-align: left;
+	}
+	.hentry .post-date,
+	.sticky .entry-format,
+	.more-posts .sticky h2.entry-format,
+	.more-posts h2.entry-format {
+		left: 0;
+	}
+	.content-sidebar .widget_text h1 {
+		float: left;
+		text-align: left;
+		width: 100%;
+	}
+	.content-sidebar .widget_text p {
+		padding: 0;
+		width: 100%;
+	}
+	#footer-inner-inner,
+	#copyright-inner-inner {
+		padding: 0 9%;
+	}
+	#page #footer-widgets {
+		padding: 0;
+		width: 100%;
+	}
+	#page .footer-widget-item {
+		float: none;
+		margin: 0 0 35px 0;
+		width: 100%;
+	}
+	#page .footer-widget-item aside {
+		margin: 0 0 30px 0;
+	}
+	
+	iframe,
+	embed,
+	object {
+		max-width: 100%;
+	}
+	.contact-form input	{
+		max-width: 100%;
+	}
+	#page #upper-footer-widgets .widget_text h1 {
+		float: none;
+		text-align: left;
+		width: auto;
+	}
+	#page #upper-footer-widgets .textwidget {
+		float: none;
+		width: 100%
+	}
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) {
+	body, input, textarea {
+		font-size: 50%;
+	}
+	#main-title #site-description {
+		line-height: 20px;
+	}
+	#menu {
+		padding: 10px 0 15px;
+	}
+	#menu a {
+		padding: 3px 5px 5px;
+	}
+	#menu > ul > li {
+		margin-bottom: 5px;
+	}
+	#main-image {
+		padding: 5px 0;
+	}
+	#content {
+		padding: 10px 0 50px 2.083%;
+	}
+	.post-content {
+		margin: 0 0 10px 0;
+	}
+	.post-title {
+		padding: 0 0 10px;
+	}
+	.post-extras {
+		padding: 20px 0 10px;
+	}
+	.hentry .post-date {
+		top: 5px;
+	}
+	.sticky .entry-format,
+	.more-posts .sticky h2.entry-format,
+	.more-posts h2.entry-format	 {
+		top: 3px;
+	}
+	
+	iframe,
+	embed,
+	object {
+		max-width: 100%;
+	}
+	.contact-form input	{
+		max-width: 100%;
+	}
+	#footer-widgets {
+		padding: 0;
+		width: 100%;
+	}
+	.footer-widget-item {
+		float: none;
+		margin: 0 0 35px 0;
+		width: 100%;
+	}
+	.footer-widget-item aside {
+		margin: 0 0 30px 0;
+	}
+}
+
+
+
+
+#ie7 .clear-fix {
+	height: 1%;
+}
+#ie7 .footer-widget-item {
+	width: 22.3%;
+}
+#ie7 #comments h3 span {
+	line-height: 100%;
+	top: 10px;
+}
+#ie7 .hentry .post-date {
+	top: 18px;
+}
+#ie7 .entry-format,
+#ie7 .more-posts h2.entry-format {
+	top: 40px;
+}
+
+
+
+
+#ie8 .clear-fix {
+	height:1%;
+}
+#ie8 .entry-format,
+#ie8 .more-posts h2.entry-format {
+	top: 37px;
+}
+#content .wpl-likebox {
+	padding: 5px 0 10px 24.5%!important;
+}
+.post-entry .sharing {
+	padding: 0;
+}
+.post-entry .sharing a {
+	font-size: 0.9em;
+	text-decoration: none;
+}
+.post-entry .sharing li {
+	clear: none;
+	line-height: 200%;
+}
+#ilikeposts {
+	clear: both;
+}
+.post-entry div.sharedaddy div.sd-block {
+	border-top:0;
+	padding: 0;
+}
+.post-entry div.sharedaddy {
+	margin-bottom: 0
+}
+.post-entry div.sharedaddy div.sd-block {
+	padding: 0;
+}
+div.sharedaddy h3,
+#content div.sharedaddy h3,
+#main div.sharedaddy h3 {
+	float: left!important;
+	padding-top: 1em!important;
+	margin-right: 10px!important;
+	max-width: 100px!important;
+}
+.rtl div.sharedaddy h3,
+.rtl #content div.sharedaddy h3,
+.rtl #main div.sharedaddy h3 {
+	float: right!important;
+	margin-right: 0!important;
+	margin-left: 10px!important;
+}
+#jp-post-flair h3 {
+	border-bottom: 0;
+}
+body.highlander-light h3.sd-title:before,
+div#jp-relatedposts h3.jp-relatedposts-headline em:before {
+	display: none!important;
+}
+div#jp-relatedposts h3.jp-relatedposts-headline {
+	font-family: "Adobe Garamond Pro", Garamond, Palatino, "Palatino Linotype", Times, "Times New Roman", Georgia, serif;
+}
+div.sharedaddy .sd-content {
+	float: left!important;
+}
+.rtl div.sharedaddy .sd-content {
+	float: right!important;
+}
+.adcode {
+	font-size: 0.7em;
+}
+#wpstats {
+	position: absolute;
+	top: -9000px;
+}
+.video-player {
+	max-width: 97.5% !important;
+}
+.videopress-placeholder,
+.video-player img {
+	max-width: 100% !important;
+	height: auto !important;
+}
+
+.reblogger-note img.avatar {
+	float: left;
+	padding: 0;
+	border: 0;
+}
+
+.reblogger-note-content {
+	margin: 0 0 20px;
+}
+
+.wpcom-reblog-snapshot .reblog-from img {
+	margin: 0 .75em 0 0;
+	padding: 0;
+	border: 0;
+}
+
+.wpcom-reblog-snapshot .reblogger-note img.avatar {
+	float: left;
+	padding: 0;
+	border: 0;
+	margin: 0 .5em 0 0;
+}
+
+.wpcom-reblog-snapshot {
+	margin-bottom: 1em;
+}
+
+.wpcom-reblog-snapshot p.reblog-from {
+	margin: 0 0 1em 0;
+}
+
+.wpcom-reblog-snapshot p.reblogger-headline {
+	line-height: 32px;
+	margin: 0 0 1em 0;
+}
+
+.wpcom-reblog-snapshot .reblogged-content {
+	margin: 0 0 1em 0;
+}
+
+
+.reblog-post .wpcom-enhanced-excerpt-content {
+	border-left: 3px solid #eee;
+	padding-left: 15px;
+}
+
+.reblog-post ul.thumb-list {
+	display: block;
+	list-style: none;
+	margin: 2px 0;
+	padding: 0;
+	clear: both;
+}
+
+.reblog-post ul.thumb-list li {
+	display: inline;
+	margin: 0;
+	padding: 0 1px;
+	border: 0;
+}
+
+.reblog-post ul.thumb-list li a {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.reblog-post ul.thumb-list li img {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.reblog-post .wpcom-enhanced-excerpt {
+	clear: both;
+}
+
+.reblog-post .wpcom-enhanced-excerpt address,
+.reblog-post .wpcom-enhanced-excerpt li,
+.reblog-post .wpcom-enhanced-excerpt h1,
+.reblog-post .wpcom-enhanced-excerpt h2,
+.reblog-post .wpcom-enhanced-excerpt h3,
+.reblog-post .wpcom-enhanced-excerpt h4,
+.reblog-post .wpcom-enhanced-excerpt h5,
+.reblog-post .wpcom-enhanced-excerpt h6,
+.reblog-post .wpcom-enhanced-excerpt p {
+	font-size: 100% !important;
+}
+
+.reblog-post .wpcom-enhanced-excerpt blockquote,
+.reblog-post .wpcom-enhanced-excerpt pre,
+.reblog-post .wpcom-enhanced-excerpt code,
+.reblog-post .wpcom-enhanced-excerpt q {
+	font-size: 98% !important;
+}
+
+
+.reblog-from img {
+	margin: 0 10px 0 0;
+	vertical-align: middle;
+	padding: 0;
+	border: 0;
+}
+
+.reblog-source {
+	margin-bottom: 0;
+	font-size: .8em;
+	line-height: 1;
+}
+
+.reblog-source .more-words {
+	color: #668eaa;
+}
+
+.wpcom-reblog-snapshot .reblog-post {
+	box-shadow: 0 0 0 1px rgba(46, 68, 83, .1) inset, 0 1px 1px rgba(46, 68, 83, .05);
+	border-radius: 4px;
+	padding: 24px;
+}
+
+
+.wpcom-reblog-snapshot .reblogger-note {
+	margin: 0 0 1em 0;
+	overflow: hidden;
+}
+
+.wpcom-reblog-snapshot p.reblogger-headline {
+	line-height: 32px;
+	margin: 0 0 1em 0;
+}
+
+.wpcom-reblog-snapshot .reblogger-note-content {
+	margin: 0;
+	padding: 0;
+}
+
+body .wpcom-reblog-snapshot .reblogger-note-content blockquote {
+	font-style: normal;
+	font-weight: normal;
+	font-size: 1em;
+	margin: 0;
+	padding: 0;
+	position: relative;
+	border: none;
+}
+
+.wpcom-reblog-snapshot .reblogger-note-content blockquote p:last-child {
+	margin-bottom: 0;
+}
+.geolocation-chip .noticon {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.geolocation-chip {
+  margin-bottom: 1em;
+}
+
+/* ===== CCFNT nav overrides ===== */
+
+/* Stack branding: image first, title second, nav last */
+#branding {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+#main-image {
+  order: 1;
+  padding: 0;
+  border-top: none;
+}
+#main-title {
+  order: 2;
+  padding: 10px 0 6px;
+  margin: 0;
+  width: 100%;
+}
+#menu {
+  order: 3;
+  padding: 0;
+  background: #3a1f00;
+  width: 100%;
+}
+
+/* Menu bar items */
+#menu ul.menu {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+}
+#menu li {
+  background: transparent;
+  float: none;
+  margin: 0;
+}
+#menu > ul > li {
+  margin-bottom: 0;
+}
+#menu a {
+  color: #f0e6d3;
+  font-size: 1em;
+  font-weight: 600;
+  padding: 13px 18px;
+  border: none;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: block;
+}
+#menu a:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.12);
+}
+
+/* Active / current page */
+#menu .current-menu-item > a,
+#menu .current_page_item > a,
+#menu .current-menu-ancestor > a,
+#menu .current-menu-parent > a,
+#menu .current_page_ancestor > a {
+  color: #ffd699;
+  border: none;
+  font-weight: 700;
+}
+
+/* Dropdown submenus */
+#menu ul ul {
+  background: #3a1f00;
+  top: 100%;
+  width: 200px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+#menu li li {
+  background: transparent;
+  float: none;
+  margin: 0;
+}
+#menu li li a {
+  padding: 10px 18px;
+  font-size: 0.88em;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.custom-background #menu li li a {
+  background: transparent;
+}
+
+/* align image width to menu bar */
+#main-image { max-width: 100%; }
+
+
+/* ============================================================
+   Mobile sidebar improvements
+   ============================================================ */
+@media (max-width: 768px) {
+
+  /* More breathing room between widgets */
+  #secondary .sidebar-widget {
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+
+  /* Widget title — slightly larger on mobile */
+  #secondary .widget-title {
+    font-size: .78em;
+    letter-spacing: .12em;
+    margin-bottom: 10px;
+  }
+
+  /* ---- Prochaine Messe calendar ---- */
+  #milestone_widget-2 .milestone-content {
+    margin: 0 auto;
+  }
+
+  /* ---- SMS form ---- */
+  /* 16px minimum stops iOS from zooming on focus */
+  #sms-form input[type=tel] {
+    font-size: 16px !important;
+    padding: 12px 14px !important;
+    margin: 10px 0 8px !important;
+    border-radius: 6px !important;
+  }
+  #sms-submit {
+    padding: 13px 8px !important;
+    font-size: 1em !important;
+    border-radius: 6px !important;
+    letter-spacing: .05em !important;
+  }
+  .sms-icon {
+    font-size: 2.4em !important;
+    margin-bottom: 2px;
+    display: block;
+  }
+  /* Description text below the icon */
+  #sms-reminder-widget > div > div {
+    font-size: .9em !important;
+    color: #555 !important;
+    margin-top: 6px;
+  }
+  #sms-msg {
+    font-size: .88em !important;
+    margin-top: 8px !important;
+    padding: 0 4px;
+  }
+
+  /* ---- Gaggle signup widget ---- */
+  /* Smaller envelope SVG so button is the visual hero */
+  .ccfnt-env-wrap svg {
+    width: 64px !important;
+    height: 48px !important;
+  }
+  /* Description text */
+  #text-2 .textwidget > div > div[style] {
+    font-size: .9em !important;
+    color: #555 !important;
+    margin: 8px 0 4px !important;
+  }
+  .ccfnt-signup-btn {
+    padding: 11px 28px !important;
+    font-size: .95em !important;
+    display: inline-block;
+    margin-top: 10px !important;
+  }
+
+  /* ---- Logo widget ---- */
+  #media_image-2 img {
+    max-width: 240px;
+    display: block;
+    margin: 0 auto;
+  }
+}
+
+/* ============================================================
+   Mobile sidebar v2 — corrected sizing
+   (overrides the v1 block above)
+   ============================================================ */
+@media (max-width: 768px) {
+
+  /* Break compound em scaling — set a clear baseline */
+  #secondary .sidebar-widget {
+    font-size: 1em !important;
+    padding: 18px 20px 20px !important;
+    margin-bottom: 14px !important;
+  }
+
+  /* Widget titles — explicit px so nested em scaling can't shrink them */
+  #secondary .sidebar-widget h1,
+  #secondary .sidebar-widget h1.widget-title {
+    font-size: 13px !important;
+    letter-spacing: .14em !important;
+    margin-bottom: 14px !important;
+    padding-bottom: 10px !important;
+  }
+
+  /* ---- Prochaine Messe countdown ---- */
+  .milestone-countdown .difference {
+    font-size: 3em !important;
+  }
+  .milestone-countdown .label {
+    font-size: 15px !important;
+    color: #555 !important;
+  }
+
+  /* ---- SMS widget ---- */
+  .sms-icon {
+    font-size: 2.6em !important;
+    display: block !important;
+    margin-bottom: 4px !important;
+  }
+  /* Override inline style="font-size:.82em" on the description div */
+  #sms-reminder-widget div[style] {
+    font-size: 15px !important;
+    color: #555 !important;
+    line-height: 1.5 !important;
+  }
+  #sms-form input[type=tel] {
+    font-size: 16px !important;
+    padding: 13px 14px !important;
+    margin: 10px 0 8px !important;
+    border-radius: 6px !important;
+  }
+  #sms-submit {
+    padding: 14px 8px !important;
+    font-size: 16px !important;
+    border-radius: 6px !important;
+  }
+  #sms-msg {
+    font-size: 14px !important;
+    margin-top: 10px !important;
+  }
+
+  /* ---- Gaggle / email widget ---- */
+  .ccfnt-env-wrap svg {
+    width: 60px !important;
+    height: 46px !important;
+  }
+  /* Override inline font-size:.82em on description */
+  #text-2 div[style] {
+    font-size: 15px !important;
+    color: #555 !important;
+    line-height: 1.5 !important;
+  }
+  .ccfnt-signup-btn {
+    font-size: 16px !important;
+    padding: 12px 30px !important;
+    margin-top: 12px !important;
+  }
+
+  /* ---- Logo ---- */
+  #media_image-2 img {
+    max-width: 220px !important;
+    display: block !important;
+    margin: 0 auto !important;
+  }
+}
+
+/* ============================================================
+   Desktop sidebar — wider column + corrected font scaling
+   Targets screens wider than the theme's mobile breakpoint
+   ============================================================ */
+@media (min-width: 769px) {
+
+  /* Widen sidebar from 19.68% (~200px) to 26% (~266px on 1024px) */
+  #secondary {
+    width: 26% !important;
+    font-size: 13px !important;   /* explicit base — breaks the 76% × 0.9 × 0.9 compound */
+  }
+
+  /* Adjust primary/content to match the wider sidebar */
+  #primary {
+    margin-left: -28% !important;
+  }
+  #content {
+    margin-left: 28% !important;
+    width: 70% !important;
+  }
+
+  /* Stop the sidebar widget from double-shrinking */
+  #secondary .sidebar-widget {
+    font-size: 1em !important;
+    padding-bottom: 20px !important;
+  }
+
+  /* Widget titles — readable at the new 13px base */
+  #secondary .sidebar-widget h1,
+  #secondary .sidebar-widget h1.widget-title {
+    font-size: 1em !important;       /* 13px — was ~9.7px */
+    letter-spacing: .1em !important;
+  }
+
+  /* Countdown "jours restants" */
+  .milestone-countdown .label {
+    font-size: 13px !important;
+  }
+  .milestone-countdown .difference {
+    font-size: 2.6em !important;
+  }
+
+  /* SMS form — explicit sizes so the input fills the wider column */
+  #sms-reminder-widget div[style] {
+    font-size: 13px !important;
+    color: #555 !important;
+    line-height: 1.5 !important;
+  }
+  #sms-form input[type=tel] {
+    font-size: 14px !important;
+    padding: 9px 12px !important;
+  }
+  #sms-submit {
+    font-size: 14px !important;
+    padding: 10px 8px !important;
+  }
+  #sms-msg {
+    font-size: 13px !important;
+  }
+  #sms-expand input[type=text] {
+    font-size: 14px !important;
+    padding: 9px 12px !important;
+  }
+
+  /* Gaggle widget */
+  #text-2 div[style] {
+    font-size: 13px !important;
+    color: #555 !important;
+    line-height: 1.5 !important;
+  }
+  .ccfnt-signup-btn {
+    font-size: 13px !important;
+    padding: 9px 20px !important;
+  }
+}
+
+/* ============================================================
+   Mobile hamburger nav  (≤768 px)
+   ============================================================ */
+@media (max-width: 768px) {
+
+  /* Hide the flat desktop list by default */
+  #menu ul.menu {
+    display: none !important;
+    flex-direction: column !important;
+    margin: 0 !important; padding: 0 !important;
+  }
+  #menu.ccfnt-open ul.menu {
+    display: flex !important;
+  }
+
+  /* Desktop li floats must be cleared on mobile */
+  #menu ul.menu li {
+    float: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+    border-bottom: 1px solid rgba(255,255,255,.09) !important;
+  }
+
+  /* Top-level links */
+  #menu ul.menu > li > a {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 15px 20px !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    color: #f0e6d3 !important;
+    letter-spacing: .08em !important;
+    text-transform: uppercase !important;
+    border: none !important;
+  }
+  #menu ul.menu > li.current_page_item > a,
+  #menu ul.menu > li.current-menu-item > a,
+  #menu ul.menu > li.current_page_ancestor > a {
+    color: #ffd699 !important;
+  }
+
+  /* Submenu arrow */
+  #menu ul.menu li.page_item_has_children > a::after {
+    content: '›' !important;
+    font-size: 1.3em !important;
+    line-height: 1 !important;
+    transition: transform .2s !important;
+    margin-left: 8px !important;
+  }
+  #menu ul.menu li.page_item_has_children.ccfnt-sub-open > a::after {
+    transform: rotate(90deg) !important;
+  }
+
+  /* Sub-menus hidden until parent opened */
+  #menu ul.children {
+    display: none !important;
+    background: rgba(0,0,0,.18) !important;
+    margin: 0 !important; padding: 0 !important;
+  }
+  #menu ul.menu li.ccfnt-sub-open > ul.children {
+    display: block !important;
+  }
+  #menu ul.children li {
+    border-bottom: 1px solid rgba(255,255,255,.06) !important;
+  }
+  #menu ul.children li a {
+    display: block !important;
+    padding: 12px 20px 12px 34px !important;
+    font-size: 14px !important;
+    color: #d4b896 !important;
+    font-weight: 400 !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    border: none !important;
+  }
+  #menu ul.children li a:hover { color: #fff !important; }
+
+  /* Hamburger toggle button */
+  #ccfnt-hamburger {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    background: #3a1f00 !important;
+    border: none !important;
+    color: #f0e6d3 !important;
+    font-family: inherit !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    letter-spacing: .12em !important;
+    text-transform: uppercase !important;
+    padding: 15px 20px !important;
+    cursor: pointer !important;
+    outline: none !important;
+  }
+  #ccfnt-hamburger:hover { background: #4e2a00 !important; }
+  #ccfnt-hamburger .ccfnt-hb-icon {
+    font-size: 1.45em !important;
+    line-height: 1 !important;
+    transition: transform .2s !important;
+  }
+  #ccfnt-hamburger[aria-expanded="true"] .ccfnt-hb-icon {
+    transform: rotate(90deg) !important;
+  }
+}
+
+/* On desktop the hamburger must never show */
+@media (min-width: 769px) {
+  #ccfnt-hamburger { display: none !important; }
+  #menu ul.menu    { display: block !important; }
+}
+
+/* ============================================================
+   Mobile hamburger — submenu readability fix
+   ============================================================ */
+@media (max-width: 768px) {
+  #menu ul.children {
+    background: #2a1500 !important;
+  }
+  #menu ul.children li a {
+    color: #f0e6d3 !important;
+  }
+  #menu ul.children li a:hover {
+    color: #ffd699 !important;
+    background: rgba(255,255,255,.05) !important;
+  }
+}
+
+/* ============================================================
+   Dark / Light mode — CSS variables
+   Warm stone-brown dark, not cold black.
+   Applied via [data-theme="dark"] on <html>.
+   System preference honoured when no manual choice is saved.
+   ============================================================ */
+
+/* ---- Light (default) ---- */
+:root {
+  --bg:          #ffffff;
+  --bg-surface:  #ffffff;
+  --bg-sidebar:  #f5f0eb;
+  --bg-widget:   #ffffff;
+  --text:        #222222;
+  --text-2:      #555555;
+  --text-3:      #888888;
+  --border:      #dddddd;
+  --border-soft: #ede5d8;
+  --accent:      #990000;
+  --accent-h:    #cc0000;
+  --heading:     #990000;
+  --link:        #990000;
+  --link-h:      #cc0000;
+  --input-bg:    #ffffff;
+  --input-bd:    #c9a87c;
+  --shadow:      rgba(0,0,0,.08);
+}
+
+/* ---- Dark ---- */
+[data-theme="dark"] {
+  --bg:          #1c1917;
+  --bg-surface:  #242019;
+  --bg-sidebar:  #1f1c18;
+  --bg-widget:   #28231e;
+  --text:        #e8dfd6;
+  --text-2:      #b0a090;
+  --text-3:      #7a6e64;
+  --border:      #3a342e;
+  --border-soft: #332d27;
+  --accent:      #d05050;
+  --accent-h:    #e06060;
+  --heading:     #d05050;
+  --link:        #d05050;
+  --link-h:      #e06060;
+  --input-bg:    #2a2420;
+  --input-bd:    #5a4a3a;
+  --shadow:      rgba(0,0,0,.3);
+}
+
+/* ---- System auto dark (when no manual choice saved) ---- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) {
+    --bg:          #1c1917;
+    --bg-surface:  #242019;
+    --bg-sidebar:  #1f1c18;
+    --bg-widget:   #28231e;
+    --text:        #e8dfd6;
+    --text-2:      #b0a090;
+    --text-3:      #7a6e64;
+    --border:      #3a342e;
+    --border-soft: #332d27;
+    --accent:      #d05050;
+    --accent-h:    #e06060;
+    --heading:     #d05050;
+    --link:        #d05050;
+    --link-h:      #e06060;
+    --input-bg:    #2a2420;
+    --input-bd:    #5a4a3a;
+    --shadow:      rgba(0,0,0,.3);
+  }
+}
+
+/* ---- Apply variables to elements ---- */
+body {
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
+}
+#page, #page-inner, #main {
+  background-color: var(--bg) !important;
+}
+#content, .post-content, .post-entry,
+.entry-content, #comments {
+  background-color: var(--bg-surface) !important;
+  color: var(--text) !important;
+}
+
+/* Headings */
+h1, h2, h3, h4 { color: var(--text) !important; }
+.post-title h1, .post-title h2,
+h1.entry-title, h2.entry-title {
+  color: var(--heading) !important;
+}
+/* Keep the italic red page title */
+.post-title h1 { color: var(--heading) !important; }
+
+/* Links */
+a { color: var(--link) !important; }
+a:hover { color: var(--link-h) !important; }
+
+/* Borders / dividers */
+#content { border-color: var(--border) !important; }
+hr, .post-content hr { border-color: var(--border) !important; }
+.sidebar-widget li { border-color: var(--border) !important; }
+
+/* Sidebar */
+#secondary, .widget-area {
+  background-color: var(--bg-sidebar) !important;
+}
+.sidebar-widget {
+  background-color: var(--bg-widget) !important;
+  color: var(--text) !important;
+}
+.sidebar-widget h1, .sidebar-widget h1.widget-title {
+  color: var(--text-2) !important;
+}
+
+/* Calendar widget */
+[data-theme="dark"] .ccfnt-cal-month,
+:root:not([data-theme="light"]):not([data-theme="dark"]) .ccfnt-cal-month {
+  filter: brightness(.9) !important;
+}
+[data-theme="dark"] .ccfnt-cal-body,
+:root:not([data-theme="light"]):not([data-theme="dark"]) .ccfnt-cal-body {
+  background: var(--bg-widget) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+[data-theme="dark"] .ccfnt-cal-year,
+:root:not([data-theme="light"]):not([data-theme="dark"]) .ccfnt-cal-year {
+  color: var(--text-2) !important;
+}
+.milestone-countdown .difference { color: var(--accent) !important; }
+.milestone-countdown .label { color: var(--text-2) !important; }
+
+/* SMS form */
+#sms-form input[type=tel] {
+  background: var(--input-bg) !important;
+  border-color: var(--input-bd) !important;
+  color: var(--text) !important;
+}
+#sms-form input[type=tel]::placeholder { color: var(--text-3) !important; }
+
+#sms-expand input[type=text] {
+  background: var(--input-bg) !important;
+  border-color: var(--input-bd) !important;
+  color: var(--text) !important;
+}
+#sms-expand input[type=text]::placeholder { color: var(--text-3) !important; }
+#sms-optin-label { color: var(--text-2) !important; }
+
+/* Gaggle description + SMS description */
+#sms-reminder-widget div[style],
+#text-2 div[style] {
+  color: var(--text-2) !important;
+}
+
+/* Messages list (derniers messages) */
+.msg-card {
+  background: var(--bg-widget) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+.msg-date { color: var(--text-3) !important; }
+.msg-preview { color: var(--text-2) !important; }
+
+/* Tables */
+table { color: var(--text) !important; }
+td, th { border-color: var(--border) !important; }
+
+/* Footer */
+#colophon, #footer, #footer-inner {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border) !important;
+  color: var(--text-2) !important;
+}
+
+/* ---- Toggle button ---- */
+#ccfnt-theme-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.15em;
+  line-height: 1;
+  padding: 13px 14px;
+  color: #f0e6d3;
+  opacity: .75;
+  transition: opacity .2s;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+#ccfnt-theme-toggle:hover { opacity: 1; }
+
+/* Desktop: float button to right end of menu bar */
+@media (min-width: 769px) {
+  #menu {
+    display: flex !important;
+    align-items: stretch !important;
+  }
+  #menu ul.menu { flex: 1 !important; }
+  #ccfnt-theme-toggle { padding: 0 16px !important; }
+}
+
+/* Mobile: sits between "Menu" text and ☰ icon */
+@media (max-width: 768px) {
+  #ccfnt-hamburger {
+    flex: 1;
+  }
+  #ccfnt-theme-toggle {
+    padding: 15px 16px !important;
+    font-size: 1.1em !important;
+    opacity: .85;
+  }
+}
+
+/* ============================================================
+   Dark mode v2 — corrected palette + menu layout fix
+   ============================================================ */
+
+/* ---- Lighter, less chocolatey dark palette ---- */
+[data-theme="dark"],
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]):not([data-theme="dark"]) { --x:0 } }
+[data-theme="dark"] {
+  --bg:         #2b2b2e !important;
+  --bg-surface: #2b2b2e !important;
+  --bg-sidebar: #2b2b2e !important;
+  --bg-widget:  #2b2b2e !important;
+  --text:       #e2ddd8 !important;
+  --text-2:     #a8a29c !important;
+  --text-3:     #6e6a65 !important;
+  --border:     #44444a !important;
+  --border-soft:#3c3c41 !important;
+  --input-bg:   #323235 !important;
+  --input-bd:   #555560 !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) {
+    --bg:         #2b2b2e;
+    --bg-surface: #2b2b2e;
+    --bg-sidebar: #2b2b2e;
+    --bg-widget:  #2b2b2e;
+    --text:       #e2ddd8;
+    --text-2:     #a8a29c;
+    --text-3:     #6e6a65;
+    --border:     #44444a;
+    --border-soft:#3c3c41;
+    --input-bg:   #323235;
+    --input-bd:   #555560;
+  }
+}
+
+/* ---- Fix: remove flex from #menu on desktop, float toggle right ---- */
+@media (min-width: 769px) {
+  #menu {
+    display: block !important;  /* restore float-based nav layout */
+  }
+  #menu ul.menu {
+    flex: unset !important;
+  }
+  #ccfnt-theme-toggle {
+    float: right !important;
+    padding: 14px 16px !important;
+    line-height: 1 !important;
+  }
+}
+
+/* ---- Mobile: keep toggle next to hamburger ---- */
+@media (max-width: 768px) {
+  #menu {
+    display: flex !important;
+    flex-wrap: wrap !important;
+  }
+  #ccfnt-hamburger {
+    flex: 1 !important;
+    order: 1 !important;
+  }
+  #ccfnt-theme-toggle {
+    order: 2 !important;
+    float: none !important;
+  }
+  /* Full-width nav list below the button row */
+  #menu ul.menu {
+    order: 3 !important;
+    width: 100% !important;
+    flex: unset !important;
+  }
+}
+
+/* ============================================================
+   Menu layout definitive fix — overrides the global flex/float
+   rules injected earlier (lines ~2403) that broke desktop
+   ============================================================ */
+
+/* Desktop: restore float-based horizontal menu */
+@media (min-width: 769px) {
+  #menu ul.menu {
+    display: block !important;
+    flex-wrap: unset !important;
+  }
+  #menu li {
+    float: left !important;
+    width: auto !important;
+    border-bottom: none !important;
+  }
+  #ccfnt-theme-toggle {
+    float: right !important;
+    display: block !important;
+    padding: 13px 16px !important;
+    line-height: 1 !important;
+  }
+}
+
+/* Mobile: keep flex column */
+@media (max-width: 768px) {
+  #menu li {
+    float: none !important;
+    width: 100% !important;
+  }
+  #ccfnt-theme-toggle {
+    float: none !important;
+  }
+}
+
+/* ============================================================
+   Menu layout v2 — absolute toggle, fix submenu float
+   ============================================================ */
+@media (min-width: 769px) {
+  /* Give menu a positioning context for the toggle */
+  #menu {
+    position: relative !important;
+    overflow: visible !important;
+  }
+
+  /* Only TOP-LEVEL li float left — not submenu li */
+  #menu ul.menu > li {
+    float: left !important;
+    width: auto !important;
+    border-bottom: none !important;
+  }
+
+  /* Submenu li must NOT float */
+  #menu ul.menu li li {
+    float: none !important;
+    width: 100% !important;
+    display: block !important;
+  }
+
+  /* Pin toggle to the right of the menu bar — no float needed */
+  #ccfnt-theme-toggle {
+    float: none !important;
+    position: absolute !important;
+    right: 0 !important;
+    top: 0 !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 18px !important;
+    font-size: 1.1em !important;
+  }
+}
+
+/* ============================================================
+   Dark mode fixes — sidebar backgrounds + menu link color
+   ============================================================ */
+
+/* Light mode: sidebar widgets must stay transparent (no grey boxes) */
+:root {
+  --bg-sidebar: transparent;
+  --bg-widget:  transparent;
+}
+
+/* Dark mode: restore the dark surfaces for sidebar */
+[data-theme="dark"] {
+  --bg-sidebar: #2b2b2e !important;
+  --bg-widget:  #2b2b2e !important;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) {
+    --bg-sidebar: #2b2b2e;
+    --bg-widget:  #2b2b2e;
+  }
+}
+
+/* Menu links must never be overridden by the global link variable —
+   they have their own cream/gold color set explicitly */
+#menu a,
+#menu a:hover,
+#menu ul a,
+#menu ul a:hover {
+  color: #f0e6d3 !important;
+}
+#menu .current_page_item > a,
+#menu .current-menu-item > a,
+#menu .current_page_ancestor > a,
+#menu .current-menu-ancestor > a {
+  color: #ffd699 !important;
+}
+
+/* Narrow the global link override to content areas only */
+a { color: var(--link); }   /* no !important — lets #menu a win */
+.post-content a,
+.post-entry a,
+.entry-content a,
+#comments a,
+.textwidget a {
+  color: var(--link) !important;
+}
+
+/* ---- Override inline color styles inside content (e.g. style="color:#333") ---- */
+[data-theme="dark"] .post-entry div,
+[data-theme="dark"] .post-entry p,
+[data-theme="dark"] .post-entry span,
+[data-theme="dark"] .post-entry li,
+[data-theme="dark"] .post-content div,
+[data-theme="dark"] .post-content p,
+[data-theme="dark"] .post-content span,
+[data-theme="dark"] .post-content li {
+  color: var(--text) !important;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .post-entry div,
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .post-entry p,
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .post-entry span,
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .post-entry li,
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .post-content div,
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .post-content p,
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .post-content span,
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .post-content li {
+    color: var(--text) !important;
+  }
+}
+
+/* ---- <pre> blocks in dark mode ---- */
+[data-theme="dark"] pre,
+[data-theme="dark"] code {
+  background: var(--bg-widget) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) pre,
+  :root:not([data-theme="light"]):not([data-theme="dark"]) code {
+    background: var(--bg-widget) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+  }
+}
+
+/* ---- Inline color overrides on h1/h2/h3 spans in dark mode ---- */
+[data-theme="dark"] h1 span,
+[data-theme="dark"] h2 span,
+[data-theme="dark"] h3 span,
+[data-theme="dark"] h4 span {
+  color: var(--heading) !important;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) h1 span,
+  :root:not([data-theme="light"]):not([data-theme="dark"]) h2 span,
+  :root:not([data-theme="light"]):not([data-theme="dark"]) h3 span,
+  :root:not([data-theme="light"]):not([data-theme="dark"]) h4 span {
+    color: var(--heading) !important;
+  }
+}
+
+/* ---- address elements ---- */
+[data-theme="dark"] address {
+  color: var(--text-2) !important;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) address {
+    color: var(--text-2) !important;
+  }
+}
+
+/* ============================================================
+   Batch improvements v2 — fixes #1-6
+   ============================================================ */
+
+/* ── Fix 1: Prochaine Messe calendar tile ── */
+
+/* Light mode base */
+.ccfnt-cal-tile {
+  width: 140px;
+}
+.ccfnt-cal-day {
+  background: #fff !important;
+  color: #111 !important;
+}
+
+/* Dark mode: calendar body */
+[data-theme="dark"] .ccfnt-cal-day,
+[data-theme="dark"] .ccfnt-cal-tile > div:not(.ccfnt-cal-month) {
+  background: var(--bg-widget) !important;
+  color: var(--text) !important;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .ccfnt-cal-day,
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .ccfnt-cal-tile > div:not(.ccfnt-cal-month) {
+    background: var(--bg-widget) !important;
+    color: var(--text) !important;
+  }
+}
+
+/* "jours restants" number — light in dark mode, bigger */
+.ccfnt-jours-diff {
+  color: #990000;
+}
+[data-theme="dark"] .ccfnt-jours-diff {
+  color: #e0c0a0 !important;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .ccfnt-jours-diff {
+    color: #e0c0a0 !important;
+  }
+}
+
+/* Mobile: wider tile + bigger fonts */
+@media (max-width: 768px) {
+  .ccfnt-cal-tile {
+    width: min(220px, 78vw) !important;
+  }
+  .ccfnt-cal-month {
+    font-size: 1.1em !important;
+    padding: 10px 0 8px !important;
+  }
+  .ccfnt-cal-day {
+    font-size: 5.5em !important;
+    padding: 12px 0 10px !important;
+  }
+  .milestone-countdown .difference,
+  .ccfnt-jours-diff {
+    font-size: 3.4em !important;
+  }
+  .milestone-countdown .label {
+    font-size: 16px !important;
+  }
+}
+
+/* ── Fix 2: Inscrivez-Vous S'inscrire button — keep text white always ── */
+a.ccfnt-signup-btn,
+.textwidget a.ccfnt-signup-btn {
+  color: #fff !important;
+}
+a.ccfnt-signup-btn:hover,
+.textwidget a.ccfnt-signup-btn:hover {
+  color: #fff !important;
+}
+
+/* ── Fix 3: SMS description text dark-mode color ── */
+[data-theme="dark"] #sms-reminder-widget div[style],
+[data-theme="dark"] #sms-reminder-widget > div > div {
+  color: var(--text-2) !important;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) #sms-reminder-widget div[style],
+  :root:not([data-theme="light"]):not([data-theme="dark"]) #sms-reminder-widget > div > div {
+    color: var(--text-2) !important;
+  }
+}
+
+/* ── Fix 4: Mobile global font size improvements ── */
+@media (max-width: 768px) {
+  body {
+    font-size: 17px !important;
+  }
+  .entry-content,
+  .post-entry,
+  .post-content {
+    font-size: 1em !important;
+    line-height: 1.75 !important;
+  }
+  .entry-title {
+    font-size: 1.6em !important;
+  }
+}
+
+/* ── Fix 5: Hamburger menu — chevron button for accordion, link navigates ── */
+@media (max-width: 768px) {
+  /* Hide old ::after arrow on the link itself */
+  #menu ul.menu li.page_item_has_children > a::after {
+    content: '' !important;
+    display: none !important;
+  }
+
+  /* Parent link takes most of the row, chevron gets a fixed width slot */
+  #menu ul.menu li.page_item_has_children {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: stretch !important;
+  }
+  #menu ul.menu li.page_item_has_children > a {
+    flex: 1 !important;
+    justify-content: flex-start !important;
+  }
+
+  /* Chevron toggle button */
+  .ccfnt-sub-toggle {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 52px !important;
+    flex-shrink: 0 !important;
+    background: rgba(255,255,255,.07) !important;
+    border: none !important;
+    border-left: 1px solid rgba(255,255,255,.12) !important;
+    color: #f0e6d3 !important;
+    font-size: 1.6em !important;
+    cursor: pointer !important;
+    transition: background .15s !important;
+  }
+  .ccfnt-sub-toggle:hover {
+    background: rgba(255,255,255,.16) !important;
+  }
+  /* Rotate chevron when sub-menu is open */
+  li.ccfnt-sub-open > .ccfnt-sub-toggle {
+    transform: rotate(90deg) !important;
+  }
+  /* Sub-menu must span full width */
+  #menu ul.menu li.page_item_has_children > ul.children {
+    width: 100% !important;
+  }
+}
+
+/* Chevron never shows on desktop */
+@media (min-width: 769px) {
+  .ccfnt-sub-toggle {
+    display: none !important;
+  }
+}
+
+/* ── Fix 6: Mobile Prochaine Messe tile — applied above in Fix 1 mobile block ── */
