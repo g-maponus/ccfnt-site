@@ -101,6 +101,14 @@ document.getElementById('rsvp-form').addEventListener('submit', function(e) {
     msg.textContent = 'Merci d\'indiquer votre nom et un moyen de vous contacter.';
     return;
   }
+  // Must be a real email or a 10-digit phone — the confirmation is sent to it.
+  var isEmail = /^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$/.test(contact);
+  var isPhone = /^1?\d{10}$/.test(contact.replace(/\D/g, ''));
+  if (!isEmail && !isPhone) {
+    msg.style.color = '#990000';
+    msg.textContent = 'Merci d\'indiquer un courriel valide ou un numéro de téléphone à 10 chiffres — c\'est là que nous enverrons la confirmation. / Please enter a valid email or 10-digit phone number — that\'s where we\'ll send the confirmation.';
+    return;
+  }
 
   btn.disabled = true;
   btn.textContent = 'Envoi…';
