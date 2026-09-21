@@ -1723,7 +1723,14 @@ function loadPrep(){
   api('GET','/api/masses').then(function(list){
     if(list && list.error){ logout(); return; }
     var today=todayISO();
-    var up=(list||[]).filter(function(m){ return m.date>=today; })
+    // Keep a mass on the board for 14 days AFTER its date: the J+1 "Merci &
+    // retour" dispatch and the quête entry both happen after the mass, and the
+    // old `date>=today` filter hid the mass the very morning J+1 became due
+    // (caught 2026-09-21 with the 2026-09-20 mass). Default selection still
+    // prefers the next upcoming mass.
+    var cutoff=new Date(today+'T00:00:00'); cutoff.setDate(cutoff.getDate()-14);
+    var cutoffISO=cutoff.getFullYear()+'-'+('0'+(cutoff.getMonth()+1)).slice(-2)+'-'+('0'+cutoff.getDate()).slice(-2);
+    var up=(list||[]).filter(function(m){ return m.date>=cutoffISO; })
                      .sort(function(a,b){ return a.date<b.date?-1:1; });
     var sel=document.getElementById('mb-mass');
     if(!up.length){
@@ -1733,8 +1740,9 @@ function loadPrep(){
       return;
     }
     var cur=sel.value;
-    sel.innerHTML=up.map(function(m){ return '<option value="'+m.date+'">'+(m.label||m.date)+'</option>'; }).join('');
+    sel.innerHTML=up.map(function(m){ return '<option value="'+m.date+'">'+(m.label||m.date)+(m.date<today?' (passée)':'')+'</option>'; }).join('');
     if(cur && up.some(function(m){return m.date===cur;})) sel.value=cur;
+    else { var nxt=up.filter(function(m){return m.date>=today;})[0]; if(nxt) sel.value=nxt.date; }
     mbLoad(sel.value);
   }).catch(function(){ document.getElementById('mb-assets').innerHTML='<p style="color:#990000">Erreur réseau.</p>'; });
 }
