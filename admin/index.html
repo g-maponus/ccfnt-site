@@ -1849,6 +1849,11 @@ function mbRenderTeam(){
     // altar_server_parents since 2026-08-31). See `rotating` in the
     // /api/admin/mass/plan payload.
     if(t.rotating) flag+=' <span style="color:#999;font-size:.8em">(rotation '+t.needed+'/'+t.pool_size+')</span>';
+    // altar servers: how many PZ has on duty vs. how many the role needs
+    if(t.role==='altar_server_parents'){
+      var nOn=(t.people||[]).filter(function(p){return p.coming;}).length;
+      flag+=' <span style="color:'+(nOn===t.needed?'#2a7a2a':'#b0700a')+';font-size:.8em">(au service '+nOn+'/'+t.needed+')</span>';
+    }
     // whole roster asked but only `needed` actually serve -- PZ picks who's
     // on duty from the responses (2026-08-31, user request: "we will pick
     // the first 2 to respond ... so PZ can choose them and manage directly")
@@ -1870,14 +1875,15 @@ function mbRenderTeam(){
       var order=p.order?(' <span style="color:#999;font-size:.8em">('+((ORD[p.order-1])||(p.order+'e'))+' à répondre)</span>'):'';
       var pick=pickable?(' '+mbBtn(p.picked?'★ Sur place':'☆ Choisir',
         'mbTeamPick(\''+t.role+'\',\''+p.person+'\',this)')):'';
-      // musicians: PZ decides who goes on the bulletin, last resort over
+      // musicians + altar servers: PZ decides who serves, last resort over
       // the responses (2026-10-10). Click flips it; ↺ hands it back to the
       // person's own answer.
-      if(t.role==='musicians'){
-        pick=' '+mbBtn(p.coming?'🎵 Au bulletin':'✗ Pas au bulletin',
-          'mbMusOverride(\''+p.person+'\',\''+(p.coming?'out':'in')+'\',this)');
+      var lbls=MB_CHOSEN_LABELS[t.role];
+      if(lbls){
+        pick=' '+mbBtn(p.coming?lbls[0]:lbls[1],
+          'mbRoleOverride(\''+t.role+'\',\''+p.person+'\',\''+(p.coming?'out':'in')+'\',this)');
         if(p.override) pick+=' <span style="color:#b0700a;font-size:.8em">(choix PZ)</span> '+
-          mbBtn('↺','mbMusOverride(\''+p.person+'\',\'auto\',this)');
+          mbBtn('↺','mbRoleOverride(\''+t.role+'\',\''+p.person+'\',\'auto\',this)');
       }
       return '<div style="font-size:.85em;margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">'+
         '<span>'+icon+' '+esc(p.name)+status+order+msg+'</span>'+pick+'</div>';
@@ -1911,14 +1917,19 @@ function mbTeamPick(role,person,btn){
     if(d&&d.status==='ok') mbLoad(MB.mid); else { alert((d&&d.error)||'Erreur'); btn.disabled=false; }
   });
 }
-// Put a musician on / take them off this Mass's bulletin (and the chants
-// email), regardless of their response; 'auto' follows the response again.
-function mbMusOverride(person,value,btn){
+// Roles where PZ chooses who serves (server-side PZ_CHOSEN_ROLES):
+// [button when serving, button when not, flash prefix]
+var MB_CHOSEN_LABELS={ musicians:['🎵 Au bulletin','✗ Pas au bulletin','Musique'],
+  altar_server_parents:['⛪ Au service','✗ Pas au service',"Servants d'autel"] };
+// Put someone on / take them off this Mass for that role (for musicians:
+// the bulletin's Musique line + the chants email), regardless of their
+// response; 'auto' follows the response again.
+function mbRoleOverride(role,person,value,btn){
   btn.disabled=true;
-  api('POST','/api/admin/mass/team/override',{mass:MB.mid,person:person,value:value}).then(function(d){
+  api('POST','/api/admin/mass/team/override',{mass:MB.mid,role:role,person:person,value:value}).then(function(d){
     if(d&&d.status==='ok'){
-      mbFlash(d.entete_locked?'⚠️ En-tête du bulletin modifié à la main : la ligne Musique ne change pas toute seule'
-        :'✓ Musique : '+(d.coming.join(', ')||'personne'));
+      mbFlash(role==='musicians'&&d.entete_locked?'⚠️ En-tête du bulletin modifié à la main : la ligne Musique ne change pas toute seule'
+        :'✓ '+MB_CHOSEN_LABELS[role][2]+' : '+(d.coming.join(', ')||'personne'));
       mbLoad(MB.mid);
     } else { alert((d&&d.error)||'Erreur'); btn.disabled=false; }
   });
