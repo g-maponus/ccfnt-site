@@ -1870,6 +1870,15 @@ function mbRenderTeam(){
       var order=p.order?(' <span style="color:#999;font-size:.8em">('+((ORD[p.order-1])||(p.order+'e'))+' à répondre)</span>'):'';
       var pick=pickable?(' '+mbBtn(p.picked?'★ Sur place':'☆ Choisir',
         'mbTeamPick(\''+t.role+'\',\''+p.person+'\',this)')):'';
+      // musicians: PZ decides who goes on the bulletin, last resort over
+      // the responses (2026-10-10). Click flips it; ↺ hands it back to the
+      // person's own answer.
+      if(t.role==='musicians'){
+        pick=' '+mbBtn(p.coming?'🎵 Au bulletin':'✗ Pas au bulletin',
+          'mbMusOverride(\''+p.person+'\',\''+(p.coming?'out':'in')+'\',this)');
+        if(p.override) pick+=' <span style="color:#b0700a;font-size:.8em">(choix PZ)</span> '+
+          mbBtn('↺','mbMusOverride(\''+p.person+'\',\'auto\',this)');
+      }
       return '<div style="font-size:.85em;margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">'+
         '<span>'+icon+' '+esc(p.name)+status+order+msg+'</span>'+pick+'</div>';
     }).join('');
@@ -1900,6 +1909,18 @@ function mbTeamPick(role,person,btn){
   btn.disabled=true;
   api('POST','/api/admin/mass/team/pick',{mass:MB.mid,role:role,person:person}).then(function(d){
     if(d&&d.status==='ok') mbLoad(MB.mid); else { alert((d&&d.error)||'Erreur'); btn.disabled=false; }
+  });
+}
+// Put a musician on / take them off this Mass's bulletin (and the chants
+// email), regardless of their response; 'auto' follows the response again.
+function mbMusOverride(person,value,btn){
+  btn.disabled=true;
+  api('POST','/api/admin/mass/team/override',{mass:MB.mid,person:person,value:value}).then(function(d){
+    if(d&&d.status==='ok'){
+      mbFlash(d.entete_locked?'⚠️ En-tête du bulletin modifié à la main : la ligne Musique ne change pas toute seule'
+        :'✓ Musique : '+(d.coming.join(', ')||'personne'));
+      mbLoad(MB.mid);
+    } else { alert((d&&d.error)||'Erreur'); btn.disabled=false; }
   });
 }
 // Chants + psaume → email the musicians role with whatever partition/audio
