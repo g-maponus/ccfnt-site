@@ -2322,7 +2322,16 @@ function beRenderResult(){
 }
 function beToPrint(){
   api('POST','/api/admin/bulletin/to-print',{mass:BE.mid}).then(function(d){
-    if(d&&d.status==='ok'){ mbFlash('✓ envoyé à l\'impression'); beLoad(); }
+    if(d&&d.status==='ok'){
+      // who actually got the email (CC contact@ccfnt.org), or why not -- 2026-10-14
+      var e=d.email||{sent:[],failed:[]};
+      var nm=function(x){return x.name||x.email||'';};
+      if(e.failed&&e.failed.length) alert('⚠️ Email « bulletin à imprimer » NON envoyé à : '+
+        e.failed.map(function(x){return nm(x)+' ('+x.error+')';}).join(', ')+
+        (e.sent.length?'\nEnvoyé à : '+e.sent.map(nm).join(', '):''));
+      mbFlash(e.sent.length?'✓ envoyé à l\'impression → '+e.sent.map(nm).join(', '):'⚠️ envoyé à l\'impression, mais aucun email parti');
+      beLoad();
+    }
     else alert((d&&d.error)||'Erreur');
   });
 }
