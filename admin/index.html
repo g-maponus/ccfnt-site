@@ -1850,10 +1850,15 @@ function mbRenderTeam(){
     // /api/admin/mass/plan payload.
     if(t.rotating) flag+=' <span style="color:#999;font-size:.8em">(rotation '+t.needed+'/'+t.pool_size+')</span>';
     // altar servers: how many PZ has on duty vs. how many the role needs
-    if(t.role==='altar_server_parents'){
+    // (and, for the other PZ-validated roles needing more than one person,
+    // how many he has validated -- 2026-10-14)
+    if(t.role==='altar_server_parents' || (t.pz_validated && t.needed>1)){
       var nOn=(t.people||[]).filter(function(p){return p.coming;}).length;
-      flag+=' <span style="color:'+(nOn===t.needed?'#2a7a2a':'#b0700a')+';font-size:.8em">(au service '+nOn+'/'+t.needed+')</span>';
+      flag+=' <span style="color:'+(nOn===t.needed?'#2a7a2a':'#b0700a')+';font-size:.8em">('+
+        (t.role==='altar_server_parents'?'au service ':'validés ')+nOn+'/'+t.needed+')</span>';
     }
+    if(t.pz_validated && !(t.people||[]).length)
+      flag+=' <span style="color:#b0700a;font-size:.8em">(personne d\'assigné — Rôles & Contacts)</span>';
     // whole roster asked but only `needed` actually serve -- PZ picks who's
     // on duty from the responses (2026-08-31, user request: "we will pick
     // the first 2 to respond ... so PZ can choose them and manage directly")
@@ -1862,7 +1867,9 @@ function mbRenderTeam(){
     if(t.status!=='confirme') acts+=mbBtn('✉️ Demander','mbAsk(\''+t.role+'\',this)');
     // celebrant/printing: confirmed = PZ has chosen someone below, so no
     // separate ✓/↺ (2026-10-14); asking is optional, the answer is a hint
-    if(!t.pz_validated){
+    // ...unless there is nobody to choose from (e.g. no one assigned to
+    // Nettoyage yet): then PZ still confirms by hand
+    if(!t.pz_validated || !(t.people||[]).length){
       if(t.status!=='confirme') acts+=' '+mbBtn('✓ Confirmé','mbTeamSet(\''+t.role+'\',\'confirme\')');
       if(t.status==='confirme') acts+=mbBtn('↺ Rouvrir','mbTeamSet(\''+t.role+'\',\'a_demander\')');
     }
@@ -1928,7 +1935,10 @@ var MB_CHOSEN_LABELS={ musicians:['🎵 Au bulletin','✗ Pas au bulletin','Musi
   altar_server_parents:['⛪ Au service','✗ Pas au service',"Servants d'autel"],
   // 2026-10-14: nobody is on these until PZ validates them (or they say oui)
   celebrant:['✓ Célèbre','☐ Valider comme célébrant','Célébrant'],
-  printing:['✓ Imprime','☐ Valider pour imprimer','Impression'] };
+  printing:['✓ Imprime','☐ Valider pour imprimer','Impression'],
+  music_lead:['✓ Responsable','☐ Valider comme responsable','Responsable musique'],
+  reception_team:['✓ Réception','☐ Valider pour la réception','Réception'],
+  cleaning_crew:['✓ Nettoyage','☐ Valider pour le nettoyage','Nettoyage & rangement'] };
 // Put someone on / take them off this Mass for that role (for musicians:
 // the bulletin's Musique line + the chants email), regardless of their
 // response; 'auto' follows the response again.
