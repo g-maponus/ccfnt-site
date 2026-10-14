@@ -1860,8 +1860,12 @@ function mbRenderTeam(){
     var pickable=!t.rotating && t.pool_size>t.needed;
     var acts='';
     if(t.status!=='confirme') acts+=mbBtn('✉️ Demander','mbAsk(\''+t.role+'\',this)');
-    if(t.status!=='confirme') acts+=' '+mbBtn('✓ Confirmé','mbTeamSet(\''+t.role+'\',\'confirme\')');
-    if(t.status==='confirme') acts+=mbBtn('↺ Rouvrir','mbTeamSet(\''+t.role+'\',\'a_demander\')');
+    // celebrant/printing: confirmed = PZ has chosen someone below, so no
+    // separate ✓/↺ (2026-10-14); asking is optional, the answer is a hint
+    if(!t.pz_validated){
+      if(t.status!=='confirme') acts+=' '+mbBtn('✓ Confirmé','mbTeamSet(\''+t.role+'\',\'confirme\')');
+      if(t.status==='confirme') acts+=mbBtn('↺ Rouvrir','mbTeamSet(\''+t.role+'\',\'a_demander\')');
+    }
     // per-person breakdown (who among the assigned people answered what) —
     // added 2026-08-22 after a role with 2 lecteurs got a reply with no way
     // to tell which of them sent it. Response order (1er/2e/...) and a
@@ -1870,7 +1874,8 @@ function mbRenderTeam(){
     var ORD=['1er','2e','3e','4e','5e','6e'];
     var people=(t.people||[]).map(function(p){
       var icon=p.response?(MB_RESP_ICON[p.response]||'•'):'⏳';
-      var status=p.response?'':' <span style="color:#999">(pas encore répondu)</span>';
+      var status=p.backup?' <span style="color:#999">(remplaçant)</span>'
+        :(p.response?'':' <span style="color:#999">(pas encore répondu)</span>');
       var msg=p.message?(' <span style="font-style:italic;color:#666">— “'+esc(p.message)+'”</span>'):'';
       var order=p.order?(' <span style="color:#999;font-size:.8em">('+((ORD[p.order-1])||(p.order+'e'))+' à répondre)</span>'):'';
       var pick=pickable?(' '+mbBtn(p.picked?'★ Sur place':'☆ Choisir',
@@ -1920,7 +1925,10 @@ function mbTeamPick(role,person,btn){
 // Roles where PZ chooses who serves (server-side PZ_CHOSEN_ROLES):
 // [button when serving, button when not, flash prefix]
 var MB_CHOSEN_LABELS={ musicians:['🎵 Au bulletin','✗ Pas au bulletin','Musique'],
-  altar_server_parents:['⛪ Au service','✗ Pas au service',"Servants d'autel"] };
+  altar_server_parents:['⛪ Au service','✗ Pas au service',"Servants d'autel"],
+  // 2026-10-14: nobody is on these until PZ validates them (or they say oui)
+  celebrant:['✓ Célèbre','☐ Valider comme célébrant','Célébrant'],
+  printing:['✓ Imprime','☐ Valider pour imprimer','Impression'] };
 // Put someone on / take them off this Mass for that role (for musicians:
 // the bulletin's Musique line + the chants email), regardless of their
 // response; 'auto' follows the response again.
@@ -1928,7 +1936,7 @@ function mbRoleOverride(role,person,value,btn){
   btn.disabled=true;
   api('POST','/api/admin/mass/team/override',{mass:MB.mid,role:role,person:person,value:value}).then(function(d){
     if(d&&d.status==='ok'){
-      mbFlash(role==='musicians'&&d.entete_locked?'⚠️ En-tête du bulletin modifié à la main : la ligne Musique ne change pas toute seule'
+      mbFlash((role==='musicians'||role==='celebrant')&&d.entete_locked?'⚠️ En-tête du bulletin modifié à la main : la ligne '+(role==='musicians'?'Musique':'Célébrant')+' ne change pas toute seule'
         :'✓ '+MB_CHOSEN_LABELS[role][2]+' : '+(d.coming.join(', ')||'personne'));
       mbLoad(MB.mid);
     } else { alert((d&&d.error)||'Erreur'); btn.disabled=false; }
@@ -2294,13 +2302,17 @@ function beRenderResult(){
         html+='<div style="margin-top:6px;font-size:.85em;color:#999">En attente de confirmation de réception.</div>';
       }
     } else {
+      // who PZ validated on "Impression" (2026-10-14: PZ's choice, not the
+      // printer's own acceptance) -- the email goes to exactly these people
       var printTeam=(BE.plan.team||[]).filter(function(x){return x.role==='printing';})[0];
-      if(printTeam && printTeam.status!=='confirme'){
+      var printers=((printTeam&&printTeam.people)||[]).filter(function(p){return p.coming;});
+      if(printTeam && !printers.length){
         html+='<div style="margin-top:8px;font-size:.85em;color:#8a6d00;background:#fdf6e3;'+
-          'border-radius:6px;padding:8px 12px">⚠️ Le rôle « Impression » n\'est pas encore confirmé '+
-          '— demandez-le dans l\'équipe (tableau de bord) avant d\'envoyer à l\'impression.</div>';
+          'border-radius:6px;padding:8px 12px">⚠️ Personne n\'est choisi pour l\'« Impression » '+
+          '— validez qui imprime dans l\'équipe (tableau de bord) avant d\'envoyer à l\'impression.</div>';
       } else {
-        html+='<div style="margin-top:8px">'+mbBtn('🖨️ Envoyer à l\'impression','beToPrint()','btn-secondary')+'</div>';
+        html+='<div style="margin-top:8px">'+mbBtn('🖨️ Envoyer à l\'impression','beToPrint()','btn-secondary')+
+          (printers.length?' <span style="font-size:.85em;color:#666">→ '+esc(printers.map(function(p){return p.name;}).join(', '))+'</span>':'')+'</div>';
       }
     }
     box.innerHTML=html;
