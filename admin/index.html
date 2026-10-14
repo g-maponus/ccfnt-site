@@ -2113,8 +2113,15 @@ function mbRenderDispatches(){
     var st=MB.plan.dispatches[dd.id]||{status:'pending'};
     var s=MB_DISP_STATUS[st.status]||['neutral',st.status];
     var chan=(dd.channels||[]).map(function(c){return c==='sms'?'SMS':'Email';}).join(' + ');
+    // automation since 2026-10-14 (server: auto_dispatch_tick, 7h15 run)
+    var note='';
+    if(dd.id==='d3' && st.status!=='sent') note='🤖 Envoi automatique à J-3 (7h15). Un brouillon enregistré avant part tel quel.';
+    if(dd.id==='d3' && st.status==='sent' && st.auto_sent) note='🤖 Envoyé automatiquement';
+    if(dd.id==='d15' && st.status!=='sent') note=st.pz_reminded_at?('🔔 Rappel envoyé à PZ (email + SMS) le '+st.pz_reminded_at.slice(0,10))
+      :'🔔 À J-15, PZ reçoit un rappel (email + SMS) pour l\'envoyer.';
     return '<div class="mb-disp"><h4>'+esc(dd.label)+'</h4>'+
       '<div>'+mbChip(s[0],s[1])+' <span style="font-size:.75em;color:#999">'+chan+'</span></div>'+
+      (note?'<div style="font-size:.75em;color:#777;margin-top:4px">'+esc(note)+'</div>':'')+
       '<div class="row" style="margin-top:9px">'+mbBtn('Composer','mbOpenDispatch(\''+dd.id+'\')','btn-primary')+'</div></div>';
   }).join('');
 }
