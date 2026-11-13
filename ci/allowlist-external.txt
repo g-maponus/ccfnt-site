@@ -1,0 +1,5 @@
+# Outside hosts a page may load from (scripts, CSS, images, iframes...).
+# Format: <repository path> <host>   # why and who approved
+# Adding a line needs G's approval in the pull request.
+
+messes/adresse/index.html maps.google.com   # Google Maps embed of the church address

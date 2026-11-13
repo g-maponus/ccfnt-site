@@ -1,0 +1,7 @@
+# Public role contacts the personal-data check accepts: email addresses and phone
+# numbers of the community or of institutions, never a person's own.
+# One per line. Adding a line needs G's approval in the pull request.
+
+contact@ccfnt.org
+dallas-ccfnt@gaggle.email   # community mailing list (join link in the sidebar)
+(972) 438-2044   # Cistercian Abbey Our Lady of Dallas, public number (/messes/les-messes-americaines/)
