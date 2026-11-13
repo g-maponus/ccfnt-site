@@ -506,10 +506,10 @@ input:checked + .slider:before { transform: translateX(18px); }
               <select id="rsvp-manual-event" style="width:100%;padding:7px;border:1px solid #d9c8a5;border-radius:6px;box-sizing:border-box;margin-top:3px"></select>
             </label>
             <label style="font-size:.82em;color:#666">Nom
-              <input id="rsvp-manual-name" style="width:100%;padding:7px;border:1px solid #d9c8a5;border-radius:6px;box-sizing:border-box;margin-top:3px" placeholder="Jocelyne Raad">
+              <input id="rsvp-manual-name" style="width:100%;padding:7px;border:1px solid #d9c8a5;border-radius:6px;box-sizing:border-box;margin-top:3px" placeholder="Prénom Nom">
             </label>
             <label style="font-size:.82em;color:#666">Contact (email ou téléphone)
-              <input id="rsvp-manual-contact" style="width:100%;padding:7px;border:1px solid #d9c8a5;border-radius:6px;box-sizing:border-box;margin-top:3px" placeholder="jocelyne@exemple.com">
+              <input id="rsvp-manual-contact" style="width:100%;padding:7px;border:1px solid #d9c8a5;border-radius:6px;box-sizing:border-box;margin-top:3px" placeholder="prenom@exemple.com">
             </label>
             <label style="font-size:.82em;color:#666">Personnes
               <input id="rsvp-manual-headcount" type="number" min="1" max="20" value="1" style="width:100%;padding:7px;border:1px solid #d9c8a5;border-radius:6px;box-sizing:border-box;margin-top:3px">
@@ -776,8 +776,8 @@ input:checked + .slider:before { transform: translateX(18px); }
           <summary style="cursor:pointer;padding:12px 0;font-weight:600;color:#8E1B26">⬆️ Import en masse — Email/Tél. PROD</summary>
           <div style="padding:6px 0 16px">
             <p style="font-size:.82em;color:#666;margin:0 0 8px">Collez une ligne par personne — <strong>Nom</strong>, <strong>Email PROD</strong>, <strong>Tél PROD</strong> — depuis un tableur (collage direct, colonnes séparées par tabulation) ou un CSV (virgules). Le nom doit correspondre à la colonne <strong>Nom</strong> ci-dessus (accents/majuscules sans importance). Les cases vides ne remplacent rien ; seules les colonnes PROD sont modifiées.</p>
-            <textarea id="people-import-rows" placeholder="Philippe Zimmern	philippe@exemple.com	972-555-0100
-Sabine Kerael	sabine@exemple.com	972-555-0101" style="width:100%;min-height:110px;padding:8px;border:1px solid #d9c8a5;border-radius:6px;box-sizing:border-box;font:12px/1.4 ui-monospace,monospace"></textarea>
+            <textarea id="people-import-rows" placeholder="Prénom Nom	prenom@exemple.com	000-000-0000
+Prénom Nom	prenom2@exemple.com	000-000-0001" style="width:100%;min-height:110px;padding:8px;border:1px solid #d9c8a5;border-radius:6px;box-sizing:border-box;font:12px/1.4 ui-monospace,monospace"></textarea>
             <div style="margin-top:8px"><button class="btn btn-primary" style="font-size:.8em" onclick="importPeopleBulk(this)">Importer</button></div>
             <div id="people-import-result" style="margin-top:10px;font-size:.85em"></div>
           </div>
