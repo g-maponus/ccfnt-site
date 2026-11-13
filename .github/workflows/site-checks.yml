@@ -1,0 +1,35 @@
+name: site-checks
+
+# CI for ccfnt.org (Paperclip HOM-21 / plan HOM-19). Written by LUNA (PR #5), installed by
+# Claude Code on G's behalf (LUNA has no `workflow` permission by design).
+# Read-only: no secrets, no write token, nothing but Python's standard library.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  site-checks:
+    name: site-checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0          # the diff-based checks need the base commit
+          persist-credentials: false
+      - name: Run site checks
+        env:
+          # PR: compare with the target branch; push to main: with the previous tip.
+          BASE: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event.before }}
+        run: python3 ci/run_checks.py --base "$BASE"
+      - name: Test the checks
+        run: python3 -m unittest discover -s ci
