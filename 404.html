@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page introuvable — CCFNT</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/jpeg" href="/_static/site-icon-32.jpg" sizes="32x32">
+<link rel="apple-touch-icon" href="/_static/site-icon-114.jpg">
+<script>try{var t=localStorage.getItem("ccfnt-theme");if(t&&t!=="auto")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<style>
+  /* Served for unknown URLs at any depth: every path on this page is absolute. */
+  :root { --bg: #fdf8f2; --card: #fff; --text: #333; --muted: #6b4226; --accent: #990000; --border: #c9a87c; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #1b1917; --card: #262320; --text: #eee; --muted: #d9c3a5; --accent: #ff8a80; --border: #5a4a3a; }
+  }
+  [data-theme="dark"] { --bg: #1b1917; --card: #262320; --text: #eee; --muted: #d9c3a5; --accent: #ff8a80; --border: #5a4a3a; }
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: var(--bg); color: var(--text);
+    margin: 0; padding: 24px 16px 60px; line-height: 1.5;
+  }
+  main {
+    max-width: 480px; margin: 0 auto; text-align: center;
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 24px 20px;
+  }
+  img { border-radius: 50%; }
+  h1 { color: var(--accent); font-size: 1.4em; margin: 12px 0 4px; }
+  h2 { color: var(--muted); font-size: 1.1em; font-weight: normal; margin: 0 0 16px; }
+  p { margin: 0 0 12px; }
+  ul { list-style: none; padding: 0; margin: 20px 0 0; }
+  li { margin: 8px 0; }
+  a { color: var(--accent); font-weight: bold; }
+  a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .en { color: var(--muted); font-style: italic; }
+</style>
+</head>
+<body>
+<main>
+  <a href="/"><img src="/_static/site-icon-114.jpg" width="80" height="80" alt="CCFNT — retour à l’accueil"></a>
+  <h1>Page introuvable</h1>
+  <h2 lang="en">Page not found</h2>
+  <p>Désolé, cette page n’existe pas ou a été déplacée.</p>
+  <p class="en" lang="en">Sorry, this page does not exist or has moved.</p>
+  <ul>
+    <li><a href="/">Accueil</a> · <span lang="en">Home</span></li>
+    <li><a href="/messes/calendrier/">Calendrier des messes</a> · <span lang="en">Mass schedule</span></li>
+    <li><a href="/derniers-messages/">Derniers messages</a> · <span lang="en">Latest messages</span></li>
+  </ul>
+</main>
+</body>
+</html>
