@@ -3,3 +3,6 @@
 *.env
 .env*
 __pycache__/
+
+# Generated server-side by gaggle_archive.py (outside the web root since 2026-11-12, HOM-20)
+messages/

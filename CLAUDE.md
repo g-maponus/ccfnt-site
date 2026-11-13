@@ -37,8 +37,9 @@ Dallas area. It is served as-is (static files, no build step). The owner is **@g
   references it.
 - **Never break URLs.** Page paths and links are shared in emails and SMS. If a path must change,
   add a redirect page and say so in the PR.
-- **`messages/` is generated on the server** (message archive pages, `all-messages.json`,
-  `index.json`, attachments). Do not edit it by hand; propose changes to how it is displayed instead.
+- **`/messages/` is generated on the server** (message archive pages, `all-messages.json`,
+  `index.json`, attachments) and is **not in this repository** (served from a separate folder since
+  2026-11-12). Never add a `messages/` folder here; propose changes to how it is displayed instead.
 - **`/api/...` endpoints are a fixed contract** (mass dates, SMS sign-up, RSVP, admin). The server
   code is not in this repository. Do not call write endpoints, submit forms, or design features that
   need a new endpoint without saying so explicitly in the plan.
