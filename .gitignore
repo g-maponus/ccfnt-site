@@ -2,3 +2,4 @@
 *.bak
 *.env
 .env*
+__pycache__/
