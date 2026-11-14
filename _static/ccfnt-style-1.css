@@ -1432,17 +1432,20 @@ a.entry-format-link:hover {
 	font-size: 0.9em;
 	padding-bottom: 25px;
 }
-.sidebar-widget h1 {
+.sidebar-widget h1,
+.sidebar-widget h2 {
 	color: #8D8767;
 	font-size: 0.9em;
 	letter-spacing: 0.1em;
 	padding-bottom: 10px;
 	text-transform: uppercase;
 }
-.sidebar-widget h1 a {
+.sidebar-widget h1 a,
+.sidebar-widget h2 a {
 	color: #8d8767;
 }
-.sidebar-widget h1.widget-title:before {
+.sidebar-widget h1.widget-title:before,
+.sidebar-widget h2.widget-title:before {
 	content: "\002663 ";
 	display: inline;
 	margin: 0 3px 0;
@@ -2564,7 +2567,9 @@ body .wpcom-reblog-snapshot .reblogger-note-content blockquote {
 
   /* Widget titles — explicit px so nested em scaling can't shrink them */
   #secondary .sidebar-widget h1,
-  #secondary .sidebar-widget h1.widget-title {
+  #secondary .sidebar-widget h1.widget-title,
+  #secondary .sidebar-widget h2,
+  #secondary .sidebar-widget h2.widget-title {
     font-size: 13px !important;
     letter-spacing: .14em !important;
     margin-bottom: 14px !important;
@@ -2662,7 +2667,9 @@ body .wpcom-reblog-snapshot .reblogger-note-content blockquote {
 
   /* Widget titles — readable at the new 13px base */
   #secondary .sidebar-widget h1,
-  #secondary .sidebar-widget h1.widget-title {
+  #secondary .sidebar-widget h1.widget-title,
+  #secondary .sidebar-widget h2,
+  #secondary .sidebar-widget h2.widget-title {
     font-size: 1em !important;       /* 13px — was ~9.7px */
     letter-spacing: .1em !important;
   }
@@ -2950,7 +2957,8 @@ hr, .post-content hr { border-color: var(--border) !important; }
   background-color: var(--bg-widget) !important;
   color: var(--text) !important;
 }
-.sidebar-widget h1, .sidebar-widget h1.widget-title {
+.sidebar-widget h1, .sidebar-widget h1.widget-title,
+.sidebar-widget h2, .sidebar-widget h2.widget-title {
   color: var(--text-2) !important;
 }
 
@@ -3469,3 +3477,22 @@ a.ccfnt-signup-btn:hover,
 }
 
 /* ── Fix 6: Mobile Prochaine Messe tile — applied above in Fix 1 mobile block ── */
+
+/* ── Skip link: hidden until focused with the keyboard (Tab) ── */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+}
+.skip-link:focus {
+  left: 8px;
+  top: 8px;
+  z-index: 10000;
+  padding: 8px 14px;
+  background: #990000;
+  color: #fff !important;
+  font-size: 14px;
+  text-decoration: none;
+  outline: 3px solid #fff;
+  border-radius: 4px;
+}
