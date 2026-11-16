@@ -373,7 +373,7 @@ input:checked + .slider:before { transform: translateX(18px); }
     <button class="tab-btn" data-tab="masses">📅 Dates des messes</button>
     <button class="tab-btn" data-tab="quete">💰 La Quête</button>
     <button class="tab-btn" data-tab="roles">👥 Rôles &amp; Contacts</button>
-    <button class="tab-btn" data-tab="subscribers">📋 Abonnés SMS</button>
+    <button class="tab-btn" data-tab="subscribers">📋 Abonnés SMS <span id="sub-pending-badge" title="Demandes d'inscription en attente d'approbation" style="font-size:.75em;background:#b0700a;color:#fff;padding:1px 7px;border-radius:10px;margin-left:2px" hidden></span></button>
     <button class="tab-btn" data-tab="notifications">🔔 Notifications</button>
     <button class="tab-btn" data-tab="settings">⚙️ Paramètres</button>
   </div>
@@ -383,6 +383,7 @@ input:checked + .slider:before { transform: translateX(18px); }
     <div class="card">
       <div class="stat-row" id="stats-row">
         <div class="stat"><div class="num" id="stat-count">—</div><div class="lbl">Abonnés</div></div>
+        <div class="stat"><div class="num" id="stat-pending" style="color:#b0700a">—</div><div class="lbl">En attente</div></div>
         <div class="stat"><div class="num" id="stat-cap">—</div><div class="lbl">Capacité max</div></div>
         <div class="stat"><div class="num" id="stat-remaining">—</div><div class="lbl">Places restantes</div></div>
         <div class="stat"><div class="num" id="stat-opted-out" style="color:#888">—</div><div class="lbl">Désabonnés</div></div>
@@ -392,6 +393,15 @@ input:checked + .slider:before { transform: translateX(18px); }
           <button class="btn btn-secondary" id="btn-refresh-balance" style="font-size:.7em;padding:3px 8px;margin-top:4px">↻ Actualiser</button>
         </div>
       </div>
+    </div>
+    <div class="card" id="sub-pending-card">
+      <h2>⏳ Demandes en attente</h2>
+      <p style="font-size:.83em;color:#888;margin-bottom:14px">
+        Inscriptions reçues via le site, pas encore approuvées. Elles ne reçoivent aucun SMS.
+        <strong>Approuver</strong> envoie le SMS de bienvenue ; <strong>Refuser</strong> supprime
+        la demande sans prévenir la personne.
+      </p>
+      <div id="sub-pending-wrap"><p class="no-subs">Chargement…</p></div>
     </div>
     <div class="card">
       <h2>Envoyer un SMS aux abonnés</h2>
@@ -1145,8 +1155,16 @@ function loadSubscribers() {
     document.getElementById('stat-cap').textContent = d.cap;
     document.getElementById('stat-remaining').textContent = d.cap - d.count;
     document.getElementById('stat-opted-out').textContent = d.opted_out_count || 0;
+    // Pending signups (issue #9): own card + tab badge; kept out of the main list.
+    var isPend = function(s){ return s.status === 'pending' && !s.opted_out; };
+    var pend = (d.subscribers || []).filter(isPend);
+    document.getElementById('stat-pending').textContent = pend.length;
+    var badge = document.getElementById('sub-pending-badge');
+    badge.textContent = pend.length; badge.hidden = pend.length === 0;
+    renderPendingSubs(pend, d.count >= d.cap);
     var wrap = document.getElementById('sub-list-wrap');
-    if (!d.subscribers || d.subscribers.length === 0) {
+    d.subscribers = (d.subscribers || []).filter(function(s){ return !isPend(s); });
+    if (d.subscribers.length === 0) {
       wrap.innerHTML = '<p class="no-subs">Aucun abonné pour l\'instant.</p>';
       return;
     }
@@ -1180,6 +1198,48 @@ function loadSubscribers() {
     html += '</tbody></table>';
     wrap.innerHTML = html;
   }).catch(function(){ logout(); });
+}
+
+function renderPendingSubs(pend, full) {
+  var wrap = document.getElementById('sub-pending-wrap');
+  if (pend.length === 0) {
+    wrap.innerHTML = '<p class="no-subs">Aucune demande en attente.</p>';
+    return;
+  }
+  var html = (full ? '<p style="color:#990000;font-size:.85em;margin-bottom:8px">Liste complète : retirez un abonné avant d\'en approuver un autre.</p>' : '') +
+    '<table class="sub-table"><thead><tr>' +
+    '<th>Prénom</th><th>Nom</th><th>Téléphone</th><th>Demandé le</th><th></th>' +
+    '</tr></thead><tbody>';
+  pend.forEach(function(s) {
+    var p = esc(s.phone);
+    html += '<tr><td>' + (s.first_name ? esc(s.first_name) : '—') + '</td>' +
+      '<td>' + (s.last_name ? esc(s.last_name) : '—') + '</td>' +
+      '<td>' + esc(formatPhone(s.phone)) + '</td>' +
+      '<td style="white-space:nowrap">' + esc((s.subscribed_at || '').slice(0, 10)) + '</td>' +
+      '<td style="white-space:nowrap">' +
+      '<button class="btn btn-primary" style="width:auto;font-size:.78em;padding:3px 10px;margin-right:4px"' +
+      (full ? ' disabled' : '') + ' onclick="approveSub(\'' + p + '\', this)">Approuver</button>' +
+      '<button class="btn btn-danger" onclick="refuseSub(\'' + p + '\', this)">Refuser</button></td></tr>';
+  });
+  wrap.innerHTML = html + '</tbody></table>';
+}
+
+function approveSub(phone, btn) {
+  if (!confirm('Approuver ' + formatPhone(phone) + ' ? Le SMS de bienvenue sera envoyé.')) return;
+  if (btn) btn.disabled = true;
+  api('POST', '/api/admin/approve-subscriber', {phone: phone}).then(function(d) {
+    if (d.status === 'ok') loadSubscribers();
+    else { alert(d.error || 'Erreur'); if (btn) btn.disabled = false; }
+  });
+}
+
+function refuseSub(phone, btn) {
+  if (!confirm('Refuser la demande de ' + formatPhone(phone) + ' ? Elle sera supprimée, sans message à la personne.')) return;
+  if (btn) btn.disabled = true;
+  api('POST', '/api/admin/refuse-subscriber', {phone: phone}).then(function(d) {
+    if (d.status === 'ok') loadSubscribers();
+    else { alert(d.error || 'Erreur'); if (btn) btn.disabled = false; }
+  });
 }
 
 function removeSub(phone) {
@@ -3217,6 +3277,8 @@ var LOG_META = {
   run_complete:{i:'⚙️',l:'Cron exécuté'},
   rsvp_approved:{i:'✅',l:'RSVP approuvée'}, rsvp_denied:{i:'🚫',l:'RSVP refusée'},
   rsvp_auto_subscribed:{i:'📲',l:'Abonné SMS ajouté (via RSVP)'},
+  sub_requested:{i:'⏳',l:'Demande d\'abonnement SMS'}, sub_approved:{i:'✅',l:'Abonné SMS approuvé'},
+  sub_refused:{i:'🚫',l:'Demande SMS refusée'},
   contacts_mode_switch:{i:'🔀',l:'Mode contacts changé'}
 };
 function logWho(e){ return e.by || e.person || '—'; }
