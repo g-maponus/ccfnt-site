@@ -214,6 +214,23 @@ body { font-family: Helvetica, Arial, sans-serif; background: #f5f0eb; color: #3
   display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 12px 44px rgba(0,0,0,.32); }
 [data-theme="dark"] .ce-search-box { background: #323235; }
 .ce-search-list { flex: 1; overflow-y: auto; padding: 4px 15px 12px; }
+/* Musicians send: confirm / result dialog (issue #11) */
+#ms-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55);
+  z-index: 1100; align-items: center; justify-content: center; padding: 16px; }
+.ms-box { background: #fff; border-radius: 10px; width: min(560px, 96vw); max-height: 86vh;
+  display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 12px 44px rgba(0,0,0,.32); }
+[data-theme="dark"] .ms-box { background: #323235; color: #eee; }
+.ms-head { padding: 13px 16px; font-weight: 700; font-size: 1.05em; }
+.ms-head.ok { background: #eaf5ea; color: #1f6b1f; }
+.ms-head.err { background: #fbe9e9; color: #990000; }
+.ms-head.ask { background: #fdf6e3; color: #6b4f00; }
+.ms-body { padding: 12px 16px; overflow-y: auto; font-size: .9em; line-height: 1.45; }
+.ms-body ul { margin: 6px 0 10px 18px; padding: 0; }
+.ms-foot { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; padding: 11px 16px; border-top: 1px solid #eee; }
+[data-theme="dark"] .ms-foot { border-color: #45454a; }
+.ms-last { font-size: .8em; margin-top: 6px; }
+.ms-last.ok { color: #2a7a2a; }
+.ms-last.none { color: #8a6d3b; }
 .pt-wrap { display: grid; grid-template-columns: minmax(210px, 290px) minmax(0, 1fr); gap: 26px; align-items: start; }
 .pt-timeline { min-width: 0; }
 .pt-detail { min-width: 0; }
@@ -934,6 +951,16 @@ Prénom Nom	prenom2@exemple.com	000-000-0001" style="width:100%;min-height:110px
         oninput="ceSearchRun()">
     </div>
     <div class="ce-search-list" id="ce-search-results"></div>
+  </div>
+</div>
+
+<!-- Musicians send: confirmation summary before, and a result that stays on
+     screen after (✓ ENVOYÉ / ✗ NON ENVOYÉ) -- issue #11. -->
+<div id="ms-modal">
+  <div class="ms-box" role="dialog" aria-modal="true" aria-labelledby="ms-head">
+    <div class="ms-head" id="ms-head"></div>
+    <div class="ms-body" id="ms-body"></div>
+    <div class="ms-foot" id="ms-foot"></div>
   </div>
 </div>
 
@@ -1873,13 +1900,22 @@ function mbRenderAssets(){
   // like the other 3, see BULLETIN_REUSABLE_SECTIONS.
   var ch=a.chants, psc=a.psaume_chant||{}, pReady=psc.status==='pret';
   var chosen=['entree','universelle','communion','final'].filter(function(s){return ch[s];}).length+(pReady?1:0);
+  // Approval state on the card itself (issue #11): the send button only
+  // appears once every chosen slot is approved; until then it points to
+  // the Chants & partitions page. The server still hard-blocks either way.
+  var chApproved=ch.approved||{};
+  var toApprove=['entree','universelle','communion','final'].filter(function(s){return ch[s]&&!chApproved[s];}).length+
+    (pReady&&!psc.approved?1:0);
+  var sendBtn = !chosen ? ''
+    : toApprove ? mbBtn('⚠️ '+toApprove+' à approuver avant l\'envoi','ceOpen(MB.mid)','btn-secondary')
+    : mbBtn('✉️ Envoyer aux musiciens','musicSendFlow(MB.mid,this)','btn-primary');
   cards.push(mbAssetCard('🎵','Chants & partitions',
     mbChip(chosen===5?'ok':'neutral', chosen+' / 5 prêts'),
-    'Entrée · Prière universelle · Communion · Final · Psaume'+(pReady?'':' <span style="color:#b0700a">(psaume : en attente)</span>'),
+    'Entrée · Prière universelle · Communion · Final · Psaume'+(pReady?'':' <span style="color:#b0700a">(psaume : en attente)</span>')+
+      musicLastSentHtml(ch.last_sent),
     roleName('musicians'),
     mbBtn('Choisir les chants','beOpen(MB.mid)')+' '+
-    mbBtn('🎼 Partitions & audio','ceOpen(MB.mid)')+' '+
-    mbBtn('✉️ Envoyer aux musiciens','mbSendMusic(this)')));
+    mbBtn('🎼 Partitions & audio','ceOpen(MB.mid)')+' '+sendBtn));
   // Réception
   var rc=a.reception, rn=(rc.items&&rc.items.length)?['ok',rc.items.length+' contributions']:['neutral','À organiser'];
   cards.push(mbAssetCard('🍽️','Réception', mbChip(rn[0],rn[1]),
@@ -2014,14 +2050,97 @@ function mbRoleOverride(role,person,value,btn){
     } else { alert((d&&d.error)||'Erreur'); btn.disabled=false; }
   });
 }
-// Chants + psaume → email the musicians role with whatever partition/audio
-// Library links are matched so far (links, not attachments — added 2026-08-22)
-function mbSendMusic(btn){
-  var label=btn.textContent; btn.disabled=true; btn.textContent='…';
-  api('POST','/api/admin/mass/music/send',{mass:MB.mid}).then(function(d){
-    btn.disabled=false; btn.textContent=label;
-    if(d&&d.status==='ok') mbFlash('✓ envoyé aux musiciens ('+d.sent+')');
-    else alert((d&&d.error)||'Erreur');
+// ---- Musicians send (issue #11, 2026-11-18) ----
+// PZ clicked "Envoyer aux musiciens" with unapproved partitions. The server
+// refused, but the page showed nothing PZ noticed, so PZ believed it had gone
+// out. Now every send goes: preview → confirmation dialog (who, what,
+// bulletin) → send → a result dialog that stays until closed. A refusal says
+// NON ENVOYÉ and lists exactly what's missing. Both send buttons (Mass board
+// card and Chants & partitions page) use this one flow.
+
+// Like api(), but never rejects and never hangs: a network error or a
+// non-JSON reply (e.g. a proxy error page) becomes {error, http}. Kept
+// separate from api() because some api() callers rely on .catch().
+function apiSafe(method, path, body){
+  var opts = { method: method, headers: {'Content-Type': 'application/json'} };
+  if (token) opts.headers['Authorization'] = 'Bearer ' + token;
+  if (body !== undefined) opts.body = JSON.stringify(body);
+  return fetch(path, opts).then(function(r){
+    return r.text().then(function(t){
+      try { var d=JSON.parse(t); if(d&&typeof d==='object'){ d.http=r.status; return d; } } catch(e){}
+      return {error:'Réponse inattendue du serveur (HTTP '+r.status+').', http:r.status};
+    });
+  }).catch(function(){ return {error:'Connexion au serveur impossible.', http:0}; });
+}
+function musicLastSentHtml(ls){
+  if(ls&&ls.at) return '<div class="ms-last ok">✓ Dernier envoi : '+esc(fmtCentral(ls.at))+
+    ' — '+esc(String(ls.sent))+' musicien'+(ls.sent>1?'s':'')+(ls.by?' (par '+esc(ls.by)+')':'')+'</div>';
+  return '<div class="ms-last none">Pas encore envoyé aux musiciens.</div>';
+}
+function msShow(kind, head, bodyHtml, buttons){
+  document.getElementById('ms-head').className='ms-head '+kind;
+  document.getElementById('ms-head').textContent=head;
+  document.getElementById('ms-body').innerHTML=bodyHtml;
+  var foot=document.getElementById('ms-foot'); foot.innerHTML='';
+  buttons.forEach(function(b){
+    var el=document.createElement('button');
+    el.className='btn '+(b.primary?'btn-primary':'btn-secondary'); el.textContent=b.label;
+    el.onclick=b.onclick; foot.appendChild(el);
+  });
+  document.getElementById('ms-modal').style.display='flex';
+  var last=foot.lastChild; if(last) last.focus();
+}
+function msClose(){ document.getElementById('ms-modal').style.display='none'; }
+function msList(arr){ return '<ul>'+arr.map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('')+'</ul>'; }
+function msNotSent(mid, d, after){
+  var body='<p><strong>Rien n\'a été envoyé aux musiciens.</strong></p>';
+  if(d.unapproved&&d.unapproved.length)
+    body+='<p>Pas encore approuvé (cochez « Approuvé — prêt pour l\'envoi ») :</p>'+msList(d.unapproved);
+  var other=(d.blockers||[]).filter(function(b){ return b.indexOf('Pas encore approuvé')!==0; });
+  if(other.length) body+=msList(other);
+  if(!(d.blockers&&d.blockers.length)) body+='<p>'+esc(d.error||'Erreur inconnue.')+'</p>';
+  var btns=[{label:'Fermer',onclick:function(){ msClose(); if(after) after(); }}];
+  if(!CE.open) btns.unshift({label:'🎼 Ouvrir Chants & partitions',onclick:function(){ msClose(); ceOpen(mid); }});
+  msShow('err','✗ NON ENVOYÉ', body, btns);
+}
+function musicSendFlow(mid, btn, after){
+  var label=btn?btn.textContent:''; if(btn){ btn.disabled=true; btn.textContent='…'; }
+  function restore(){ if(btn){ btn.disabled=false; btn.textContent=label; } }
+  apiSafe('POST','/api/admin/mass/music/preview',{mass:mid}).then(function(p){
+    restore();
+    if(!p||p.error||p.status!=='ok'){
+      return msNotSent(mid,{error:'Impossible de vérifier l\'envoi : '+((p&&p.error)||'erreur')},after);
+    }
+    if(!p.can_send) return msNotSent(mid,p,after);
+    var m=(masses||[]).filter(function(x){return x.date===mid;})[0];
+    var body='<p>Messe : <strong>'+esc((m&&m.label)||mid)+'</strong></p>'+
+      '<p>Destinataires ('+p.recipients.length+') : '+esc(p.recipients.join(', '))+'</p>'+
+      '<p>Contenu :</p>'+msList(p.items.map(function(it){
+        var f=[it.partition?'partition':null, it.audio?'audio':null].filter(Boolean);
+        return it.heading+' — '+(f.length?f.join(' + '):'rien à joindre');
+      }))+
+      (p.bulletin_approved ? '<p>📄 Bulletin joint : '+esc(p.bulletin_file||'Bulletin.pdf')+'</p>'
+        : '<p style="color:#8a6d00">⚠️ Bulletin pas encore approuvé — il ne sera <strong>pas</strong> joint.</p>')+
+      (p.last_sent&&p.last_sent.at ? '<p style="color:#8a6d00">⚠️ Déjà envoyé le '+esc(fmtCentral(p.last_sent.at))+
+        ' — les musiciens le recevront une deuxième fois.</p>' : '');
+    msShow('ask','Envoyer aux musiciens ?', body, [
+      {label:'Annuler', onclick:msClose},
+      {label:'✉️ Envoyer', primary:true, onclick:function(){
+        msShow('ask','Envoi en cours…','<p>Merci de patienter, ne fermez pas la page.</p>',[]);
+        apiSafe('POST','/api/admin/mass/music/send',{mass:mid}).then(function(d){
+          if(d&&d.status==='ok'){
+            var ok='<p>Envoyé à <strong>'+d.sent+'</strong> musicien'+(d.sent>1?'s':'')+
+              (d.last_sent&&d.last_sent.at?' le '+esc(fmtCentral(d.last_sent.at)):'')+'.</p>'+
+              (d.bulletin_approved?'<p>Bulletin joint.</p>':'<p>Bulletin non joint (pas encore approuvé).</p>');
+            if(d.failed&&d.failed.length)
+              ok+='<p style="color:#990000">⚠️ Refusé par le serveur pour : '+
+                esc(d.failed.map(function(f){return f.name||f.email;}).join(', '))+'</p>';
+            msShow('ok','✓ ENVOYÉ', ok, [{label:'OK', primary:true, onclick:function(){ msClose(); if(after) after(); }}]);
+          } else msNotSent(mid, d||{}, after);
+          if(MB.mid===mid && typeof mbLoad==='function') mbLoad(mid);
+        });
+      }}
+    ]);
   });
 }
 
@@ -2042,6 +2161,7 @@ function ceLoad(){
   api('POST','/api/admin/mass/music/summary',{mass:CE.mid}).then(function(d){
     if(!d||d.error){ alert((d&&d.error)||'Erreur de chargement.'); return; }
     CE.items=d.items||[]; CE.allApproved=!!d.all_approved; CE.bulletin=d.bulletin||{approved:false};
+    CE.lastSent=d.last_sent||null;
     ceRender();
   });
 }
@@ -2118,8 +2238,10 @@ function ceRender(){
   }).join('') : '<p style="color:#888">Aucun chant choisi pour cette messe pour l\'instant — utilisez « Choisir les chants » d\'abord.</p>';
   var btn=document.getElementById('ce-send-btn');
   btn.disabled = !CE.allApproved || !CE.items.length;
-  document.getElementById('ce-send-hint').textContent = (!CE.items.length) ? ''
-    : (CE.allApproved ? '' : 'Approuvez chaque emplacement ci-dessus avant l\'envoi.');
+  var unapp=CE.items.filter(function(it){ return !it.empty && !it.approved; }).length;
+  document.getElementById('ce-send-hint').innerHTML = ((!CE.items.length) ? ''
+    : (CE.allApproved ? '' : '⚠️ Encore '+unapp+' emplacement'+(unapp>1?'s':'')+' à approuver avant l\'envoi.'))+
+    musicLastSentHtml(CE.lastSent);
 }
 function ceApprove(moment, approved){
   api('POST','/api/admin/mass/music/approve',{mass:CE.mid,moment:moment,approved:approved}).then(function(d){
@@ -2166,16 +2288,7 @@ function ceSearchPick(docId){
     else alert((d&&d.error)||'Erreur');
   });
 }
-function ceSend(btn){
-  var label=btn.textContent; btn.disabled=true; btn.textContent='…';
-  api('POST','/api/admin/mass/music/send',{mass:CE.mid}).then(function(d){
-    btn.disabled=false; btn.textContent=label;
-    if(d&&d.status==='ok'){
-      mbFlash('✓ envoyé aux musiciens ('+d.sent+')'+(d.bulletin_approved?' avec le bulletin':' — bulletin non joint (pas encore approuvé)'));
-      ceLoad();
-    } else alert((d&&d.error)||'Erreur');
-  });
-}
+function ceSend(btn){ musicSendFlow(CE.mid, btn, ceLoad); }
 
 // ---- dispatches ----
 var MB_DISP_STATUS={ pending:['neutral','À préparer'], draft:['warn','Brouillon prêt'], sent:['ok','Envoyé'] };
